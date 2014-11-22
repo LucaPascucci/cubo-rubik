@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <vector>
 
 #include "imageloader.h"
 
@@ -11,6 +12,29 @@
 #pragma comment(linker,"/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
 
 using namespace std;
+
+typedef struct{
+	float x, y,z;
+} Point;
+
+typedef struct{
+	Point posizione;
+	char colore;
+} Cubo;
+
+typedef struct{
+	int numeroVisuale;
+	bool riga_colonna; //se true muove riga altrimenti colonna
+	int valore_riga_colonna; //si intende quale riga o colonna vuole muovere.
+} Mossa;
+
+vector<Cubo> cuboRubik;
+Cubo cuboMultiuso;
+Point puntoMultiuso;
+Mossa mossaCorrente;
+bool mossaAttiva; //true se l'utente ha richiesto una mossa
+vector<Mossa> mosseEffettuate;
+int scattoRotazione = 90;
 
 int larghezza,altezza,windowsID;
 int window_x,window_y;
@@ -50,6 +74,136 @@ void centraFinestraDesktop()
 {
 	window_x = (glutGet (GLUT_SCREEN_WIDTH) - larghezza)/2;
 	window_y = (glutGet (GLUT_SCREEN_HEIGHT) - altezza)/2;
+}
+
+void inizializzaCubo(){
+
+	puntoMultiuso.x = -1.0;
+	puntoMultiuso.y = -1.0;
+	puntoMultiuso.z = -1.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboMultiuso.colore = 'G';
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.z = 0.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.z = 1.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.y = 0.0;
+	puntoMultiuso.z = -1.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.z = 0.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.z = 1.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.y = 1.0;
+	puntoMultiuso.z = -1.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.z = 0.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.z = 1.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	//linea centrale
+	puntoMultiuso.x = 0.0;
+	puntoMultiuso.y = -1.0;
+	puntoMultiuso.z = -1.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboMultiuso.colore = 'G';
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.z = 0.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.z = 1.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.y = 0.0;
+	puntoMultiuso.z = -1.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.z = 0.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.z = 1.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.y = 1.0;
+	puntoMultiuso.z = -1.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.z = 0.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.z = 1.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+
+	//linea destra
+	puntoMultiuso.x = 1.0;
+	puntoMultiuso.y = -1.0;
+	puntoMultiuso.z = -1.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboMultiuso.colore = 'G';
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.z = 0.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.z = 1.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.y = 0.0;
+	puntoMultiuso.z = -1.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.z = 0.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.z = 1.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.y = 1.0;
+	puntoMultiuso.z = -1.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.z = 0.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
+	puntoMultiuso.z = 1.0;
+	cuboMultiuso.posizione = puntoMultiuso;
+	cuboRubik.push_back(cuboMultiuso);
+
 }
 
 void keyboard(unsigned char key,int x,int y)
@@ -400,11 +554,11 @@ void display()
 	//oscilla();
 	//cuboSingolo();
 
-	for(int x = 0.0;x <= DIMENSIONE_FACCIA*3 - 1; x += DIMENSIONE_FACCIA)
+	/*for(int x = -1.0;x <= DIMENSIONE_FACCIA*2-1; x += DIMENSIONE_FACCIA)
 	{
-		for(int y = 0;y <= DIMENSIONE_FACCIA*3 - 1 ; y += DIMENSIONE_FACCIA)
+		for(int y = -1.0;y <= DIMENSIONE_FACCIA*2-1; y += DIMENSIONE_FACCIA)
 		{
-			for(int z = 0; z <= DIMENSIONE_FACCIA*3 - 1; z += DIMENSIONE_FACCIA)
+			for(int z = -1.0; z <= DIMENSIONE_FACCIA*2-1; z += DIMENSIONE_FACCIA)
 			{
 				glPushMatrix();
 				glTranslatef(x,y,z);
@@ -412,6 +566,19 @@ void display()
 				glPopMatrix();
 			}
 		}
+	}*/
+	
+	
+	for (int i = 0; i < cuboRubik.size(); i++){
+		
+		glPushMatrix();
+		if (cuboRubik[i].posizione.x == 0){
+			glRotatef(angolo_rotazione, 1.0f, 0.0f, 0.0f);
+		}
+		glTranslatef(cuboRubik[i].posizione.x,cuboRubik[i].posizione.y,cuboRubik[i].posizione.z);
+		glCallList(_displayListId_smallcube);
+		glPopMatrix();
+
 	}
 
 	glutSwapBuffers();
@@ -419,12 +586,34 @@ void display()
 }
 
 void timer(int value) {
-	angolo_rotazione += 2.0f;
-	if (angolo_rotazione > 360) {
-		angolo_rotazione -= 360;
+	if (angolo_rotazione != 90) {
+		angolo_rotazione += 1.0;
 	}
 	glutPostRedisplay();
 	glutTimerFunc(10, timer, 0);
+}
+
+void createGluiPanel()
+{
+//	GLUI* glui = GLUI_Master.create_glui("Opzioni", GLUI_SUBWINDOW_TOP, (glutGet(GLUT_SCREEN_WIDTH)-larghezza-400)/2, (glutGet(GLUT_SCREEN_HEIGHT)-altezza)/2);
+//	pannello_colore_sfondo = glui -> add_panel("Gestione colore sfondo", GLUI_PANEL_EMBOSSED);
+//	rs = glui -> add_edittext_to_panel(pannello_colore_sfondo, "rosso:", GLUI_EDITTEXT_FLOAT, &rosso_sf);
+//	gs = glui -> add_edittext_to_panel(pannello_colore_sfondo, "verde:", GLUI_EDITTEXT_FLOAT, &verde_sf);
+//	bs = glui -> add_edittext_to_panel(pannello_colore_sfondo, "blu:", GLUI_EDITTEXT_FLOAT, &blu_sf);
+//
+//	rs -> set_int_limits(0, 255);
+//	gs -> set_int_limits(0, 255);
+//	bs -> set_int_limits(0, 255);
+//
+//	pannello_velocità_palla = glui -> add_panel("Gestione velocita palla", GLUI_PANEL_EMBOSSED);
+//	incrementa_palla = glui -> add_button_to_panel(pannello_velocità_palla, "+", 1, manageButton);
+//	decrementa_palla = glui -> add_button_to_panel(pannello_velocità_palla, "-", 2, manageButton);
+//
+//	pannello_velocità_racchette = glui -> add_panel("Gestione velocita racchette", GLUI_PANEL_EMBOSSED);
+//	incrementa_racchetta = glui -> add_button_to_panel(pannello_velocità_racchette, "+", 3, manageButton);
+//	decrementa_racchetta = glui -> add_button_to_panel(pannello_velocità_racchette, "-", 4, manageButton);
+//
+//	glui -> set_main_gfx_window(winID);
 }
 
 void main(int argc,char** argv)
@@ -446,5 +635,7 @@ void main(int argc,char** argv)
 	glutTimerFunc(17, timer, 0);
 	glutSpecialFunc(specialKeyboard);
 
+	//creaPannelloGlui();
+	
 	glutMainLoop();
 }

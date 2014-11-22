@@ -29,6 +29,7 @@ typedef struct{
 	int numeroVisuale;
 	bool riga_colonna; //se true muove riga altrimenti colonna
 	int valore_riga_colonna; //si intende quale riga o colonna vuole muovere.
+	bool direzione;
 } Mossa;
 
 vector<Cubo> cuboRubik;

@@ -86,8 +86,11 @@
     <Image Include="yellow.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CuboRubik.cpp" />
+    <ClCompile Include="CuboRubikModificato.cpp" />
+    <ClCompile Include="glui.cpp" />
     <ClCompile Include="imageloader.cpp" />
-    <ClCompile Include="Maincpp.cpp" />
+    <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imageloader.h" />

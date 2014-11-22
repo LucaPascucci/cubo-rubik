@@ -35,10 +35,19 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Maincpp.cpp">
+    <ClCompile Include="imageloader.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="imageloader.cpp">
+    <ClCompile Include="CuboRubik.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="CuboRubikModificato.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="glui.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>

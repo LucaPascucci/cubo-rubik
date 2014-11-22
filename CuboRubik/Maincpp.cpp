@@ -12,7 +12,7 @@
 #include "imageloader.h"
 
 // Nasconde la console
-#pragma comment(linker,"/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
+//#pragma comment(linker,"/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
 
 using namespace std;
 
@@ -38,6 +38,11 @@ Mossa mossaCorrente;
 bool mossaAttiva; //true se l'utente ha richiesto una mossa
 vector<Mossa> mosseEffettuate;
 int scattoRotazione = 90;
+
+int angolo_asse_y = 0;
+int angolo_asse_x = 0;
+Point rotate_x = {1.0, 0.0, 0.0};
+Point rotate_y = {0.0, 1.0, 0.0};
 
 int larghezza,altezza,windowsID;
 int window_x,window_y;
@@ -229,82 +234,61 @@ void specialKeyboard(int key, int x, int y)
 {
 	if(key == GLUT_KEY_UP)
 	{
-		arrowXrot-=3;
-		if(arrowXrot < -360.0)
-			arrowXrot=0;
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		angolo_asse_x -= 90;
+		if (angolo_asse_x <= -360) {
+			angolo_asse_x = 0;
+		}
+		/*rotazione_x = 1.0;
+		rotazione_y = 0.0;*/
+		cout << "Il valore di x e' : " << angolo_asse_x << endl;
+		cout << "Il valore di y e' : " << angolo_asse_y << endl;
 	}
 
 	if(key == GLUT_KEY_DOWN)
 	{
-		arrowXrot += 3.0;
-		if(arrowXrot > 360.0)
-			arrowXrot=0;
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		angolo_asse_x += 90;
+		if (angolo_asse_x >= 360) {
+			angolo_asse_x = 0;
+		}
+		/*rotazione_x = 1.0;
+		rotazione_y = 0.0;*/
+		cout << "Il valore di x e' : " << angolo_asse_x << endl;
+		cout << "Il valore di y e' : " << angolo_asse_y << endl;
 	}
-
-	/*if(key == GLUT_KEY_LEFT)
-	{
-		arrowZrot+=3.0;
-		if(arrowZrot > 360.0)
-			arrowZrot=0;
-	}
-
-	if(key == GLUT_KEY_RIGHT)
-	{
-		arrowZrot-=3;
-		if(arrowZrot < -360.0)
-			arrowZrot=0;
-	}*/
 
 	if(key == GLUT_KEY_LEFT)
 	{
-		arrowYrot-=3;
-		if(arrowYrot < -360.0)
-			arrowYrot=0;
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		angolo_asse_y += 90;
+		if (angolo_asse_y >= 360) {
+			angolo_asse_y = 0;
+		}
+		/*rotazione_x = 0.0;
+		rotazione_y = 1.0;*/
+		cout << "Il valore di x e' : " << angolo_asse_x << endl;
+		cout << "Il valore di y e' : " << angolo_asse_y << endl;
 	}
 
 	if(key == GLUT_KEY_RIGHT)
 	{
-		arrowYrot+=3;
-		if(arrowYrot>360.0)
-			arrowYrot=0;
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		angolo_asse_y -= 90;
+		if (angolo_asse_y <= -360) {
+			angolo_asse_y = 0;
+		}
+		/*rotazione_x = 0.0;
+		rotazione_y = 1.0;*/
+		cout << "Il valore di x e' : " << angolo_asse_x << endl;
+		cout << "Il valore di y e' : " << angolo_asse_y << endl;
 	}
 
-	/* Aggiorna l'immagine */
 	glutPostRedisplay();
-}
-
-void oscilla()
-{
-	GLfloat offset = 0.1;
-	GLfloat maxAngleSize = 30.0;
-	static GLfloat angle = 90.0;
-	static GLfloat angleOld;
-	GLfloat zRot = sin(angle)*3;
-	GLfloat xRot = cos(angle)*3;
-
-	angleOld = angle + 10.0;
-
-	glRotatef(zRot, 0.0, 0.0, 1.0);
-	glRotatef(xRot, 0.0, 1.0, 0.0);
-
-	/* imposta un leggero movimento oscillatorio di default */
-	if(angleOld != angle && angle > -maxAngleSize)
-	{
-		angle-=offset;
-	}
-	else if(angle <= maxAngleSize)
-	{
-		angle+=offset;
-		angleOld=angle;
-	}
-	else if(angleOld == angle && angle < maxAngleSize)
-	{
-		angle+=offset; 
-		angleOld+=offset;
-	}
-	else{
-		angleOld=angle+10.0;
-	}
 }
 
 
@@ -522,13 +506,9 @@ void display()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	
-	/*gluLookAt(2.0f,-5.0f, -10.0f, 
+	gluLookAt(-4.0f, 5.0f, 8.0f, 
 		0.0f,0.0f,0.0f,
-		0.0f,1.0f,0.0f);*/
-
-	/*gluLookAt(0.0f,12.0f, 4.0f, 
-		0.0f,0.0f,0.0f,
-		0.0f,1.0f,0.0f);*/
+		0.0f,1.0f,0.0f);
 
 	//faccia gialla avanti
 	/*gluLookAt(4.0f, 5.0f, -8.0f, 
@@ -536,19 +516,19 @@ void display()
 		0.0f,1.0f,0.0f);*/
 
 	//faccia verde davanti
-	/*gluLookAt(-8.0f, 5.0f, -2.0f, 
+	/*gluLookAt(-8.0f, 5.0f, -4.0f, 
 		0.0f,0.0f,0.0f,
 		0.0f,1.0f,0.0f);*/
 
 	//(faccia blu davanti)
-	/*gluLookAt(10.0f,5.0f, 4.0f,
+	/*gluLookAt(8.0f,5.0f, 4.0f,
 		0.0f,0.0f,0.0f,
 		0.0f,1.0f,0.0f);*/
 
 	//Questa puo andare bene come posizione iniziale (faccia bianca davanti)
-	gluLookAt(-2.0f,5.0f, 10.0f, 
+	/*gluLookAt(-4.0f,5.0f, 8.0f, 
 		0.0f,0.0f,0.0f,
-		0.0f,1.0f,0.0f);
+		0.0f,1.0f,0.0f);*/
 
 	//quella presente nella vecchia resize
 	/*gluLookAt(0.0f,5.5f, 15.0f,
@@ -557,42 +537,24 @@ void display()
 
 	drawGround();
 
-	//glTranslatef(0,-5.0,-10.0);
-	glTranslatef(0, 0.0, 0.0);
-	//glRotatef(-angolo_rotazione, 2.0f, 2.0f, 0.0f);
-	//glRotatef(45.0, 1.0, 0.0, 0.0);
-	//glRotatef(45.0, 0.0, 1.0, 0.0);
+	glTranslatef(0.0, 0.0, 0.0);
+	//per far ruotare il cubo nella sua interezza
 
-	glRotatef(arrowXrot, 1.0, 0.0, 0.0);
+	glRotatef(angolo_asse_x, rotate_x.x, rotate_x.y, rotate_x.z);
+	glRotatef(angolo_asse_y, rotate_y.x, rotate_y.y, rotate_y.z); 
+
+	/*glRotatef(arrowXrot, 1.0, 0.0, 0.0);
 	glRotatef(arrowYrot, 0.0, 1.0, 0.0);
-	glRotatef(arrowZrot, 0.0, 0.0, 0.0);
+	glRotatef(arrowZrot, 0.0, 0.0, 0.0);*/
 
 	glutWireCube(4.0);
-
-	//oscilla();
-	//cuboSingolo();
-
-	/*for(int x = -1.0;x <= DIMENSIONE_FACCIA*2-1; x += DIMENSIONE_FACCIA)
-	{
-		for(int y = -1.0;y <= DIMENSIONE_FACCIA*2-1; y += DIMENSIONE_FACCIA)
-		{
-			for(int z = -1.0; z <= DIMENSIONE_FACCIA*2-1; z += DIMENSIONE_FACCIA)
-			{
-				glPushMatrix();
-				glTranslatef(x,y,z);
-				glCallList(_displayListId_smallcube);
-				glPopMatrix();
-			}
-		}
-	}*/
-	
 	
 	for (int i = 0; i < cuboRubik.size(); i++){
 		
 		glPushMatrix();
-		if (cuboRubik[i].posizione.x == 0){
+		/*if (cuboRubik[i].posizione.x == 0){
 			glRotatef(angolo_rotazione, 1.0f, 0.0f, 0.0f);
-		}
+		}*/
 		glTranslatef(cuboRubik[i].posizione.x,cuboRubik[i].posizione.y,cuboRubik[i].posizione.z);
 		glCallList(_displayListId_smallcube);
 		glPopMatrix();

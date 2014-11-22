@@ -146,15 +146,18 @@ void oscilla()
 }
 
 
-void resize(int w,int h)
-{
-	glViewport(0,0,w,h);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(45.0,(double)w/(double)h,1.0,200.0);
-	gluLookAt(0.0f,5.5f, 15.0f,
-		0.0f,0.0f,0.0f,
-		0.0f,1.0f,0.0f);
+void reshape(GLsizei width, GLsizei height) // GLsizei for non-negative integer
+{ 
+	// Compute aspect ratio of the new window
+	if (height == 0) height = 1; // To prevent divide by 0
+	GLfloat aspect = (GLfloat)width / (GLfloat)height;
+	// Set the viewport to cover the new window
+	glViewport(0, 0, width, height);
+	// Set the aspect ratio of the clipping volume to match the viewport
+	glMatrixMode(GL_PROJECTION); // To operate on the Projection matrix
+	glLoadIdentity(); // Reset
+	// Enable perspective projection with fovy, aspect, zNear and zFar
+	gluPerspective(60.0f, aspect, 1.0f, 1000.0f);
 }
 
 void drawGround(void)
@@ -347,6 +350,39 @@ void display()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	
+	/*gluLookAt(2.0f,-5.0f, -10.0f, 
+		0.0f,0.0f,0.0f,
+		0.0f,1.0f,0.0f);*/
+
+	/*gluLookAt(0.0f,12.0f, 4.0f, 
+		0.0f,0.0f,0.0f,
+		0.0f,1.0f,0.0f);*/
+
+	//faccia gialla avanti
+	/*gluLookAt(4.0f, 5.0f, -8.0f, 
+		0.0f,0.0f,0.0f,
+		0.0f,1.0f,0.0f);*/
+
+	//faccia verde davanti
+	/*gluLookAt(-8.0f, 5.0f, -2.0f, 
+		0.0f,0.0f,0.0f,
+		0.0f,1.0f,0.0f);*/
+
+	//(faccia blu davanti)
+	/*gluLookAt(10.0f,5.0f, 4.0f,
+		0.0f,0.0f,0.0f,
+		0.0f,1.0f,0.0f);*/
+
+	//Questa puo andare bene come posizione iniziale (faccia bianca davanti)
+	gluLookAt(-2.0f,5.0f, 10.0f, 
+		0.0f,0.0f,0.0f,
+		0.0f,1.0f,0.0f);
+
+	//quella presente nella vecchia resize
+	/*gluLookAt(0.0f,5.5f, 15.0f,
+		0.0f,0.0f,0.0f,
+		0.0f,1.0f,0.0f);*/
+
 	drawGround();
 
 	//glTranslatef(0,-5.0,-10.0);
@@ -359,14 +395,16 @@ void display()
 	glRotatef(arrowYrot, 0.0, 1.0, 0.0);
 	glRotatef(arrowZrot, 0.0, 0.0, 0.0);
 
+	glutWireCube(4.0);
+
 	//oscilla();
 	//cuboSingolo();
 
-	for(int x = 0.0;x < DIMENSIONE_FACCIA*3-0.1; x += DIMENSIONE_FACCIA)
+	for(int x = 0.0;x <= DIMENSIONE_FACCIA*3 - 1; x += DIMENSIONE_FACCIA)
 	{
-		for(int y = 0;y < DIMENSIONE_FACCIA*3-0.1; y += DIMENSIONE_FACCIA)
+		for(int y = 0;y <= DIMENSIONE_FACCIA*3 - 1 ; y += DIMENSIONE_FACCIA)
 		{
-			for(int z = 0; z < DIMENSIONE_FACCIA*3-0.1; z += DIMENSIONE_FACCIA)
+			for(int z = 0; z <= DIMENSIONE_FACCIA*3 - 1; z += DIMENSIONE_FACCIA)
 			{
 				glPushMatrix();
 				glTranslatef(x,y,z);
@@ -404,7 +442,7 @@ void main(int argc,char** argv)
 
 	glutDisplayFunc(display);
 	glutKeyboardFunc(keyboard);
-	glutReshapeFunc(resize);
+	glutReshapeFunc(reshape);
 	glutTimerFunc(17, timer, 0);
 	glutSpecialFunc(specialKeyboard);
 

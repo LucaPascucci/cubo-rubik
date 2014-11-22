@@ -34,10 +34,11 @@ typedef struct{
 vector<Cubo> cuboRubik;
 Cubo cuboMultiuso;
 Point puntoMultiuso;
-Mossa mossaCorrente;
-bool mossaAttiva; //true se l'utente ha richiesto una mossa
+Mossa mossaAttiva;
+bool pussantePremuto; //true se l'utente ha premuto un pussante
 vector<Mossa> mosseEffettuate;
 int scattoRotazione = 90;
+Point puntoRiferimentoRotazione;
 
 int angolo_asse_y = 0;
 int angolo_asse_x = 0;
@@ -48,11 +49,8 @@ int larghezza,altezza,windowsID;
 int window_x,window_y;
 bool inizio = true;
 
-//GLUI_Panel *pannello_colore_sfondo, *pannello_velocità_palla, *pannello_velocità_racchette;
-//GLUI_EditText *rs, *gs, *bs;
 GLUI* glui;
 GLUI_Panel *panel;
-//GLUI_Button *incrementa_palla, *decrementa_palla, *incrementa_racchetta, *decrementa_racchetta;
 
 float angolo_rotazione = 0;
 const float DIMENSIONE_FACCIA = 1.0;
@@ -154,9 +152,10 @@ void inizializzaCubo(){
 	cuboMultiuso.posizione = puntoMultiuso;
 	cuboRubik.push_back(cuboMultiuso);
 
-	puntoMultiuso.z = 0.0;
+	//punto centrale che rimane nascosto
+	/*puntoMultiuso.z = 0.0;
 	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
+	cuboRubik.push_back(cuboMultiuso);*/
 
 	puntoMultiuso.z = 1.0;
 	cuboMultiuso.posizione = puntoMultiuso;
@@ -471,14 +470,128 @@ void cuboSingolo()
 
 }
 
-void manageButton(int opzione){
-	switch (opzione)
+void gestioneBottoni(int opzione){
+	if (!pussantePremuto){
+		pussantePremuto = !pussantePremuto;
+		switch (opzione)
+		{
+		case 0: //premuto quit
+				glutDestroyWindow( windowsID );
+				exit(0);
+			break;
+
+		case -1:	//Prima riga a sinistra
+			mossaAttiva.riga_colonna = true;
+			mossaAttiva.valore_riga_colonna = 1.0;
+			mossaAttiva.direzione = false;
+			break;
+
+		case -2:	//Seconda riga a sinistra
+			mossaAttiva.riga_colonna = true;
+			mossaAttiva.valore_riga_colonna = 0.0;
+			mossaAttiva.direzione = false;
+			break;
+
+		case -3:	//Terza riga a sinistra
+			mossaAttiva.riga_colonna = true;
+			mossaAttiva.valore_riga_colonna = -1.0;
+			mossaAttiva.direzione = false;
+			break;
+
+		case 1:		//Prima riga a destra
+			mossaAttiva.riga_colonna = true;
+			mossaAttiva.valore_riga_colonna = 1.0;
+			mossaAttiva.direzione = true;
+			break;
+
+		case 2:		//Seconda riga a destra
+			mossaAttiva.riga_colonna = true;
+			mossaAttiva.valore_riga_colonna = 0.0;
+			mossaAttiva.direzione = true;
+			break;
+
+		case 3:		//Terza riga a destra 
+			mossaAttiva.riga_colonna = true;
+			mossaAttiva.valore_riga_colonna = -1.0;
+			mossaAttiva.direzione = true;
+			break;
+
+		case -4:	//Prima colonna sù
+			mossaAttiva.riga_colonna = false;
+			mossaAttiva.valore_riga_colonna = -1.0;
+			mossaAttiva.direzione = false;
+			break;
+
+		case -5:	//Seconda colonna sù
+			mossaAttiva.riga_colonna = false;
+			mossaAttiva.valore_riga_colonna = 0.0;
+			mossaAttiva.direzione = false;
+			break;
+
+		case -6:	//Terza colonna sù
+			mossaAttiva.riga_colonna = false;
+			mossaAttiva.valore_riga_colonna = 1.0;
+			mossaAttiva.direzione = false;
+			break;
+
+		case 4:		//Prima colonna giù
+			mossaAttiva.riga_colonna = false;
+			mossaAttiva.valore_riga_colonna = -1.0;
+			mossaAttiva.direzione = true;
+			break;
+
+		case 5:		//Seconda colonna giù
+			mossaAttiva.riga_colonna = false;
+			mossaAttiva.valore_riga_colonna = 0.0;
+			mossaAttiva.direzione = true;
+			break;
+
+		case 6:		//Terza colonna giù
+			mossaAttiva.riga_colonna = false;
+			mossaAttiva.valore_riga_colonna = 1.0;
+			mossaAttiva.direzione = true;
+			break;
+
+		case 7:		//Shuffle
+			break;
+
+		case 8:		//Reset
+			break;
+		}
+	}
+}
+
+bool attivazioneMossa(Cubo cuboCorrente){
+	bool attivaMovimento = false;
+	switch (mossaAttiva.riga_colonna)
 	{
-	case 0:
-			glutDestroyWindow( windowsID );
-			exit( 0 );
+	case true:
+		puntoRiferimentoRotazione.x = 0.0;
+		puntoRiferimentoRotazione.z = 0.0;
+		if (mossaAttiva.direzione){
+			puntoRiferimentoRotazione.y = 1.0;
+		}else {
+			puntoRiferimentoRotazione.y = -1.0;
+		}
+		if (cuboCorrente.posizione.y == mossaAttiva.valore_riga_colonna){
+			attivaMovimento = true;
+		}
+		break;
+	case false:
+		puntoRiferimentoRotazione.y = 0.0;
+		puntoRiferimentoRotazione.z = 0.0;
+		if (mossaAttiva.direzione){
+			puntoRiferimentoRotazione.x = 1.0;
+		}else {
+			puntoRiferimentoRotazione.x = -1.0;
+		}
+		if (cuboCorrente.posizione.x == mossaAttiva.valore_riga_colonna){
+			attivaMovimento = true;
+		}
 		break;
 	}
+	return attivaMovimento;
+	
 }
 
 void init()
@@ -552,9 +665,11 @@ void display()
 	for (int i = 0; i < cuboRubik.size(); i++){
 		
 		glPushMatrix();
-		/*if (cuboRubik[i].posizione.x == 0){
-			glRotatef(angolo_rotazione, 1.0f, 0.0f, 0.0f);
-		}*/
+		if (pussantePremuto){
+			if (attivazioneMossa(cuboRubik[i])){
+				glRotatef(angolo_rotazione, puntoRiferimentoRotazione.x, puntoRiferimentoRotazione.y, puntoRiferimentoRotazione.z);
+			}
+		}
 		glTranslatef(cuboRubik[i].posizione.x,cuboRubik[i].posizione.y,cuboRubik[i].posizione.z);
 		glCallList(_displayListId_smallcube);
 		glPopMatrix();
@@ -575,9 +690,14 @@ void timer(int value) {
 		SetActiveWindow(GetActiveWindow());
 	}
 
-	if (angolo_rotazione != 90) {
-		angolo_rotazione += 1.0;
+	if (angolo_rotazione < scattoRotazione && pussantePremuto) {
+		angolo_rotazione += 2.0;
+		//angolo_rotazione = scattoRotazione;
+	}else{
+		angolo_rotazione = 0;
+		pussantePremuto = false;
 	}
+	
 	glutSetWindow(windowsID);
 	glutPostRedisplay();
 	glutTimerFunc(17, timer, 0);
@@ -590,41 +710,41 @@ void creaPannelloGlui()
 
 	panel = glui -> add_panel("Movimenti cubo", GLUI_PANEL_EMBOSSED);
 	glui -> add_statictext_to_panel(panel,"");
-	glui -> add_button_to_panel(panel, "<", -1, manageButton);
-	glui -> add_button_to_panel(panel, "<", -2, manageButton);
-	glui -> add_button_to_panel(panel, "<", -3, manageButton);
+	glui -> add_button_to_panel(panel, "<", -1, gestioneBottoni);	//Prima riga a sinistra
+	glui -> add_button_to_panel(panel, "<", -2, gestioneBottoni);	//Seconda riga a sinistra
+	glui -> add_button_to_panel(panel, "<", -3, gestioneBottoni);	//Terza riga a sinistra
 	glui -> add_statictext_to_panel(panel,"");
 	glui->add_column_to_panel( panel, false );
-	glui -> add_button_to_panel(panel, "^", 4, manageButton);
+	glui -> add_button_to_panel(panel, "^", -4, gestioneBottoni);	//Prima colonna giù
 	glui -> add_statictext_to_panel(panel,"");
 	glui -> add_statictext_to_panel(panel,"");
 	glui -> add_statictext_to_panel(panel,"");
-	glui -> add_button_to_panel(panel, "v", -4, manageButton);
+	glui -> add_button_to_panel(panel, "v", 4, gestioneBottoni);	//Prima colonna sù
 	glui->add_column_to_panel( panel, false );
-	glui -> add_button_to_panel(panel, "^", 5, manageButton);
+	glui -> add_button_to_panel(panel, "^", -5, gestioneBottoni);	//Seconda colonna giù
 	glui -> add_statictext_to_panel(panel,"");
 	glui -> add_statictext_to_panel(panel,"");
 	glui -> add_statictext_to_panel(panel,"");
-	glui -> add_button_to_panel(panel, "v", -5, manageButton);
+	glui -> add_button_to_panel(panel, "v", 5, gestioneBottoni);	//Seconda colonna sù
 	glui->add_column_to_panel( panel, false );
-	glui -> add_button_to_panel(panel, "^", 6, manageButton);
+	glui -> add_button_to_panel(panel, "^", -6, gestioneBottoni);	//Terza colonna giù
 	glui -> add_statictext_to_panel(panel,"");
 	glui -> add_statictext_to_panel(panel,"");
 	glui -> add_statictext_to_panel(panel,"");
-	glui -> add_button_to_panel(panel, "v", -6, manageButton);
+	glui -> add_button_to_panel(panel, "v", 6, gestioneBottoni);	//Terza colonna sù
 	glui->add_column_to_panel( panel, false );
 	glui -> add_statictext_to_panel(panel,"");
-	glui -> add_button_to_panel(panel, ">", 1, manageButton);
-	glui -> add_button_to_panel(panel, ">", 2, manageButton);
-	glui -> add_button_to_panel(panel, ">", 3, manageButton);
+	glui -> add_button_to_panel(panel, ">", 1, gestioneBottoni);	//Prima riga a destra
+	glui -> add_button_to_panel(panel, ">", 2, gestioneBottoni);	//Seconda riga a destra
+	glui -> add_button_to_panel(panel, ">", 3, gestioneBottoni);	//Terza riga a destra
 	glui -> add_statictext_to_panel(panel,"");
 
 	panel = glui->add_panel( "", false );
-	glui -> add_button_to_panel(panel, "Shuffle", 7, manageButton);
+	glui -> add_button_to_panel(panel, "Shuffle", 7, gestioneBottoni);
 	glui->add_column_to_panel( panel, false );
-	glui->add_button_to_panel( panel, "Reset", 8, manageButton);
+	glui->add_button_to_panel( panel, "Reset", 8, gestioneBottoni);
 	glui->add_column_to_panel( panel, false );
-	glui->add_button_to_panel( panel, "Quit", 0, manageButton);
+	glui->add_button_to_panel( panel, "Quit", 0, gestioneBottoni);
 	
 	glui -> set_main_gfx_window(windowsID);
 }

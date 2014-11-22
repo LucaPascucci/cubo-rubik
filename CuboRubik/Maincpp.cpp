@@ -1,5 +1,8 @@
 #include <windows.h>
-#include <gl/glut.h>
+#include <gl/glut.h> 
+#include <gl/gl.h> 
+#include <gl/glu.h>
+#include <gl/glui.h>
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
@@ -38,6 +41,13 @@ int scattoRotazione = 90;
 
 int larghezza,altezza,windowsID;
 int window_x,window_y;
+bool inizio = true;
+
+//GLUI_Panel *pannello_colore_sfondo, *pannello_velocità_palla, *pannello_velocità_racchette;
+//GLUI_EditText *rs, *gs, *bs;
+GLUI* glui;
+GLUI_Panel *panel;
+//GLUI_Button *incrementa_palla, *decrementa_palla, *incrementa_racchetta, *decrementa_racchetta;
 
 float angolo_rotazione = 0;
 const float DIMENSIONE_FACCIA = 1.0;
@@ -124,7 +134,6 @@ void inizializzaCubo(){
 	puntoMultiuso.y = -1.0;
 	puntoMultiuso.z = -1.0;
 	cuboMultiuso.posizione = puntoMultiuso;
-	cuboMultiuso.colore = 'G';
 	cuboRubik.push_back(cuboMultiuso);
 
 	puntoMultiuso.z = 0.0;
@@ -167,7 +176,6 @@ void inizializzaCubo(){
 	puntoMultiuso.y = -1.0;
 	puntoMultiuso.z = -1.0;
 	cuboMultiuso.posizione = puntoMultiuso;
-	cuboMultiuso.colore = 'G';
 	cuboRubik.push_back(cuboMultiuso);
 
 	puntoMultiuso.z = 0.0;
@@ -479,6 +487,16 @@ void cuboSingolo()
 
 }
 
+void manageButton(int opzione){
+	switch (opzione)
+	{
+	case 0:
+			glutDestroyWindow( windowsID );
+			exit( 0 );
+		break;
+	}
+}
+
 void init()
 {
 	glEnable(GL_DEPTH_TEST);
@@ -586,34 +604,67 @@ void display()
 }
 
 void timer(int value) {
+
+	if (inizio) // per mettere in rilievo la finestra di gioco all'avvio del programma
+	{
+		SetActiveWindow(FindWindowA(0,"Pong 2D"));
+		inizio = false;
+	} else {
+		SetActiveWindow(GetActiveWindow());
+	}
+
 	if (angolo_rotazione != 90) {
 		angolo_rotazione += 1.0;
 	}
+	glutSetWindow(windowsID);
 	glutPostRedisplay();
-	glutTimerFunc(10, timer, 0);
+	glutTimerFunc(17, timer, 0);
+	
 }
 
-void createGluiPanel()
+void creaPannelloGlui()
 {
-//	GLUI* glui = GLUI_Master.create_glui("Opzioni", GLUI_SUBWINDOW_TOP, (glutGet(GLUT_SCREEN_WIDTH)-larghezza-400)/2, (glutGet(GLUT_SCREEN_HEIGHT)-altezza)/2);
-//	pannello_colore_sfondo = glui -> add_panel("Gestione colore sfondo", GLUI_PANEL_EMBOSSED);
-//	rs = glui -> add_edittext_to_panel(pannello_colore_sfondo, "rosso:", GLUI_EDITTEXT_FLOAT, &rosso_sf);
-//	gs = glui -> add_edittext_to_panel(pannello_colore_sfondo, "verde:", GLUI_EDITTEXT_FLOAT, &verde_sf);
-//	bs = glui -> add_edittext_to_panel(pannello_colore_sfondo, "blu:", GLUI_EDITTEXT_FLOAT, &blu_sf);
-//
-//	rs -> set_int_limits(0, 255);
-//	gs -> set_int_limits(0, 255);
-//	bs -> set_int_limits(0, 255);
-//
-//	pannello_velocità_palla = glui -> add_panel("Gestione velocita palla", GLUI_PANEL_EMBOSSED);
-//	incrementa_palla = glui -> add_button_to_panel(pannello_velocità_palla, "+", 1, manageButton);
-//	decrementa_palla = glui -> add_button_to_panel(pannello_velocità_palla, "-", 2, manageButton);
-//
-//	pannello_velocità_racchette = glui -> add_panel("Gestione velocita racchette", GLUI_PANEL_EMBOSSED);
-//	incrementa_racchetta = glui -> add_button_to_panel(pannello_velocità_racchette, "+", 3, manageButton);
-//	decrementa_racchetta = glui -> add_button_to_panel(pannello_velocità_racchette, "-", 4, manageButton);
-//
-//	glui -> set_main_gfx_window(winID);
+	glui = GLUI_Master.create_glui("Comandi Giocatore", GLUI_SUBWINDOW_TOP, (glutGet(GLUT_SCREEN_WIDTH)-larghezza-400)/2, (glutGet(GLUT_SCREEN_HEIGHT)-altezza)/2);
+
+	panel = glui -> add_panel("Movimenti cubo", GLUI_PANEL_EMBOSSED);
+	glui -> add_statictext_to_panel(panel,"");
+	glui -> add_button_to_panel(panel, "<", -1, manageButton);
+	glui -> add_button_to_panel(panel, "<", -2, manageButton);
+	glui -> add_button_to_panel(panel, "<", -3, manageButton);
+	glui -> add_statictext_to_panel(panel,"");
+	glui->add_column_to_panel( panel, false );
+	glui -> add_button_to_panel(panel, "^", 4, manageButton);
+	glui -> add_statictext_to_panel(panel,"");
+	glui -> add_statictext_to_panel(panel,"");
+	glui -> add_statictext_to_panel(panel,"");
+	glui -> add_button_to_panel(panel, "v", -4, manageButton);
+	glui->add_column_to_panel( panel, false );
+	glui -> add_button_to_panel(panel, "^", 5, manageButton);
+	glui -> add_statictext_to_panel(panel,"");
+	glui -> add_statictext_to_panel(panel,"");
+	glui -> add_statictext_to_panel(panel,"");
+	glui -> add_button_to_panel(panel, "v", -5, manageButton);
+	glui->add_column_to_panel( panel, false );
+	glui -> add_button_to_panel(panel, "^", 6, manageButton);
+	glui -> add_statictext_to_panel(panel,"");
+	glui -> add_statictext_to_panel(panel,"");
+	glui -> add_statictext_to_panel(panel,"");
+	glui -> add_button_to_panel(panel, "v", -6, manageButton);
+	glui->add_column_to_panel( panel, false );
+	glui -> add_statictext_to_panel(panel,"");
+	glui -> add_button_to_panel(panel, ">", 1, manageButton);
+	glui -> add_button_to_panel(panel, ">", 2, manageButton);
+	glui -> add_button_to_panel(panel, ">", 3, manageButton);
+	glui -> add_statictext_to_panel(panel,"");
+
+	panel = glui->add_panel( "", false );
+	glui -> add_button_to_panel(panel, "Shuffle", 7, manageButton);
+	glui->add_column_to_panel( panel, false );
+	glui->add_button_to_panel( panel, "Reset", 8, manageButton);
+	glui->add_column_to_panel( panel, false );
+	glui->add_button_to_panel( panel, "Quit", 0, manageButton);
+	
+	glui -> set_main_gfx_window(windowsID);
 }
 
 void main(int argc,char** argv)
@@ -629,13 +680,15 @@ void main(int argc,char** argv)
 
 	init();
 
+	inizializzaCubo();
+
 	glutDisplayFunc(display);
 	glutKeyboardFunc(keyboard);
 	glutReshapeFunc(reshape);
 	glutTimerFunc(17, timer, 0);
 	glutSpecialFunc(specialKeyboard);
 
-	//creaPannelloGlui();
+	creaPannelloGlui();
 	
 	glutMainLoop();
 }

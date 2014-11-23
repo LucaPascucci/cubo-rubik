@@ -17,7 +17,7 @@
 using namespace std;
 
 typedef struct{
-	float x, y,z;
+	float x, y, z;
 } Point;
 
 typedef struct{
@@ -41,10 +41,17 @@ vector<Mossa> mosseEffettuate;
 int scattoRotazione = 90;
 Point puntoRiferimentoRotazione;
 
+//variabili necessarie per il controllo della rotazione del cubo nella sua interezza
 int angolo_asse_y = 0;
 int angolo_asse_x = 0;
+int angolo_asse_z = 0;
 Point rotate_x = {1.0, 0.0, 0.0};
 Point rotate_y = {0.0, 1.0, 0.0};
+Point rotate_z = {0.0, 0.0, 1.0};
+bool frecciaPremuta = false;
+int valorePrecX = 0;
+int valorePrecY = 0;
+int valorePrecZ = 0;
 
 int larghezza,altezza,windowsID;
 int window_x,window_y;
@@ -232,63 +239,86 @@ void keyboard(unsigned char key,int x,int y)
 
 void specialKeyboard(int key, int x, int y)
 {
-	if(key == GLUT_KEY_UP)
+	if (!frecciaPremuta)
 	{
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		angolo_asse_x -= 90;
-		if (angolo_asse_x <= -360) {
-			angolo_asse_x = 0;
+		frecciaPremuta = true;
+		if(key == GLUT_KEY_UP)
+		{
+			if (angolo_asse_y == 90 || angolo_asse_y == -90 || angolo_asse_y == 270 || angolo_asse_y == -270)
+			{
+				angolo_asse_z -= 90;
+				if (angolo_asse_z == -360) {
+					angolo_asse_z = 0;
+				}
+			} else {
+				angolo_asse_x -= 90;
+				if (angolo_asse_x <= -360) {
+					angolo_asse_x = 0;
+				}
+			}
+			cout << "Il valore di x e' : " << angolo_asse_x << endl;
+			cout << "Il valore di y e' : " << angolo_asse_y << endl;
+			cout << "Il valore di z e' : " << angolo_asse_z << endl;
 		}
-		/*rotazione_x = 1.0;
-		rotazione_y = 0.0;*/
-		cout << "Il valore di x e' : " << angolo_asse_x << endl;
-		cout << "Il valore di y e' : " << angolo_asse_y << endl;
-	}
 
-	if(key == GLUT_KEY_DOWN)
-	{
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		angolo_asse_x += 90;
-		if (angolo_asse_x >= 360) {
-			angolo_asse_x = 0;
+		if(key == GLUT_KEY_DOWN)
+		{
+			if (angolo_asse_y == 90 || angolo_asse_y == -90 || angolo_asse_y == 270 || angolo_asse_y == -270)
+			{
+				angolo_asse_z += 90;
+				if (angolo_asse_z == -360) {
+					angolo_asse_z = 0;
+				}
+			} else {
+				angolo_asse_x += 90;
+				if (angolo_asse_x >= 360) {
+					angolo_asse_x = 0;
+				}
+			}
+			cout << "Il valore di x e' : " << angolo_asse_x << endl;
+			cout << "Il valore di y e' : " << angolo_asse_y << endl;
+			cout << "Il valore di z e' : " << angolo_asse_z << endl;
 		}
-		/*rotazione_x = 1.0;
-		rotazione_y = 0.0;*/
-		cout << "Il valore di x e' : " << angolo_asse_x << endl;
-		cout << "Il valore di y e' : " << angolo_asse_y << endl;
-	}
 
-	if(key == GLUT_KEY_LEFT)
-	{
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		angolo_asse_y += 90;
-		if (angolo_asse_y >= 360) {
-			angolo_asse_y = 0;
+		if(key == GLUT_KEY_LEFT)
+		{
+			if (angolo_asse_x == 90 || angolo_asse_x == -90 || angolo_asse_x == 270 || angolo_asse_x == -270)
+			{
+				angolo_asse_z -= 90;
+				if (angolo_asse_z == -360) {
+					angolo_asse_z = 0;
+				}
+			} else {
+				angolo_asse_y += 90;
+				if (angolo_asse_y >= 360) {
+					angolo_asse_y = 0;
+				}
+			}
+			cout << "Il valore di x e' : " << angolo_asse_x << endl;
+			cout << "Il valore di y e' : " << angolo_asse_y << endl;
+			cout << "Il valore di z e' : " << angolo_asse_z << endl;
 		}
-		/*rotazione_x = 0.0;
-		rotazione_y = 1.0;*/
-		cout << "Il valore di x e' : " << angolo_asse_x << endl;
-		cout << "Il valore di y e' : " << angolo_asse_y << endl;
-	}
 
-	if(key == GLUT_KEY_RIGHT)
-	{
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		angolo_asse_y -= 90;
-		if (angolo_asse_y <= -360) {
-			angolo_asse_y = 0;
+		if(key == GLUT_KEY_RIGHT)
+		{
+			if (angolo_asse_x == 90 || angolo_asse_x == -90 || angolo_asse_x == 270 || angolo_asse_x == -270) {
+				angolo_asse_z += 90;
+				if (angolo_asse_z == 360) {
+					angolo_asse_z = 0;
+				}
+			} else {
+				angolo_asse_y -= 90;
+				if (angolo_asse_y <= -360) {
+					angolo_asse_y = 0;
+				}
+			}
+			cout << "Il valore di x e' : " << angolo_asse_x << endl;
+			cout << "Il valore di y e' : " << angolo_asse_y << endl;
+			cout << "Il valore di z e' : " << angolo_asse_z << endl;
 		}
-		/*rotazione_x = 0.0;
-		rotazione_y = 1.0;*/
-		cout << "Il valore di x e' : " << angolo_asse_x << endl;
-		cout << "Il valore di y e' : " << angolo_asse_y << endl;
-	}
 
-	glutPostRedisplay();
+		glutPostRedisplay();
+	}
 }
 
 
@@ -624,42 +654,12 @@ void display()
 		0.0f,0.0f,0.0f,
 		0.0f,1.0f,0.0f);
 
-	//faccia gialla avanti
-	/*gluLookAt(4.0f, 5.0f, -8.0f, 
-		0.0f,0.0f,0.0f,
-		0.0f,1.0f,0.0f);*/
-
-	//faccia verde davanti
-	/*gluLookAt(-8.0f, 5.0f, -4.0f, 
-		0.0f,0.0f,0.0f,
-		0.0f,1.0f,0.0f);*/
-
-	//(faccia blu davanti)
-	/*gluLookAt(8.0f,5.0f, 4.0f,
-		0.0f,0.0f,0.0f,
-		0.0f,1.0f,0.0f);*/
-
-	//Questa puo andare bene come posizione iniziale (faccia bianca davanti)
-	/*gluLookAt(-4.0f,5.0f, 8.0f, 
-		0.0f,0.0f,0.0f,
-		0.0f,1.0f,0.0f);*/
-
-	//quella presente nella vecchia resize
-	/*gluLookAt(0.0f,5.5f, 15.0f,
-		0.0f,0.0f,0.0f,
-		0.0f,1.0f,0.0f);*/
-
 	drawGround();
 
-	glTranslatef(0.0, 0.0, 0.0);
 	//per far ruotare il cubo nella sua interezza
-
-	glRotatef(angolo_asse_x, rotate_x.x, rotate_x.y, rotate_x.z);
-	glRotatef(angolo_asse_y, rotate_y.x, rotate_y.y, rotate_y.z); 
-
-	/*glRotatef(arrowXrot, 1.0, 0.0, 0.0);
-	glRotatef(arrowYrot, 0.0, 1.0, 0.0);
-	glRotatef(arrowZrot, 0.0, 0.0, 0.0);*/
+	glRotatef(valorePrecX, rotate_x.x, rotate_x.y, rotate_x.z);
+	glRotatef(valorePrecY, rotate_y.x, rotate_y.y, rotate_y.z); 
+	glRotatef(valorePrecZ, rotate_z.x, rotate_z.y, rotate_z.z);
 
 	glutWireCube(4.0);
 	
@@ -689,6 +689,29 @@ void timer(int value) {
 		inizio = false;
 	} else {
 		SetActiveWindow(GetActiveWindow());
+	}
+
+	//per permettere una rotazione progressiva dell'intero cubo
+	if (frecciaPremuta)
+	{
+		if (valorePrecX > angolo_asse_x) {
+			valorePrecX -= 3;
+		} else if (valorePrecX < angolo_asse_x){
+			valorePrecX += 3;
+		}
+		if (valorePrecY > angolo_asse_y) {
+			valorePrecY -= 3;
+		} else if (valorePrecY < angolo_asse_y){
+			valorePrecY += 3;
+		}
+		if (valorePrecZ > angolo_asse_z) {
+			valorePrecZ -= 3;
+		} else if (valorePrecZ < angolo_asse_z){
+			valorePrecZ += 3;
+		}
+		if (valorePrecX == angolo_asse_x && valorePrecY == angolo_asse_y && valorePrecZ == angolo_asse_z){
+			frecciaPremuta = false;
+		}
 	}
 
 	if (angolo_rotazione < scattoRotazione && pussantePremuto) {

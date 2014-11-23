@@ -91,9 +91,12 @@
     <ClCompile Include="glui.cpp" />
     <ClCompile Include="imageloader.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="RubickAreom.cpp" />
+    <ClCompile Include="rubix_cube.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imageloader.h" />
+    <ClInclude Include="rubix_cube.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

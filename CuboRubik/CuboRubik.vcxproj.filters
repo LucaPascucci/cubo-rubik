@@ -50,9 +50,18 @@
     <ClCompile Include="Main.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="RubickAreom.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="rubix_cube.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imageloader.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="rubix_cube.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>

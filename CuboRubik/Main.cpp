@@ -35,7 +35,8 @@ typedef struct{
 vector<Cubo> cuboRubik;
 Cubo cuboMultiuso;
 Point puntoMultiuso;
-Mossa mossaAttiva;
+
+Mossa mossaInCorso;
 bool pussantePremuto; //true se l'utente ha premuto un pussante
 vector<Mossa> mosseEffettuate;
 int scattoRotazione = 90;
@@ -228,19 +229,22 @@ void inizializzaCubo(){
 
 void keyboard(unsigned char key,int x,int y)
 {
+	Mossa mossaAttiva;
 	switch(key)
 	{
 	case 27: //esc
 		glutDestroyWindow ( windowsID );
 		exit(0);
 		break;
-		
+
 	case 'q': // sezione posteriore a sinistra
 		if (!pussantePremuto){
 			pussantePremuto = !pussantePremuto;
 			mossaAttiva.riga_colonna = 's';
 			mossaAttiva.valore_riga_colonna_sezione = -1.0;
 			mossaAttiva.direzione = false;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
 		}
 		break;
 
@@ -250,6 +254,8 @@ void keyboard(unsigned char key,int x,int y)
 			mossaAttiva.riga_colonna = 's';
 			mossaAttiva.valore_riga_colonna_sezione = 0.0;
 			mossaAttiva.direzione = false;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
 		}
 		break;
 
@@ -259,6 +265,8 @@ void keyboard(unsigned char key,int x,int y)
 			mossaAttiva.riga_colonna = 's';
 			mossaAttiva.valore_riga_colonna_sezione = 1.0;
 			mossaAttiva.direzione = false;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
 		}
 		break;
 
@@ -268,6 +276,8 @@ void keyboard(unsigned char key,int x,int y)
 			mossaAttiva.riga_colonna = 's';
 			mossaAttiva.valore_riga_colonna_sezione = -1.0;
 			mossaAttiva.direzione = true;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
 		}
 		break;
 
@@ -277,6 +287,8 @@ void keyboard(unsigned char key,int x,int y)
 			mossaAttiva.riga_colonna = 's';
 			mossaAttiva.valore_riga_colonna_sezione = 0.0;
 			mossaAttiva.direzione = true;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
 		}
 		break;
 
@@ -286,6 +298,8 @@ void keyboard(unsigned char key,int x,int y)
 			mossaAttiva.riga_colonna = 's';
 			mossaAttiva.valore_riga_colonna_sezione = 1.0;
 			mossaAttiva.direzione = true;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
 		}
 		break;
 	}
@@ -374,7 +388,6 @@ void specialKeyboard(int key, int x, int y)
 		glutPostRedisplay();
 	}
 }
-
 
 void reshape(GLsizei width, GLsizei height) // GLsizei for non-negative integer
 { 
@@ -556,85 +569,110 @@ void cuboSingolo()
 }
 
 void gestioneBottoni(int opzione){
+	Mossa mossaAttiva;
 	if (!pussantePremuto){
 		pussantePremuto = !pussantePremuto;
 		switch (opzione)
 		{
 		case 0: //premuto quit
-				glutDestroyWindow( windowsID );
-				exit(0);
+			glutDestroyWindow( windowsID );
+			exit(0);
 			break;
 
 		case -1:	//Prima riga a sinistra
 			mossaAttiva.riga_colonna = 'r';
 			mossaAttiva.valore_riga_colonna_sezione = 1.0;
 			mossaAttiva.direzione = false;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
 			break;
 
 		case -2:	//Seconda riga a sinistra
 			mossaAttiva.riga_colonna = 'r';
 			mossaAttiva.valore_riga_colonna_sezione = 0.0;
 			mossaAttiva.direzione = false;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
 			break;
 
 		case -3:	//Terza riga a sinistra
 			mossaAttiva.riga_colonna = 'r';
 			mossaAttiva.valore_riga_colonna_sezione = -1.0;
 			mossaAttiva.direzione = false;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
 			break;
 
 		case 1:		//Prima riga a destra
 			mossaAttiva.riga_colonna = 'r';
 			mossaAttiva.valore_riga_colonna_sezione = 1.0;
 			mossaAttiva.direzione = 'r';
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
 			break;
 
 		case 2:		//Seconda riga a destra
 			mossaAttiva.riga_colonna = 'r';
 			mossaAttiva.valore_riga_colonna_sezione = 0.0;
 			mossaAttiva.direzione = true;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
 			break;
 
 		case 3:		//Terza riga a destra 
 			mossaAttiva.riga_colonna = 'r';
 			mossaAttiva.valore_riga_colonna_sezione = -1.0;
 			mossaAttiva.direzione = true;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
 			break;
 
 		case -4:	//Prima colonna sù
 			mossaAttiva.riga_colonna = 'c',
-			mossaAttiva.valore_riga_colonna_sezione = -1.0;
+				mossaAttiva.valore_riga_colonna_sezione = -1.0;
 			mossaAttiva.direzione = false;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
 			break;
 
 		case -5:	//Seconda colonna sù
 			mossaAttiva.riga_colonna = 'c';
 			mossaAttiva.valore_riga_colonna_sezione = 0.0;
 			mossaAttiva.direzione = false;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
 			break;
 
 		case -6:	//Terza colonna sù
 			mossaAttiva.riga_colonna = 'c';
 			mossaAttiva.valore_riga_colonna_sezione = 1.0;
 			mossaAttiva.direzione = false;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
 			break;
 
 		case 4:		//Prima colonna giù
 			mossaAttiva.riga_colonna = 'c';
 			mossaAttiva.valore_riga_colonna_sezione = -1.0;
 			mossaAttiva.direzione = true;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
 			break;
 
 		case 5:		//Seconda colonna giù
 			mossaAttiva.riga_colonna = 'c';
 			mossaAttiva.valore_riga_colonna_sezione = 0.0;
 			mossaAttiva.direzione = true;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
 			break;
 
 		case 6:		//Terza colonna giù
 			mossaAttiva.riga_colonna = 'c';
 			mossaAttiva.valore_riga_colonna_sezione = 1.0;
 			mossaAttiva.direzione = true;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
 			break;
 
 		case 7:		//Shuffle
@@ -646,31 +684,31 @@ void gestioneBottoni(int opzione){
 	}
 }
 
-bool attivazioneMossa(Cubo cuboCorrente){
+bool attivazioneMossa(Mossa mossaCorrente,Cubo cuboCorrente){
 	bool attivaMovimento = false;
-	switch (mossaAttiva.riga_colonna)
+	switch (mossaCorrente.riga_colonna)
 	{
-	case 'c':
+	case 'r':
 		puntoRiferimentoRotazione.x = 0.0;
 		puntoRiferimentoRotazione.z = 0.0;
-		if (mossaAttiva.direzione){
+		if (mossaCorrente.direzione){
 			puntoRiferimentoRotazione.y = 1.0;
 		}else {
 			puntoRiferimentoRotazione.y = -1.0;
 		}
-		if (cuboCorrente.posizione.y == mossaAttiva.valore_riga_colonna_sezione){
+		if (cuboCorrente.posizione.y == mossaCorrente.valore_riga_colonna_sezione){
 			attivaMovimento = true;
 		}
 		break;
-	case 'r':
+	case 'c':
 		puntoRiferimentoRotazione.y = 0.0;
 		puntoRiferimentoRotazione.z = 0.0;
-		if (mossaAttiva.direzione){
+		if (mossaCorrente.direzione){
 			puntoRiferimentoRotazione.x = -1.0;
 		}else {
 			puntoRiferimentoRotazione.x = 1.0;
 		}
-		if (cuboCorrente.posizione.x == mossaAttiva.valore_riga_colonna_sezione){
+		if (cuboCorrente.posizione.x == mossaCorrente.valore_riga_colonna_sezione){
 			attivaMovimento = true;
 		}
 		break;
@@ -678,19 +716,18 @@ bool attivazioneMossa(Cubo cuboCorrente){
 	case 's':
 		puntoRiferimentoRotazione.y = 0.0;
 		puntoRiferimentoRotazione.x = 0.0;
-		if (mossaAttiva.direzione){
+		if (mossaCorrente.direzione){
 			puntoRiferimentoRotazione.z = -1.0;
 		}else {
 			puntoRiferimentoRotazione.z = 1.0;
 		}
-		if (cuboCorrente.posizione.z == mossaAttiva.valore_riga_colonna_sezione){
+		if (cuboCorrente.posizione.z == mossaCorrente.valore_riga_colonna_sezione){
 			attivaMovimento = true;
 		}
 		break;
 	}
-	}
 	return attivaMovimento;
-	
+
 }
 
 void init()
@@ -717,7 +754,7 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	
+
 	gluLookAt(-4.0f, 5.0f, 8.0f, 
 		0.0f,0.0f,0.0f,
 		0.0f,1.0f,0.0f);
@@ -730,13 +767,29 @@ void display()
 	glRotatef(valorePrecZ, rotate_z.x, rotate_z.y, rotate_z.z);
 
 	glutWireCube(4.0);
-	
+
 	for (int i = 0; i < cuboRubik.size(); i++){
-		
+
 		glPushMatrix();
+
 		if (pussantePremuto){
-			if (attivazioneMossa(cuboRubik[i])){
+			if (!mosseEffettuate.empty()){
+				for (int x = 0;x < mosseEffettuate.size()-1;x++){
+					if (attivazioneMossa(mosseEffettuate[x],cuboRubik[i])){
+						glRotatef(90.0, puntoRiferimentoRotazione.x, puntoRiferimentoRotazione.y, puntoRiferimentoRotazione.z);
+					}
+				}
+			}
+			if (attivazioneMossa(mossaInCorso,cuboRubik[i])){
 				glRotatef(angolo_rotazione, puntoRiferimentoRotazione.x, puntoRiferimentoRotazione.y, puntoRiferimentoRotazione.z);
+			}
+		}else{
+			if (!mosseEffettuate.empty()){
+				for (int x = 0;x < mosseEffettuate.size();x++){
+					if (attivazioneMossa(mosseEffettuate[x],cuboRubik[i])){
+						glRotatef(90.0, puntoRiferimentoRotazione.x, puntoRiferimentoRotazione.y, puntoRiferimentoRotazione.z);
+					}
+				}
 			}
 		}
 		glTranslatef(cuboRubik[i].posizione.x,cuboRubik[i].posizione.y,cuboRubik[i].posizione.z);
@@ -789,11 +842,11 @@ void timer(int value) {
 		angolo_rotazione = 0;
 		pussantePremuto = false;
 	}
-	
+
 	glutSetWindow(windowsID);
 	glutPostRedisplay();
 	glutTimerFunc(17, timer, 0);
-	
+
 }
 
 void creaPannelloGlui()
@@ -837,7 +890,7 @@ void creaPannelloGlui()
 	glui->add_button_to_panel( panel, "Reset", 8, gestioneBottoni);
 	glui->add_column_to_panel( panel, false );
 	glui->add_button_to_panel( panel, "Quit", 0, gestioneBottoni);
-	
+
 	glui -> set_main_gfx_window(windowsID);
 }
 
@@ -863,6 +916,6 @@ void main(int argc,char** argv)
 	glutSpecialFunc(specialKeyboard);
 
 	creaPannelloGlui();
-	
+
 	glutMainLoop();
 }

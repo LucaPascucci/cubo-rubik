@@ -27,8 +27,8 @@ typedef struct{
 
 typedef struct{
 	int numeroVisuale;
-	bool riga_colonna; //se true muove riga altrimenti colonna
-	int valore_riga_colonna; //si intende quale riga o colonna vuole muovere.
+	char riga_colonna; //c = colonna, r = righa, s = sezione
+	int valore_riga_colonna_sezione; //si intende quale riga o colonna vuole muovere.
 	bool direzione;
 } Mossa;
 
@@ -233,6 +233,60 @@ void keyboard(unsigned char key,int x,int y)
 	case 27: //esc
 		glutDestroyWindow ( windowsID );
 		exit(0);
+		break;
+		
+	case 'q': // sezione posteriore a sinistra
+		if (!pussantePremuto){
+			pussantePremuto = !pussantePremuto;
+			mossaAttiva.riga_colonna = 's';
+			mossaAttiva.valore_riga_colonna_sezione = -1.0;
+			mossaAttiva.direzione = false;
+		}
+		break;
+
+	case 'a': //sezione centrale a sinistra
+		if (!pussantePremuto){
+			pussantePremuto = !pussantePremuto;
+			mossaAttiva.riga_colonna = 's';
+			mossaAttiva.valore_riga_colonna_sezione = 0.0;
+			mossaAttiva.direzione = false;
+		}
+		break;
+
+	case 'z': //sezione frontale a sinistra
+		if (!pussantePremuto){
+			pussantePremuto = !pussantePremuto;
+			mossaAttiva.riga_colonna = 's';
+			mossaAttiva.valore_riga_colonna_sezione = 1.0;
+			mossaAttiva.direzione = false;
+		}
+		break;
+
+	case 'w': //sezione posteriore a destra
+		if (!pussantePremuto){
+			pussantePremuto = !pussantePremuto;
+			mossaAttiva.riga_colonna = 's';
+			mossaAttiva.valore_riga_colonna_sezione = -1.0;
+			mossaAttiva.direzione = true;
+		}
+		break;
+
+	case 's': //sezione centrale a destra
+		if (!pussantePremuto){
+			pussantePremuto = !pussantePremuto;
+			mossaAttiva.riga_colonna = 's';
+			mossaAttiva.valore_riga_colonna_sezione = 0.0;
+			mossaAttiva.direzione = true;
+		}
+		break;
+
+	case 'x': //sezione frontale a destra
+		if (!pussantePremuto){
+			pussantePremuto = !pussantePremuto;
+			mossaAttiva.riga_colonna = 's';
+			mossaAttiva.valore_riga_colonna_sezione = 1.0;
+			mossaAttiva.direzione = true;
+		}
 		break;
 	}
 }
@@ -512,74 +566,74 @@ void gestioneBottoni(int opzione){
 			break;
 
 		case -1:	//Prima riga a sinistra
-			mossaAttiva.riga_colonna = true;
-			mossaAttiva.valore_riga_colonna = 1.0;
+			mossaAttiva.riga_colonna = 'r';
+			mossaAttiva.valore_riga_colonna_sezione = 1.0;
 			mossaAttiva.direzione = false;
 			break;
 
 		case -2:	//Seconda riga a sinistra
-			mossaAttiva.riga_colonna = true;
-			mossaAttiva.valore_riga_colonna = 0.0;
+			mossaAttiva.riga_colonna = 'r';
+			mossaAttiva.valore_riga_colonna_sezione = 0.0;
 			mossaAttiva.direzione = false;
 			break;
 
 		case -3:	//Terza riga a sinistra
-			mossaAttiva.riga_colonna = true;
-			mossaAttiva.valore_riga_colonna = -1.0;
+			mossaAttiva.riga_colonna = 'r';
+			mossaAttiva.valore_riga_colonna_sezione = -1.0;
 			mossaAttiva.direzione = false;
 			break;
 
 		case 1:		//Prima riga a destra
-			mossaAttiva.riga_colonna = true;
-			mossaAttiva.valore_riga_colonna = 1.0;
-			mossaAttiva.direzione = true;
+			mossaAttiva.riga_colonna = 'r';
+			mossaAttiva.valore_riga_colonna_sezione = 1.0;
+			mossaAttiva.direzione = 'r';
 			break;
 
 		case 2:		//Seconda riga a destra
-			mossaAttiva.riga_colonna = true;
-			mossaAttiva.valore_riga_colonna = 0.0;
+			mossaAttiva.riga_colonna = 'r';
+			mossaAttiva.valore_riga_colonna_sezione = 0.0;
 			mossaAttiva.direzione = true;
 			break;
 
 		case 3:		//Terza riga a destra 
-			mossaAttiva.riga_colonna = true;
-			mossaAttiva.valore_riga_colonna = -1.0;
+			mossaAttiva.riga_colonna = 'r';
+			mossaAttiva.valore_riga_colonna_sezione = -1.0;
 			mossaAttiva.direzione = true;
 			break;
 
 		case -4:	//Prima colonna sù
-			mossaAttiva.riga_colonna = false;
-			mossaAttiva.valore_riga_colonna = -1.0;
+			mossaAttiva.riga_colonna = 'c',
+			mossaAttiva.valore_riga_colonna_sezione = -1.0;
 			mossaAttiva.direzione = false;
 			break;
 
 		case -5:	//Seconda colonna sù
-			mossaAttiva.riga_colonna = false;
-			mossaAttiva.valore_riga_colonna = 0.0;
+			mossaAttiva.riga_colonna = 'c';
+			mossaAttiva.valore_riga_colonna_sezione = 0.0;
 			mossaAttiva.direzione = false;
 			break;
 
 		case -6:	//Terza colonna sù
-			mossaAttiva.riga_colonna = false;
-			mossaAttiva.valore_riga_colonna = 1.0;
+			mossaAttiva.riga_colonna = 'c';
+			mossaAttiva.valore_riga_colonna_sezione = 1.0;
 			mossaAttiva.direzione = false;
 			break;
 
 		case 4:		//Prima colonna giù
-			mossaAttiva.riga_colonna = false;
-			mossaAttiva.valore_riga_colonna = -1.0;
+			mossaAttiva.riga_colonna = 'c';
+			mossaAttiva.valore_riga_colonna_sezione = -1.0;
 			mossaAttiva.direzione = true;
 			break;
 
 		case 5:		//Seconda colonna giù
-			mossaAttiva.riga_colonna = false;
-			mossaAttiva.valore_riga_colonna = 0.0;
+			mossaAttiva.riga_colonna = 'c';
+			mossaAttiva.valore_riga_colonna_sezione = 0.0;
 			mossaAttiva.direzione = true;
 			break;
 
 		case 6:		//Terza colonna giù
-			mossaAttiva.riga_colonna = false;
-			mossaAttiva.valore_riga_colonna = 1.0;
+			mossaAttiva.riga_colonna = 'c';
+			mossaAttiva.valore_riga_colonna_sezione = 1.0;
 			mossaAttiva.direzione = true;
 			break;
 
@@ -596,7 +650,7 @@ bool attivazioneMossa(Cubo cuboCorrente){
 	bool attivaMovimento = false;
 	switch (mossaAttiva.riga_colonna)
 	{
-	case true:
+	case 'c':
 		puntoRiferimentoRotazione.x = 0.0;
 		puntoRiferimentoRotazione.z = 0.0;
 		if (mossaAttiva.direzione){
@@ -604,22 +658,36 @@ bool attivazioneMossa(Cubo cuboCorrente){
 		}else {
 			puntoRiferimentoRotazione.y = -1.0;
 		}
-		if (cuboCorrente.posizione.y == mossaAttiva.valore_riga_colonna){
+		if (cuboCorrente.posizione.y == mossaAttiva.valore_riga_colonna_sezione){
 			attivaMovimento = true;
 		}
 		break;
-	case false:
+	case 'r':
 		puntoRiferimentoRotazione.y = 0.0;
 		puntoRiferimentoRotazione.z = 0.0;
 		if (mossaAttiva.direzione){
-			puntoRiferimentoRotazione.x = 1.0;
-		}else {
 			puntoRiferimentoRotazione.x = -1.0;
+		}else {
+			puntoRiferimentoRotazione.x = 1.0;
 		}
-		if (cuboCorrente.posizione.x == mossaAttiva.valore_riga_colonna){
+		if (cuboCorrente.posizione.x == mossaAttiva.valore_riga_colonna_sezione){
 			attivaMovimento = true;
 		}
 		break;
+
+	case 's':
+		puntoRiferimentoRotazione.y = 0.0;
+		puntoRiferimentoRotazione.x = 0.0;
+		if (mossaAttiva.direzione){
+			puntoRiferimentoRotazione.z = -1.0;
+		}else {
+			puntoRiferimentoRotazione.z = 1.0;
+		}
+		if (cuboCorrente.posizione.z == mossaAttiva.valore_riga_colonna_sezione){
+			attivaMovimento = true;
+		}
+		break;
+	}
 	}
 	return attivaMovimento;
 	

@@ -56,7 +56,6 @@ int valorePrecZ = 0;
 
 int larghezza,altezza,windowsID;
 int window_x,window_y;
-bool inizio = true;
 
 GLUI* glui;
 GLUI_Panel *panel;
@@ -315,12 +314,12 @@ void specialKeyboard(int key, int x, int y)
 			if (angolo_asse_y == 90 || angolo_asse_y == -90 || angolo_asse_y == 270 || angolo_asse_y == -270)
 			{
 				angolo_asse_z -= 90;
-				if (angolo_asse_z == -360) {
+				if (angolo_asse_z < -360) {
 					angolo_asse_z = 0;
 				}
 			} else {
 				angolo_asse_x -= 90;
-				if (angolo_asse_x <= -360) {
+				if (angolo_asse_x < -360) {
 					angolo_asse_x = 0;
 				}
 			}
@@ -334,12 +333,12 @@ void specialKeyboard(int key, int x, int y)
 			if (angolo_asse_y == 90 || angolo_asse_y == -90 || angolo_asse_y == 270 || angolo_asse_y == -270)
 			{
 				angolo_asse_z += 90;
-				if (angolo_asse_z == -360) {
+				if (angolo_asse_z < -360) {
 					angolo_asse_z = 0;
 				}
 			} else {
 				angolo_asse_x += 90;
-				if (angolo_asse_x >= 360) {
+				if (angolo_asse_x > 360) {
 					angolo_asse_x = 0;
 				}
 			}
@@ -353,12 +352,12 @@ void specialKeyboard(int key, int x, int y)
 			if (angolo_asse_x == 90 || angolo_asse_x == -90 || angolo_asse_x == 270 || angolo_asse_x == -270)
 			{
 				angolo_asse_z -= 90;
-				if (angolo_asse_z == -360) {
+				if (angolo_asse_z < -360) {
 					angolo_asse_z = 0;
 				}
 			} else {
 				angolo_asse_y += 90;
-				if (angolo_asse_y >= 360) {
+				if (angolo_asse_y > 360) {
 					angolo_asse_y = 0;
 				}
 			}
@@ -371,12 +370,12 @@ void specialKeyboard(int key, int x, int y)
 		{
 			if (angolo_asse_x == 90 || angolo_asse_x == -90 || angolo_asse_x == 270 || angolo_asse_x == -270) {
 				angolo_asse_z += 90;
-				if (angolo_asse_z == 360) {
+				if (angolo_asse_z > 360) {
 					angolo_asse_z = 0;
 				}
 			} else {
 				angolo_asse_y -= 90;
-				if (angolo_asse_y <= -360) {
+				if (angolo_asse_y < -360) {
 					angolo_asse_y = 0;
 				}
 			}
@@ -575,7 +574,7 @@ void gestioneBottoni(int opzione){
 		switch (opzione)
 		{
 		case 0: //premuto quit
-			glutDestroyWindow( windowsID );
+			glutDestroyWindow(windowsID);
 			exit(0);
 			break;
 
@@ -804,13 +803,7 @@ void display()
 
 void timer(int value) {
 
-	if (inizio) // per mettere in rilievo la finestra di gioco all'avvio del programma
-	{
-		SetActiveWindow(FindWindowA(0,"Pong 2D"));
-		inizio = false;
-	} else {
-		SetActiveWindow(GetActiveWindow());
-	}
+	SetActiveWindow(FindWindowA(0,"Cubo Di Rubik"));
 
 	//per permettere una rotazione progressiva dell'intero cubo
 	if (frecciaPremuta)

@@ -8,6 +8,7 @@
 #include <fstream>
 #include <cmath>
 #include <vector>
+#include <sstream>
 
 #include "imageloader.h"
 
@@ -89,6 +90,23 @@ GLuint loadTexture(Image* image) {
 		GL_UNSIGNED_BYTE,
 		image->pixels);
 	return textureId;
+}
+
+string int2str(int x) 
+{
+    stringstream ss;
+    ss << x;
+    return ss.str( );
+}
+
+void disegnaTesto(float x, float y, string text)
+{
+	glRasterPos2f(x, y);
+	int len = text.length();
+	for (int i = 0; i < len; i++)
+	{
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, text[i]);
+	}
 }
 
 void centraFinestraDesktop()
@@ -314,14 +332,8 @@ void specialKeyboard(int key, int x, int y)
 			if (angolo_asse_y == 90 || angolo_asse_y == -90 || angolo_asse_y == 270 || angolo_asse_y == -270)
 			{
 				angolo_asse_z -= 90;
-				if (angolo_asse_z < -360) {
-					angolo_asse_z = 0;
-				}
 			} else {
 				angolo_asse_x -= 90;
-				if (angolo_asse_x < -360) {
-					angolo_asse_x = 0;
-				}
 			}
 			cout << "Il valore di x e' : " << angolo_asse_x << endl;
 			cout << "Il valore di y e' : " << angolo_asse_y << endl;
@@ -333,14 +345,8 @@ void specialKeyboard(int key, int x, int y)
 			if (angolo_asse_y == 90 || angolo_asse_y == -90 || angolo_asse_y == 270 || angolo_asse_y == -270)
 			{
 				angolo_asse_z += 90;
-				if (angolo_asse_z < -360) {
-					angolo_asse_z = 0;
-				}
 			} else {
 				angolo_asse_x += 90;
-				if (angolo_asse_x > 360) {
-					angolo_asse_x = 0;
-				}
 			}
 			cout << "Il valore di x e' : " << angolo_asse_x << endl;
 			cout << "Il valore di y e' : " << angolo_asse_y << endl;
@@ -352,14 +358,8 @@ void specialKeyboard(int key, int x, int y)
 			if (angolo_asse_x == 90 || angolo_asse_x == -90 || angolo_asse_x == 270 || angolo_asse_x == -270)
 			{
 				angolo_asse_z -= 90;
-				if (angolo_asse_z < -360) {
-					angolo_asse_z = 0;
-				}
 			} else {
 				angolo_asse_y += 90;
-				if (angolo_asse_y > 360) {
-					angolo_asse_y = 0;
-				}
 			}
 			cout << "Il valore di x e' : " << angolo_asse_x << endl;
 			cout << "Il valore di y e' : " << angolo_asse_y << endl;
@@ -370,14 +370,8 @@ void specialKeyboard(int key, int x, int y)
 		{
 			if (angolo_asse_x == 90 || angolo_asse_x == -90 || angolo_asse_x == 270 || angolo_asse_x == -270) {
 				angolo_asse_z += 90;
-				if (angolo_asse_z > 360) {
-					angolo_asse_z = 0;
-				}
 			} else {
 				angolo_asse_y -= 90;
-				if (angolo_asse_y < -360) {
-					angolo_asse_y = 0;
-				}
 			}
 			cout << "Il valore di x e' : " << angolo_asse_x << endl;
 			cout << "Il valore di y e' : " << angolo_asse_y << endl;
@@ -410,8 +404,8 @@ void drawGround(void)
 	glVertex3f(600.0f, -50.0f, -400.0f);
 	glVertex3f(-600.0f, -50.0f, -400.0f);
 	glColor3ub(200, 200, 200);
-	glVertex3f(-600.0f, -50.0f, -20.0f);
-	glVertex3f(600.0f, -50.0f, -20.0f);
+	glVertex3f(-600.0f, -50.0f, 100.0f);
+	glVertex3f(600.0f, -50.0f, 100.0f);
 	glEnd();
 	glPopMatrix();
 }
@@ -760,6 +754,8 @@ void display()
 
 	drawGround();
 
+	disegnaTesto(-4, 4.9, "Numero di mosse effettuate: " + int2str(mosseEffettuate.size()));
+
 	//per far ruotare il cubo nella sua interezza
 	glRotatef(valorePrecX, rotate_x.x, rotate_x.y, rotate_x.z);
 	glRotatef(valorePrecY, rotate_y.x, rotate_y.y, rotate_y.z); 
@@ -825,6 +821,21 @@ void timer(int value) {
 		}
 		if (valorePrecX == angolo_asse_x && valorePrecY == angolo_asse_y && valorePrecZ == angolo_asse_z){
 			frecciaPremuta = false;
+			if (angolo_asse_x == 360 || angolo_asse_x == -360)
+			{
+				valorePrecX = 0;
+				angolo_asse_x = 0;
+			}
+			if (angolo_asse_y == 360 || angolo_asse_y == -360)
+			{
+				valorePrecY = 0;
+				angolo_asse_y = 0;
+			}
+			if (angolo_asse_z == 360 || angolo_asse_z == -360)
+			{
+				valorePrecZ = 0;
+				angolo_asse_z = 0;
+			}
 		}
 	}
 

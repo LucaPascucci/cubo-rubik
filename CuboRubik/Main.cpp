@@ -653,53 +653,85 @@ void specialKeyboard(int key, int x, int y)
 		frecciaPremuta = true;
 		if(key == GLUT_KEY_UP)
 		{
-			if (angolo_asse_y == 90 || angolo_asse_y == -90 || angolo_asse_y == 270 || angolo_asse_y == -270)
+			if (angolo_asse_y == -90 || angolo_asse_y == 270)
 			{
+				angolo_asse_z += 90;
+			} else if (angolo_asse_y == 90 || angolo_asse_y == -270) {
 				angolo_asse_z -= 90;
 			} else {
 				angolo_asse_x -= 90;
 			}
 			cout << "Il valore di x e' : " << angolo_asse_x << endl;
 			cout << "Il valore di y e' : " << angolo_asse_y << endl;
-			cout << "Il valore di z e' : " << angolo_asse_z << endl;
+			cout << "Il valore di z e' : " << angolo_asse_z << endl << endl;
 		}
 
 		if(key == GLUT_KEY_DOWN)
 		{
-			if (angolo_asse_y == 90 || angolo_asse_y == -90 || angolo_asse_y == 270 || angolo_asse_y == -270)
+			
+			if (angolo_asse_y == -90 || angolo_asse_y == 270)
 			{
-				angolo_asse_z += 90;
+				angolo_asse_z -= 90;
+			} else if (angolo_asse_y == 90 || angolo_asse_y == -270) {
+					angolo_asse_z += 90;
 			} else {
 				angolo_asse_x += 90;
 			}
 			cout << "Il valore di x e' : " << angolo_asse_x << endl;
 			cout << "Il valore di y e' : " << angolo_asse_y << endl;
-			cout << "Il valore di z e' : " << angolo_asse_z << endl;
+			cout << "Il valore di z e' : " << angolo_asse_z << endl << endl;
 		}
 
 		if(key == GLUT_KEY_LEFT)
 		{
-			if (angolo_asse_x == 90 || angolo_asse_x == -90 || angolo_asse_x == 270 || angolo_asse_x == -270)
+			if (angolo_asse_x == -90 || angolo_asse_x == 270)
 			{
-				angolo_asse_z -= 90;
+				if (angolo_asse_y == -180 || angolo_asse_y == 180)
+				{
+					angolo_asse_z -= 90;
+				} else {
+					angolo_asse_z += 90;
+				}
+			} else if (angolo_asse_x == 90 || angolo_asse_x == -270) {
+				if (angolo_asse_y == -180 || angolo_asse_y == 180) {
+					angolo_asse_z += 90;
+				} else {
+					angolo_asse_z -= 90;
+				}
+			} else if (angolo_asse_x == 180 || angolo_asse_x == -180) {
+				angolo_asse_y -= 90;
 			} else {
 				angolo_asse_y += 90;
 			}
 			cout << "Il valore di x e' : " << angolo_asse_x << endl;
 			cout << "Il valore di y e' : " << angolo_asse_y << endl;
-			cout << "Il valore di z e' : " << angolo_asse_z << endl;
+			cout << "Il valore di z e' : " << angolo_asse_z << endl << endl;
 		}
 
 		if(key == GLUT_KEY_RIGHT)
 		{
-			if (angolo_asse_x == 90 || angolo_asse_x == -90 || angolo_asse_x == 270 || angolo_asse_x == -270) {
-				angolo_asse_z += 90;
+			if (angolo_asse_x == -90 || angolo_asse_x == 270)
+			{
+				if (angolo_asse_y == -180 || angolo_asse_y == 180)
+				{
+					angolo_asse_z += 90;
+				} else {
+					angolo_asse_z -= 90;
+				}
+			} else if (angolo_asse_x == 90 || angolo_asse_x == -270) {
+				if (angolo_asse_y == -180 || angolo_asse_y == 180) {
+					angolo_asse_z -= 90;
+				} else {
+					angolo_asse_z += 90;
+				}
+			} else if (angolo_asse_x == 180 || angolo_asse_x == -180) {
+				angolo_asse_y += 90;
 			} else {
 				angolo_asse_y -= 90;
 			}
 			cout << "Il valore di x e' : " << angolo_asse_x << endl;
 			cout << "Il valore di y e' : " << angolo_asse_y << endl;
-			cout << "Il valore di z e' : " << angolo_asse_z << endl;
+			cout << "Il valore di z e' : " << angolo_asse_z << endl << endl;
 		}
 
 		glutPostRedisplay();

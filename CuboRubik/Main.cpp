@@ -17,13 +17,22 @@
 
 using namespace std;
 
+typedef enum _Colori{
+	WHITE = 0,
+	YELLOW = 1,
+	BLUE = 2,
+	GREEN = 3,
+	ORANGE = 4,
+	RED = 5	
+}Colori;
+
 typedef struct{
 	float x, y, z;
 } Point;
 
 typedef struct{
 	Point posizione;
-	char colore;
+	Colori colorifacce[6];
 } Cubo;
 
 typedef struct{
@@ -33,12 +42,12 @@ typedef struct{
 	bool direzione;
 } Mossa;
 
-vector<Cubo> cuboRubik;
-Cubo cuboMultiuso;
-Point puntoMultiuso;
+Cubo SecondoCuboRubik[3][3][3];
+Colori coloriCuboCorrente[6];
+Colori coloriInModifica[6];
 
 Mossa mossaInCorso;
-bool pussantePremuto; //true se l'utente ha premuto un pussante
+bool pussantePremuto;
 vector<Mossa> mosseEffettuate;
 int scattoRotazione = 90;
 Point puntoRiferimentoRotazione;
@@ -70,15 +79,47 @@ GLuint blue_textureId;
 GLuint green_textureId;
 GLuint yellow_textureId;
 GLuint orange_textureId;
-GLuint _displayListId_smallcube;
+//GLuint _displayListId_smallcube;
 
-GLfloat arrowXrot = 0.0;
-GLfloat arrowYrot = 0.0;
-GLfloat arrowZrot = 0.0;
+GLuint texture_0;
+GLuint texture_1;
+GLuint texture_2;
+GLuint texture_3;
+GLuint texture_4;
+GLuint texture_5;
 
-//Converte l'immagine in una texture e ritorna l'id della texture
-GLuint loadTexture(Image* image) {
+//Carica il file, lo converte in texture e ritorna l'id della texture in base all'id del colore immesso
+GLuint loadTexture(Colori colore) {
+
+	Image* image = NULL;
 	GLuint textureId;
+	switch (colore){
+	case WHITE:
+		image = loadBMP("white.bmp");
+		cout << "caricato bianco" << endl;
+		break;
+	case YELLOW:
+		image = loadBMP("yellow.bmp");
+		cout << "caricato giallo" << endl;
+		break;
+	case BLUE:
+		image = loadBMP("blue.bmp");
+		cout << "caricato blu" << endl;
+		break;
+	case GREEN:
+		image = loadBMP("green.bmp");
+		cout << "caricato verde" << endl;
+		break;
+
+	case ORANGE:
+		image = loadBMP("orange.bmp");
+		cout << "caricato arancione" << endl;
+		break;
+	case RED:
+		image = loadBMP("red.bmp");
+		cout << "caricato rosso" << endl;
+		break;
+	}
 	glGenTextures(1, &textureId);
 	glBindTexture(GL_TEXTURE_2D, textureId);
 	glTexImage2D(GL_TEXTURE_2D,
@@ -89,6 +130,36 @@ GLuint loadTexture(Image* image) {
 		GL_RGB,
 		GL_UNSIGNED_BYTE,
 		image->pixels);
+	//delete image;
+	return textureId;
+}
+
+//restituisce l'id della texture in base al colore cercato
+GLuint selezionaTextureCaricata(Colori colore){
+	GLuint textureId;
+
+	switch (colore){
+	case WHITE:
+		textureId = white_textureId;
+		break;
+	case YELLOW:
+		textureId = yellow_textureId;
+		break;
+	case BLUE:
+		textureId = blue_textureId;
+		break;
+	case GREEN:
+		textureId = green_textureId;
+		break;
+
+	case ORANGE:
+		textureId = orange_textureId;
+		break;
+	case RED:
+		textureId = red_textureId;
+		break;
+	}
+
 	return textureId;
 }
 
@@ -109,291 +180,56 @@ void disegnaTesto(float x, float y, string text)
 	}
 }
 
-void centraFinestraDesktop()
-{
-	window_x = (glutGet (GLUT_SCREEN_WIDTH) - larghezza)/2;
-	window_y = (glutGet (GLUT_SCREEN_HEIGHT) - altezza)/2;
-}
-
 void inizializzaCubo(){
 
-	puntoMultiuso.x = -1.0;
-	puntoMultiuso.y = -1.0;
-	puntoMultiuso.z = -1.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboMultiuso.colore = 'G';
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.z = 0.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.z = 1.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.y = 0.0;
-	puntoMultiuso.z = -1.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.z = 0.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.z = 1.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.y = 1.0;
-	puntoMultiuso.z = -1.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.z = 0.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.z = 1.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	//linea centrale
-	puntoMultiuso.x = 0.0;
-	puntoMultiuso.y = -1.0;
-	puntoMultiuso.z = -1.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.z = 0.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.z = 1.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.y = 0.0;
-	puntoMultiuso.z = -1.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	//punto centrale che rimane nascosto
-	/*puntoMultiuso.z = 0.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);*/
-
-	puntoMultiuso.z = 1.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.y = 1.0;
-	puntoMultiuso.z = -1.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.z = 0.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.z = 1.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-
-	//linea destra
-	puntoMultiuso.x = 1.0;
-	puntoMultiuso.y = -1.0;
-	puntoMultiuso.z = -1.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.z = 0.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.z = 1.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.y = 0.0;
-	puntoMultiuso.z = -1.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.z = 0.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.z = 1.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.y = 1.0;
-	puntoMultiuso.z = -1.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.z = 0.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-	puntoMultiuso.z = 1.0;
-	cuboMultiuso.posizione = puntoMultiuso;
-	cuboRubik.push_back(cuboMultiuso);
-
-}
-
-void keyboard(unsigned char key,int x,int y)
-{
-	Mossa mossaAttiva;
-	switch(key)
-	{
-	case 27: //esc
-		glutDestroyWindow ( windowsID );
-		exit(0);
-		break;
-
-	case 'q': // sezione posteriore a sinistra
-		if (!pussantePremuto){
-			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 's';
-			mossaAttiva.valore_riga_colonna_sezione = -1.0;
-			mossaAttiva.direzione = false;
-			mosseEffettuate.push_back(mossaAttiva);
-			mossaInCorso = mossaAttiva;
+	for (int x = 0; x < 3;x++){
+		for (int y = 0; y < 3;y++){
+			for (int z = 0; z < 3;z++){
+				Cubo nuovoCubo;
+				Point nuovaPosizione = {x-1,y-1,z-1}; // per fare in modo che il centro si trovi a 0,0,0
+				nuovoCubo.posizione = nuovaPosizione;
+				nuovoCubo.colorifacce[0] = WHITE;
+				nuovoCubo.colorifacce[1] = YELLOW;
+				nuovoCubo.colorifacce[2] = BLUE;
+				nuovoCubo.colorifacce[3] = GREEN;
+				nuovoCubo.colorifacce[4] = ORANGE;
+				nuovoCubo.colorifacce[5] = RED;
+				SecondoCuboRubik[x][y][z] = nuovoCubo;
+			}
 		}
-		break;
-
-	case 'a': //sezione centrale a sinistra
-		if (!pussantePremuto){
-			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 's';
-			mossaAttiva.valore_riga_colonna_sezione = 0.0;
-			mossaAttiva.direzione = false;
-			mosseEffettuate.push_back(mossaAttiva);
-			mossaInCorso = mossaAttiva;
-		}
-		break;
-
-	case 'z': //sezione frontale a sinistra
-		if (!pussantePremuto){
-			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 's';
-			mossaAttiva.valore_riga_colonna_sezione = 1.0;
-			mossaAttiva.direzione = false;
-			mosseEffettuate.push_back(mossaAttiva);
-			mossaInCorso = mossaAttiva;
-		}
-		break;
-
-	case 'w': //sezione posteriore a destra
-		if (!pussantePremuto){
-			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 's';
-			mossaAttiva.valore_riga_colonna_sezione = -1.0;
-			mossaAttiva.direzione = true;
-			mosseEffettuate.push_back(mossaAttiva);
-			mossaInCorso = mossaAttiva;
-		}
-		break;
-
-	case 's': //sezione centrale a destra
-		if (!pussantePremuto){
-			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 's';
-			mossaAttiva.valore_riga_colonna_sezione = 0.0;
-			mossaAttiva.direzione = true;
-			mosseEffettuate.push_back(mossaAttiva);
-			mossaInCorso = mossaAttiva;
-		}
-		break;
-
-	case 'x': //sezione frontale a destra
-		if (!pussantePremuto){
-			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 's';
-			mossaAttiva.valore_riga_colonna_sezione = 1.0;
-			mossaAttiva.direzione = true;
-			mosseEffettuate.push_back(mossaAttiva);
-			mossaInCorso = mossaAttiva;
-		}
-		break;
 	}
+
 }
 
-void specialKeyboard(int key, int x, int y)
-{
-	if (!frecciaPremuta)
-	{
-		frecciaPremuta = true;
-		if(key == GLUT_KEY_UP)
-		{
-			if (angolo_asse_y == 90 || angolo_asse_y == -90 || angolo_asse_y == 270 || angolo_asse_y == -270)
-			{
-				angolo_asse_z -= 90;
-			} else {
-				angolo_asse_x -= 90;
-			}
-			cout << "Il valore di x e' : " << angolo_asse_x << endl;
-			cout << "Il valore di y e' : " << angolo_asse_y << endl;
-			cout << "Il valore di z e' : " << angolo_asse_z << endl;
-		}
+void ruotaColonnaRubik(int x){
+	Cubo temp = SecondoCuboRubik[x][0][0];
 
-		if(key == GLUT_KEY_DOWN)
-		{
-			if (angolo_asse_y == 90 || angolo_asse_y == -90 || angolo_asse_y == 270 || angolo_asse_y == -270)
-			{
-				angolo_asse_z += 90;
-			} else {
-				angolo_asse_x += 90;
-			}
-			cout << "Il valore di x e' : " << angolo_asse_x << endl;
-			cout << "Il valore di y e' : " << angolo_asse_y << endl;
-			cout << "Il valore di z e' : " << angolo_asse_z << endl;
-		}
+	/*SecondoCuboRubik[x][2][0].colorifacce = cambiaColoreCuboColonna(SecondoCuboRubik[x][2][0].colorifacce);
+	cubes[n][2][0].column_switch();
+	
+	SecondoCuboRubik[n][0][0] = SecondoCuboRubik[n][2][0];
+    cubes[n][2][2].column_switch(); SecondoCuboRubik[n][2][0] = SecondoCuboRubik[n][2][2];
+    cubes[n][0][2].column_switch(); SecondoCuboRubik[n][2][2] = SecondoCuboRubik[n][0][2];
+    temp.column_switch();           SecondoCuboRubik[n][0][2] = temp;
 
-		if(key == GLUT_KEY_LEFT)
-		{
-			if (angolo_asse_x == 90 || angolo_asse_x == -90 || angolo_asse_x == 270 || angolo_asse_x == -270)
-			{
-				angolo_asse_z -= 90;
-			} else {
-				angolo_asse_y += 90;
-			}
-			cout << "Il valore di x e' : " << angolo_asse_x << endl;
-			cout << "Il valore di y e' : " << angolo_asse_y << endl;
-			cout << "Il valore di z e' : " << angolo_asse_z << endl;
-		}
+    temp = cubes[n][0][1];
+    cubes[n][1][0].column_switch(); SecondoCuboRubik[n][0][1] = SecondoCuboRubik[n][1][0];
+    cubes[n][2][1].column_switch(); SecondoCuboRubik[n][1][0] = SecondoCuboRubik[n][2][1];
+    cubes[n][1][2].column_switch(); SecondoCuboRubik[n][2][1] = SecondoCuboRubik[n][1][2];
+    temp.column_switch();           SecondoCuboRubik[n][1][2] = temp;
 
-		if(key == GLUT_KEY_RIGHT)
-		{
-			if (angolo_asse_x == 90 || angolo_asse_x == -90 || angolo_asse_x == 270 || angolo_asse_x == -270) {
-				angolo_asse_z += 90;
-			} else {
-				angolo_asse_y -= 90;
-			}
-			cout << "Il valore di x e' : " << angolo_asse_x << endl;
-			cout << "Il valore di y e' : " << angolo_asse_y << endl;
-			cout << "Il valore di z e' : " << angolo_asse_z << endl;
-		}
+    cubes[n][1][1].column_switch();*/
 
-		glutPostRedisplay();
-	}
 }
 
-void reshape(GLsizei width, GLsizei height) // GLsizei for non-negative integer
-{ 
-	// Compute aspect ratio of the new window
-	if (height == 0) height = 1; // To prevent divide by 0
-	GLfloat aspect = (GLfloat)width / (GLfloat)height;
-	// Set the viewport to cover the new window
-	glViewport(0, 0, width, height);
-	// Set the aspect ratio of the clipping volume to match the viewport
-	glMatrixMode(GL_PROJECTION); // To operate on the Projection matrix
-	glLoadIdentity(); // Reset
-	// Enable perspective projection with fovy, aspect, zNear and zFar
-	gluPerspective(60.0f, aspect, 1.0f, 1000.0f);
+void ruotaRigaRubik(int y){
+	Cubo temp = SecondoCuboRubik[0][y][0];
+
+}
+
+void ruotaSezioneRubik(int z){
+	Cubo temp = SecondoCuboRubik[0][0][z];
+
 }
 
 void drawGround(void)
@@ -404,41 +240,104 @@ void drawGround(void)
 	glVertex3f(600.0f, -50.0f, -400.0f);
 	glVertex3f(-600.0f, -50.0f, -400.0f);
 	glColor3ub(200, 200, 200);
-	glVertex3f(-600.0f, -50.0f, 100.0f);
-	glVertex3f(600.0f, -50.0f, 100.0f);
+	glVertex3f(-600.0f, -50.0f, 30.0f);
+	glVertex3f(600.0f, -50.0f, 30.0f);
 	glEnd();
 	glPopMatrix();
 }
 
-void cuboSingolo()
+void cuboSingolo(Colori colori[6])
 {
-
-	Image* image = loadBMP("white.bmp");
-	white_textureId = loadTexture(image);
-	delete image;
-
-	Image* image1 = loadBMP("red.bmp");
-	red_textureId = loadTexture(image1);
-	delete image1;
-
-	Image* image2 = loadBMP("blue.bmp");
-	blue_textureId = loadTexture(image2);
-	delete image2;
-
-	Image* image3 = loadBMP("orange.bmp");
-	orange_textureId = loadTexture(image3);
-	delete image3;
-
-	Image* image4 = loadBMP("green.bmp");
-	green_textureId = loadTexture(image4);
-	delete image4;
-
-	Image* image5 = loadBMP("yellow.bmp");
-	yellow_textureId = loadTexture(image5);
-	delete image5;
+	texture_0 = selezionaTextureCaricata(colori[0]);
+	texture_1 = selezionaTextureCaricata(colori[1]);
+	texture_2 = selezionaTextureCaricata(colori[2]);
+	texture_3 = selezionaTextureCaricata(colori[3]);
+	texture_4 = selezionaTextureCaricata(colori[4]);
+	texture_5 = selezionaTextureCaricata(colori[5]);
 
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, orange_textureId);
+	glBindTexture(GL_TEXTURE_2D, texture_0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glBegin(GL_QUADS);
+	//Faccia Anteriore
+
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(-DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(-DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
+
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture_1);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glBegin(GL_QUADS);
+	//Faccia Posteriore
+
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(-DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(-DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
+
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture_2);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glBegin(GL_QUADS);
+	//Faccia Destra
+
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
+
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture_3);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glBegin(GL_QUADS);
+	//Faccia Sinistra
+
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(-DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(-DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(-DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(-DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
+
+	glEnd();
+	glDisable(GL_TEXTURE_2D);	
+
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture_4);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -459,7 +358,7 @@ void cuboSingolo()
 
 	//cambio texture
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, red_textureId);
+	glBindTexture(GL_TEXTURE_2D, texture_5);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -478,87 +377,33 @@ void cuboSingolo()
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, green_textureId);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+}
 
-	glBegin(GL_QUADS);
-	//Faccia Sinistra
+Colori* cambiaColoreCuboColonna(Colori coloriCubo[6]){
+	Colori temp = coloriCubo[0];
+	coloriCubo[0] = coloriCubo[5];	//il colore frontale viene sostituito dal colore sotto
+    coloriCubo[5] = coloriCubo[1];	//il colore sotto viene sostituito dal colore dietro
+    coloriCubo[1] = coloriCubo[4];	//il colore dietro viene sostitiuto dal colore sopra
+    coloriCubo[4] = temp;			//il colore sopra viene sostituito dal colore frontale
+	return coloriCubo;
+}
 
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(-DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(-DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
+Colori* cambiaColoreCuboRiga(Colori coloriCubo[6]){
+	Colori temp = coloriCubo[0];
+	coloriCubo[0] = coloriCubo[3];
+    coloriCubo[3] = coloriCubo[1];
+    coloriCubo[1] = coloriCubo[2];
+    coloriCubo[2] = temp;
+	return coloriCubo;
+}
 
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
-
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, blue_textureId);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glBegin(GL_QUADS);
-	//Faccia Destra
-
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
-
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
-
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, white_textureId);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glBegin(GL_QUADS);
-	//Faccia Anteriore
-
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
-
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
-
-
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, yellow_textureId);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glBegin(GL_QUADS);
-	//Faccia Posteriore
-
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(-DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
-
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
-
+Colori* cambiaColoreCuboSezione(Colori coloriCubo[6]){
+	Colori temp = coloriCubo[4];
+    coloriCubo[4] = coloriCubo[3];
+    coloriCubo[3] = coloriCubo[5];
+    coloriCubo[5] = coloriCubo[2];
+    coloriCubo[2] = temp;
+	return coloriCubo;
 }
 
 void gestioneBottoni(int opzione){
@@ -723,6 +568,164 @@ bool attivazioneMossa(Mossa mossaCorrente,Cubo cuboCorrente){
 
 }
 
+void keyboard(unsigned char key,int x,int y)
+{
+	Mossa mossaAttiva;
+	switch(key)
+	{
+	case 27: //esc
+		glutDestroyWindow ( windowsID );
+		exit(0);
+		break;
+
+	case 'q': // sezione posteriore a sinistra
+		if (!pussantePremuto){
+			pussantePremuto = !pussantePremuto;
+			mossaAttiva.riga_colonna = 's';
+			mossaAttiva.valore_riga_colonna_sezione = -1.0;
+			mossaAttiva.direzione = false;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
+		}
+		break;
+
+	case 'a': //sezione centrale a sinistra
+		if (!pussantePremuto){
+			pussantePremuto = !pussantePremuto;
+			mossaAttiva.riga_colonna = 's';
+			mossaAttiva.valore_riga_colonna_sezione = 0.0;
+			mossaAttiva.direzione = false;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
+		}
+		break;
+
+	case 'z': //sezione frontale a sinistra
+		if (!pussantePremuto){
+			pussantePremuto = !pussantePremuto;
+			mossaAttiva.riga_colonna = 's';
+			mossaAttiva.valore_riga_colonna_sezione = 1.0;
+			mossaAttiva.direzione = false;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
+		}
+		break;
+
+	case 'w': //sezione posteriore a destra
+		if (!pussantePremuto){
+			pussantePremuto = !pussantePremuto;
+			mossaAttiva.riga_colonna = 's';
+			mossaAttiva.valore_riga_colonna_sezione = -1.0;
+			mossaAttiva.direzione = true;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
+		}
+		break;
+
+	case 's': //sezione centrale a destra
+		if (!pussantePremuto){
+			pussantePremuto = !pussantePremuto;
+			mossaAttiva.riga_colonna = 's';
+			mossaAttiva.valore_riga_colonna_sezione = 0.0;
+			mossaAttiva.direzione = true;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
+		}
+		break;
+
+	case 'x': //sezione frontale a destra
+		if (!pussantePremuto){
+			pussantePremuto = !pussantePremuto;
+			mossaAttiva.riga_colonna = 's';
+			mossaAttiva.valore_riga_colonna_sezione = 1.0;
+			mossaAttiva.direzione = true;
+			mosseEffettuate.push_back(mossaAttiva);
+			mossaInCorso = mossaAttiva;
+		}
+		break;
+	}
+}
+
+void specialKeyboard(int key, int x, int y)
+{
+	if (!frecciaPremuta)
+	{
+		frecciaPremuta = true;
+		if(key == GLUT_KEY_UP)
+		{
+			if (angolo_asse_y == 90 || angolo_asse_y == -90 || angolo_asse_y == 270 || angolo_asse_y == -270)
+			{
+				angolo_asse_z -= 90;
+			} else {
+				angolo_asse_x -= 90;
+			}
+			cout << "Il valore di x e' : " << angolo_asse_x << endl;
+			cout << "Il valore di y e' : " << angolo_asse_y << endl;
+			cout << "Il valore di z e' : " << angolo_asse_z << endl;
+		}
+
+		if(key == GLUT_KEY_DOWN)
+		{
+			if (angolo_asse_y == 90 || angolo_asse_y == -90 || angolo_asse_y == 270 || angolo_asse_y == -270)
+			{
+				angolo_asse_z += 90;
+			} else {
+				angolo_asse_x += 90;
+			}
+			cout << "Il valore di x e' : " << angolo_asse_x << endl;
+			cout << "Il valore di y e' : " << angolo_asse_y << endl;
+			cout << "Il valore di z e' : " << angolo_asse_z << endl;
+		}
+
+		if(key == GLUT_KEY_LEFT)
+		{
+			if (angolo_asse_x == 90 || angolo_asse_x == -90 || angolo_asse_x == 270 || angolo_asse_x == -270)
+			{
+				angolo_asse_z -= 90;
+			} else {
+				angolo_asse_y += 90;
+			}
+			cout << "Il valore di x e' : " << angolo_asse_x << endl;
+			cout << "Il valore di y e' : " << angolo_asse_y << endl;
+			cout << "Il valore di z e' : " << angolo_asse_z << endl;
+		}
+
+		if(key == GLUT_KEY_RIGHT)
+		{
+			if (angolo_asse_x == 90 || angolo_asse_x == -90 || angolo_asse_x == 270 || angolo_asse_x == -270) {
+				angolo_asse_z += 90;
+			} else {
+				angolo_asse_y -= 90;
+			}
+			cout << "Il valore di x e' : " << angolo_asse_x << endl;
+			cout << "Il valore di y e' : " << angolo_asse_y << endl;
+			cout << "Il valore di z e' : " << angolo_asse_z << endl;
+		}
+
+		glutPostRedisplay();
+	}
+}
+
+void reshape(GLsizei width, GLsizei height) // GLsizei for non-negative integer
+{ 
+	// Compute aspect ratio of the new window
+	if (height == 0) {
+		height = 1;
+	}// To prevent divide by 0
+	GLfloat aspect = (GLfloat)width / (GLfloat)height;
+	// Set the aspect ratio of the clipping volume to match the viewport
+	glMatrixMode(GL_PROJECTION); // To operate on the Projection matrix
+	glLoadIdentity(); // Reset
+	// Enable perspective projection with fovy, aspect, zNear and zFar
+	gluPerspective(60.0f, aspect, 1.0f, 1000.0f);
+
+	//metodo per non fare modificare la grandezza della finestra
+	if(width != larghezza || height != altezza)
+	{
+		glutReshapeWindow(larghezza, altezza);
+	}
+}
+
 void init()
 {
 	glEnable(GL_DEPTH_TEST);
@@ -734,11 +737,19 @@ void init()
 	/* colore di sfondo nero */
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-	//Set up a display list for drawing a cube
-	_displayListId_smallcube = glGenLists(1); //Make room for the display list
-	glNewList(_displayListId_smallcube, GL_COMPILE); //Begin the display list
-	cuboSingolo(); //Add commands for drawing a black area to the display list
-	glEndList(); //End the display list
+	//carico le texture delle immagini
+	white_textureId = loadTexture(WHITE);
+	red_textureId = loadTexture(RED);
+	blue_textureId = loadTexture(BLUE);
+	green_textureId = loadTexture(GREEN);
+	yellow_textureId = loadTexture(YELLOW);
+	orange_textureId = loadTexture(ORANGE);
+
+	////Set up a display list for drawing a cube
+	//_displayListId_smallcube = glGenLists(1); //Make room for the display list
+	//glNewList(_displayListId_smallcube, GL_COMPILE); //Begin the display list
+	//cuboSingolo(coloriCuboCorrente); //Add commands for drawing a black area to the display list
+	//glEndList(); //End the display list
 
 }
 
@@ -763,35 +774,55 @@ void display()
 
 	glutWireCube(4.0);
 
-	for (int i = 0; i < cuboRubik.size(); i++){
-
-		glPushMatrix();
-
-		if (pussantePremuto){
-			if (!mosseEffettuate.empty()){
-				for (int x = 0;x < mosseEffettuate.size()-1;x++){
-					if (attivazioneMossa(mosseEffettuate[x],cuboRubik[i])){
-						glRotatef(90.0, puntoRiferimentoRotazione.x, puntoRiferimentoRotazione.y, puntoRiferimentoRotazione.z);
-					}
-				}
-			}
-			if (attivazioneMossa(mossaInCorso,cuboRubik[i])){
-				glRotatef(angolo_rotazione, puntoRiferimentoRotazione.x, puntoRiferimentoRotazione.y, puntoRiferimentoRotazione.z);
-			}
-		}else{
-			if (!mosseEffettuate.empty()){
-				for (int x = 0;x < mosseEffettuate.size();x++){
-					if (attivazioneMossa(mosseEffettuate[x],cuboRubik[i])){
-						glRotatef(90.0, puntoRiferimentoRotazione.x, puntoRiferimentoRotazione.y, puntoRiferimentoRotazione.z);
-					}
-				}
+	for (int x = 0; x < 3;x++){
+		for (int y = 0; y < 3;y++){
+			for (int z = 0; z < 3;z++){
+				glPushMatrix();
+				Point posizioneCuboCorrente = SecondoCuboRubik[x][y][z].posizione;
+				coloriCuboCorrente[0] = SecondoCuboRubik[x][y][z].colorifacce[0];
+				coloriCuboCorrente[1] = SecondoCuboRubik[x][y][z].colorifacce[1];
+				coloriCuboCorrente[2] = SecondoCuboRubik[x][y][z].colorifacce[2];
+				coloriCuboCorrente[3] = SecondoCuboRubik[x][y][z].colorifacce[3];
+				coloriCuboCorrente[4] = SecondoCuboRubik[x][y][z].colorifacce[4];
+				coloriCuboCorrente[5] = SecondoCuboRubik[x][y][z].colorifacce[5];
+				//cout << "modificati colori per cubo corrente" << endl;
+				glTranslatef(posizioneCuboCorrente.x,posizioneCuboCorrente.y,posizioneCuboCorrente.z);
+				cuboSingolo(coloriCuboCorrente);
+				//glCallList(_displayListId_smallcube);
+				glPopMatrix();
 			}
 		}
-		glTranslatef(cuboRubik[i].posizione.x,cuboRubik[i].posizione.y,cuboRubik[i].posizione.z);
-		glCallList(_displayListId_smallcube);
-		glPopMatrix();
-
 	}
+
+	//for (int i = 0; i < cuboRubik.size(); i++){
+
+	//	glPushMatrix();
+
+	//	/*if (pussantePremuto){
+	//		if (!mosseEffettuate.empty()){
+	//			for (int x = 0;x < mosseEffettuate.size()-1;x++){
+	//				if (attivazioneMossa(mosseEffettuate[x],cuboRubik[i])){
+	//					glRotatef(90.0, puntoRiferimentoRotazione.x, puntoRiferimentoRotazione.y, puntoRiferimentoRotazione.z);
+	//				}
+	//			}
+	//		}
+	//		if (attivazioneMossa(mossaInCorso,cuboRubik[i])){
+	//			glRotatef(angolo_rotazione, puntoRiferimentoRotazione.x, puntoRiferimentoRotazione.y, puntoRiferimentoRotazione.z);
+	//		}
+	//	}else{
+	//		if (!mosseEffettuate.empty()){
+	//			for (int x = 0;x < mosseEffettuate.size();x++){
+	//				if (attivazioneMossa(mosseEffettuate[x],cuboRubik[i])){
+	//					glRotatef(90.0, puntoRiferimentoRotazione.x, puntoRiferimentoRotazione.y, puntoRiferimentoRotazione.z);
+	//				}
+	//			}
+	//		}
+	//	}*/
+	//	glTranslatef(cuboRubik[i].posizione.x-1,cuboRubik[i].posizione.y-1,cuboRubik[i].posizione.z-1);
+	//	glCallList(_displayListId_smallcube);
+	//	glPopMatrix();
+
+	//}
 
 	glutSwapBuffers();
 
@@ -898,6 +929,12 @@ void creaPannelloGlui()
 	glui -> set_main_gfx_window(windowsID);
 }
 
+void centraFinestraDesktop()
+{
+	window_x = (glutGet (GLUT_SCREEN_WIDTH) - larghezza)/2;
+	window_y = (glutGet (GLUT_SCREEN_HEIGHT) - altezza)/2;
+}
+
 void main(int argc,char** argv)
 {
 	glutInit(&argc,argv);
@@ -909,10 +946,9 @@ void main(int argc,char** argv)
 	glutInitWindowPosition (window_x, window_y);
 	windowsID = glutCreateWindow("Cubo Di Rubik");
 
-	init();
-
 	inizializzaCubo();
 
+	init();
 	glutDisplayFunc(display);
 	glutKeyboardFunc(keyboard);
 	glutReshapeFunc(reshape);

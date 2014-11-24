@@ -19,7 +19,7 @@
 //int rotate_r = -1;
 //int rotate_l = -1;
 //
-//GLfloat rotate_angle =0.0 ;
+//GLfloat rotate_angle = 0.0 ;
 //
 //RubixCube *main_cube;
 //

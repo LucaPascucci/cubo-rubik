@@ -190,7 +190,10 @@
 //                }
 //                glTranslatef(-3.1, -3.1, -3.1);
 //
-//                glTranslatef(x * 2.1, y * 2.1, z * 2.1);
+//                glTranslatef(x * 3.1, y * 3.1, z * 3.1);
+//
+//				//glTranslatef(0 * 2.1, 0 * 2.1, 0 * 2.1);
+//
 //                
 //                main_cube->display(x, y, z);
 //                

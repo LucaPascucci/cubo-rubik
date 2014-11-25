@@ -40,13 +40,12 @@ typedef struct{
 
 typedef struct{
 	int numeroVisuale;
-	char riga_colonna; //c = colonna, r = righa, s = sezione
+	char riga_colonna_sezione; //c = colonna, r = righa, s = sezione
 	int valore_riga_colonna_sezione; //si intende quale riga o colonna vuole muovere.
 	bool direzione;
 } Mossa;
 
 Cubo cuboRubik[3][3][3];
-Colori coloriCuboCorrente[6];
 Colori coloriInModifica[6];
 
 Mossa mossaInCorso;
@@ -524,6 +523,14 @@ void inizializzaCubo(){
 }
 
 void ruotaColonnaRubik(int x){
+
+	//aggiorno posizioni
+	Point posTemp = cuboRubik[x][0][2].posizione;
+	cuboRubik[x][0][2].posizione = cuboRubik[x][2][2].posizione;
+	cuboRubik[x][2][2].posizione = cuboRubik[x][2][0].posizione;
+	cuboRubik[x][2][0].posizione = cuboRubik[x][0][0].posizione;
+	cuboRubik[x][0][0].posizione = posTemp;
+
 	Cubo temp = cuboRubik[x][0][0];
 
 	cambiaColoreCuboColonna(cuboRubik[x][2][0].colorifacce);
@@ -566,6 +573,12 @@ void ruotaColonnaRubik(int x){
 	temp.colorifacce[5] = coloriInModifica[5];
 
 	cuboRubik[x][2][2] = temp; //forse va scambiata anche la posizione
+
+	posTemp = cuboRubik[x][1][2].posizione;
+	cuboRubik[x][1][2].posizione = cuboRubik[x][2][1].posizione;
+	cuboRubik[x][2][1].posizione = cuboRubik[x][1][0].posizione;
+	cuboRubik[x][1][0].posizione = cuboRubik[x][0][1].posizione;
+	cuboRubik[x][0][1].posizione = posTemp;
 
 	temp = cuboRubik[x][0][1];
 
@@ -619,7 +632,110 @@ void ruotaColonnaRubik(int x){
 }
 
 void ruotaRigaRubik(int y){
+
+	Point posTemp = cuboRubik[0][y][2].posizione;
+	cuboRubik[0][y][2].posizione = cuboRubik[2][y][2].posizione;
+	cuboRubik[2][y][2].posizione = cuboRubik[2][y][0].posizione;
+	cuboRubik[2][y][0].posizione = cuboRubik[0][y][0].posizione;
+	cuboRubik[0][y][0].posizione = posTemp;
+
 	Cubo temp = cuboRubik[0][y][0];
+
+	cambiaColoreCuboRiga(cuboRubik[2][y][0].colorifacce);
+	cuboRubik[2][y][0].colorifacce[0] = coloriInModifica[0];
+	cuboRubik[2][y][0].colorifacce[1] = coloriInModifica[1];
+	cuboRubik[2][y][0].colorifacce[2] = coloriInModifica[2];
+	cuboRubik[2][y][0].colorifacce[3] = coloriInModifica[3];
+	cuboRubik[2][y][0].colorifacce[4] = coloriInModifica[4];
+	cuboRubik[2][y][0].colorifacce[5] = coloriInModifica[5];
+
+	cuboRubik[0][y][0] = cuboRubik[2][y][0];	//forse va scambiata anche la posizione
+
+	cambiaColoreCuboRiga(cuboRubik[2][y][2].colorifacce);
+	cuboRubik[2][y][2].colorifacce[0] = coloriInModifica[0];
+	cuboRubik[2][y][2].colorifacce[1] = coloriInModifica[1];
+	cuboRubik[2][y][2].colorifacce[2] = coloriInModifica[2];
+	cuboRubik[2][y][2].colorifacce[3] = coloriInModifica[3];
+	cuboRubik[2][y][2].colorifacce[4] = coloriInModifica[4];
+	cuboRubik[2][y][2].colorifacce[5] = coloriInModifica[5];
+	
+	cuboRubik[2][y][0] = cuboRubik[2][y][2];	//forse va scambiata anche la posizione
+
+	cambiaColoreCuboRiga(cuboRubik[0][y][2].colorifacce);
+	cuboRubik[0][y][2].colorifacce[0] = coloriInModifica[0];
+	cuboRubik[0][y][2].colorifacce[1] = coloriInModifica[1];
+	cuboRubik[0][y][2].colorifacce[2] = coloriInModifica[2];
+	cuboRubik[0][y][2].colorifacce[3] = coloriInModifica[3];
+	cuboRubik[0][y][2].colorifacce[4] = coloriInModifica[4];
+	cuboRubik[0][y][2].colorifacce[5] = coloriInModifica[5];
+
+	cuboRubik[2][y][2] = cuboRubik[0][y][2];	//forse va scambiata anche la posizione
+
+	cambiaColoreCuboRiga(temp.colorifacce);
+	temp.colorifacce[0] = coloriInModifica[0];
+	temp.colorifacce[1] = coloriInModifica[1];
+	temp.colorifacce[2] = coloriInModifica[2];
+	temp.colorifacce[3] = coloriInModifica[3];
+	temp.colorifacce[4] = coloriInModifica[4];
+	temp.colorifacce[5] = coloriInModifica[5];
+
+	cuboRubik[0][y][2] = temp;	//forse va scambiata anche la posizione
+
+	posTemp = cuboRubik[1][y][2].posizione;
+	cuboRubik[1][y][2].posizione = cuboRubik[2][y][1].posizione;
+	cuboRubik[2][y][1].posizione = cuboRubik[1][y][0].posizione;
+	cuboRubik[1][y][0].posizione = cuboRubik[0][y][1].posizione;
+	cuboRubik[0][y][1].posizione = posTemp;
+
+    temp = cuboRubik[0][y][1];
+
+	cambiaColoreCuboRiga(cuboRubik[1][y][0].colorifacce);
+	cuboRubik[1][y][0].colorifacce[0] = coloriInModifica[0];
+	cuboRubik[1][y][0].colorifacce[1] = coloriInModifica[1];
+	cuboRubik[1][y][0].colorifacce[2] = coloriInModifica[2];
+	cuboRubik[1][y][0].colorifacce[3] = coloriInModifica[3];
+	cuboRubik[1][y][0].colorifacce[4] = coloriInModifica[4];
+	cuboRubik[1][y][0].colorifacce[5] = coloriInModifica[5];
+
+	cuboRubik[0][y][1] = cuboRubik[1][y][0];	//forse va scambiata anche la posizione
+
+	cambiaColoreCuboRiga(cuboRubik[2][y][1].colorifacce);
+	cuboRubik[2][y][1].colorifacce[0] = coloriInModifica[0];
+	cuboRubik[2][y][1].colorifacce[1] = coloriInModifica[1];
+	cuboRubik[2][y][1].colorifacce[2] = coloriInModifica[2];
+	cuboRubik[2][y][1].colorifacce[3] = coloriInModifica[3];
+	cuboRubik[2][y][1].colorifacce[4] = coloriInModifica[4];
+	cuboRubik[2][y][1].colorifacce[5] = coloriInModifica[5];
+
+	cuboRubik[1][y][0] = cuboRubik[2][y][1];	//forse va scambiata anche la posizione
+
+	cambiaColoreCuboRiga(cuboRubik[1][y][2].colorifacce);
+	cuboRubik[1][y][2].colorifacce[0] = coloriInModifica[0];
+	cuboRubik[1][y][2].colorifacce[1] = coloriInModifica[1];
+	cuboRubik[1][y][2].colorifacce[2] = coloriInModifica[2];
+	cuboRubik[1][y][2].colorifacce[3] = coloriInModifica[3];
+	cuboRubik[1][y][2].colorifacce[4] = coloriInModifica[4];
+	cuboRubik[1][y][2].colorifacce[5] = coloriInModifica[5];
+
+	cuboRubik[2][y][1] = cuboRubik[1][y][2];	//forse va scambiata anche la posizione
+
+	cambiaColoreCuboRiga(temp.colorifacce);
+	temp.colorifacce[0] = coloriInModifica[0];
+	temp.colorifacce[1] = coloriInModifica[1];
+	temp.colorifacce[2] = coloriInModifica[2];
+	temp.colorifacce[3] = coloriInModifica[3];
+	temp.colorifacce[4] = coloriInModifica[4];
+	temp.colorifacce[5] = coloriInModifica[5];
+
+	cuboRubik[1][y][2] = temp;	//forse va scambiata anche la posizione
+
+	cambiaColoreCuboRiga(cuboRubik[1][y][1].colorifacce);	//modifica i colori del cubo centrale che non si vede
+	cuboRubik[1][y][1].colorifacce[0] = coloriInModifica[0];
+	cuboRubik[1][y][1].colorifacce[1] = coloriInModifica[1];
+	cuboRubik[1][y][1].colorifacce[2] = coloriInModifica[2];
+	cuboRubik[1][y][1].colorifacce[3] = coloriInModifica[3];
+	cuboRubik[1][y][1].colorifacce[4] = coloriInModifica[4];
+	cuboRubik[1][y][1].colorifacce[5] = coloriInModifica[5];
 
 }
 
@@ -654,7 +770,7 @@ void gestioneBottoni(int opzione){
 	case -1:	//Prima riga a sinistra
 		if (!pussantePremuto){
 			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 'r';
+			mossaAttiva.riga_colonna_sezione = 'r';
 			mossaAttiva.valore_riga_colonna_sezione = 1.0;
 			mossaAttiva.direzione = false;
 			mossaInCorso = mossaAttiva;
@@ -664,7 +780,7 @@ void gestioneBottoni(int opzione){
 	case -2:	//Seconda riga a sinistra
 		if (!pussantePremuto){
 			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 'r';
+			mossaAttiva.riga_colonna_sezione = 'r';
 			mossaAttiva.valore_riga_colonna_sezione = 0.0;
 			mossaAttiva.direzione = false;
 			mossaInCorso = mossaAttiva;
@@ -674,7 +790,7 @@ void gestioneBottoni(int opzione){
 	case -3:	//Terza riga a sinistra
 		if (!pussantePremuto){
 			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 'r';
+			mossaAttiva.riga_colonna_sezione = 'r';
 			mossaAttiva.valore_riga_colonna_sezione = -1.0;
 			mossaAttiva.direzione = false;
 			mossaInCorso = mossaAttiva;
@@ -684,7 +800,7 @@ void gestioneBottoni(int opzione){
 	case 1:		//Prima riga a destra
 		if (!pussantePremuto){
 			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 'r';
+			mossaAttiva.riga_colonna_sezione = 'r';
 			mossaAttiva.valore_riga_colonna_sezione = 1.0;
 			mossaAttiva.direzione = 'r';
 			mossaInCorso = mossaAttiva;
@@ -694,7 +810,7 @@ void gestioneBottoni(int opzione){
 	case 2:		//Seconda riga a destra
 		if (!pussantePremuto){
 			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 'r';
+			mossaAttiva.riga_colonna_sezione = 'r';
 			mossaAttiva.valore_riga_colonna_sezione = 0.0;
 			mossaAttiva.direzione = true;
 			mossaInCorso = mossaAttiva;
@@ -704,7 +820,7 @@ void gestioneBottoni(int opzione){
 	case 3:		//Terza riga a destra 
 		if (!pussantePremuto){
 			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 'r';
+			mossaAttiva.riga_colonna_sezione = 'r';
 			mossaAttiva.valore_riga_colonna_sezione = -1.0;
 			mossaAttiva.direzione = true;
 			mossaInCorso = mossaAttiva;
@@ -714,7 +830,7 @@ void gestioneBottoni(int opzione){
 	case -4:	//Prima colonna sù
 		if (!pussantePremuto){
 			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 'c',
+			mossaAttiva.riga_colonna_sezione = 'c',
 				mossaAttiva.valore_riga_colonna_sezione = -1.0;
 			mossaAttiva.direzione = false;
 			mossaInCorso = mossaAttiva;
@@ -724,7 +840,7 @@ void gestioneBottoni(int opzione){
 	case -5:	//Seconda colonna sù
 		if (!pussantePremuto){
 			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 'c';
+			mossaAttiva.riga_colonna_sezione = 'c';
 			mossaAttiva.valore_riga_colonna_sezione = 0.0;
 			mossaAttiva.direzione = false;
 			mossaInCorso = mossaAttiva;
@@ -734,7 +850,7 @@ void gestioneBottoni(int opzione){
 	case -6:	//Terza colonna sù
 		if (!pussantePremuto){
 			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 'c';
+			mossaAttiva.riga_colonna_sezione = 'c';
 			mossaAttiva.valore_riga_colonna_sezione = 1.0;
 			mossaAttiva.direzione = false;
 			mossaInCorso = mossaAttiva;
@@ -744,7 +860,7 @@ void gestioneBottoni(int opzione){
 	case 4:		//Prima colonna giù
 		if (!pussantePremuto){
 			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 'c';
+			mossaAttiva.riga_colonna_sezione = 'c';
 			mossaAttiva.valore_riga_colonna_sezione = -1.0;
 			mossaAttiva.direzione = true;
 			mossaInCorso = mossaAttiva;
@@ -754,7 +870,7 @@ void gestioneBottoni(int opzione){
 	case 5:		//Seconda colonna giù
 		if (!pussantePremuto){
 			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 'c';
+			mossaAttiva.riga_colonna_sezione = 'c';
 			mossaAttiva.valore_riga_colonna_sezione = 0.0;
 			mossaAttiva.direzione = true;
 			mossaInCorso = mossaAttiva;
@@ -764,7 +880,7 @@ void gestioneBottoni(int opzione){
 	case 6:		//Terza colonna giù
 		if (!pussantePremuto){
 			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 'c';
+			mossaAttiva.riga_colonna_sezione = 'c';
 			mossaAttiva.valore_riga_colonna_sezione = 1.0;
 			mossaAttiva.direzione = true;
 			mossaInCorso = mossaAttiva;
@@ -783,6 +899,10 @@ void gestioneBottoni(int opzione){
 			pussantePremuto = !pussantePremuto;
 			inizializzaCubo();
 			mosseEffettuate.clear();
+			angolo_asse_x = 0;
+			angolo_asse_y = 0;
+			angolo_asse_z = 0;
+			frecciaPremuta = true;
 			pussantePremuto = !pussantePremuto;
 			glutPostRedisplay();	
 		}
@@ -792,7 +912,7 @@ void gestioneBottoni(int opzione){
 
 bool attivazioneMossa(Mossa mossaCorrente, Cubo cuboCorrente){
 	bool attivaMovimento = false;
-	switch (mossaCorrente.riga_colonna)
+	switch (mossaCorrente.riga_colonna_sezione)
 	{
 	case 'r':
 		puntoRiferimentoRotazione.x = 0.0;
@@ -837,7 +957,20 @@ bool attivazioneMossa(Mossa mossaCorrente, Cubo cuboCorrente){
 }
 
 void memorizzaMossa(){
-	ruotaColonnaRubik(mossaInCorso.valore_riga_colonna_sezione+1);
+	switch (mossaInCorso.riga_colonna_sezione)
+	{
+	case 'r':
+		ruotaRigaRubik(mossaInCorso.valore_riga_colonna_sezione+1);
+		break;
+	case 'c':
+		ruotaColonnaRubik(mossaInCorso.valore_riga_colonna_sezione+1);
+		break;
+
+	case 's':
+		ruotaSezioneRubik(mossaInCorso.valore_riga_colonna_sezione+1);
+		break;
+	}
+	//ruotaColonnaRubik(mossaInCorso.valore_riga_colonna_sezione+1);
 	mosseEffettuate.push_back(mossaInCorso);
 }
 
@@ -854,7 +987,7 @@ void keyboard(unsigned char key,int x,int y)
 	case 'q': // sezione posteriore a sinistra
 		if (!pussantePremuto){
 			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 's';
+			mossaAttiva.riga_colonna_sezione = 's';
 			mossaAttiva.valore_riga_colonna_sezione = -1.0;
 			mossaAttiva.direzione = false;
 			mossaInCorso = mossaAttiva;
@@ -864,7 +997,7 @@ void keyboard(unsigned char key,int x,int y)
 	case 'a': //sezione centrale a sinistra
 		if (!pussantePremuto){
 			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 's';
+			mossaAttiva.riga_colonna_sezione = 's';
 			mossaAttiva.valore_riga_colonna_sezione = 0.0;
 			mossaAttiva.direzione = false;
 			mossaInCorso = mossaAttiva;
@@ -874,7 +1007,7 @@ void keyboard(unsigned char key,int x,int y)
 	case 'z': //sezione frontale a sinistra
 		if (!pussantePremuto){
 			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 's';
+			mossaAttiva.riga_colonna_sezione = 's';
 			mossaAttiva.valore_riga_colonna_sezione = 1.0;
 			mossaAttiva.direzione = false;
 			mossaInCorso = mossaAttiva;
@@ -884,7 +1017,7 @@ void keyboard(unsigned char key,int x,int y)
 	case 'w': //sezione posteriore a destra
 		if (!pussantePremuto){
 			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 's';
+			mossaAttiva.riga_colonna_sezione = 's';
 			mossaAttiva.valore_riga_colonna_sezione = -1.0;
 			mossaAttiva.direzione = true;
 			mossaInCorso = mossaAttiva;
@@ -894,7 +1027,7 @@ void keyboard(unsigned char key,int x,int y)
 	case 's': //sezione centrale a destra
 		if (!pussantePremuto){
 			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 's';
+			mossaAttiva.riga_colonna_sezione = 's';
 			mossaAttiva.valore_riga_colonna_sezione = 0.0;
 			mossaAttiva.direzione = true;
 			mossaInCorso = mossaAttiva;
@@ -904,7 +1037,7 @@ void keyboard(unsigned char key,int x,int y)
 	case 'x': //sezione frontale a destra
 		if (!pussantePremuto){
 			pussantePremuto = !pussantePremuto;
-			mossaAttiva.riga_colonna = 's';
+			mossaAttiva.riga_colonna_sezione = 's';
 			mossaAttiva.valore_riga_colonna_sezione = 1.0;
 			mossaAttiva.direzione = true;
 			mossaInCorso = mossaAttiva;

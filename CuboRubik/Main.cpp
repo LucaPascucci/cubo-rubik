@@ -27,7 +27,7 @@ typedef enum _Colori{
 	GREEN = 3,
 	ORANGE = 4,
 	RED = 5	
-}Colori;
+}Colore;
 
 typedef struct{
 	float x, y, z;
@@ -35,7 +35,7 @@ typedef struct{
 
 typedef struct{
 	int numeroCubo;
-	Colori colorifacce[6];
+	Colore colorifacce[6];
 } Cubo;
 
 typedef struct{
@@ -45,13 +45,15 @@ typedef struct{
 	bool direzione;
 } Mossa;
 
+const float DIMENSIONE_FACCIA = 0.5;
 Cubo cuboRubik[3][3][3];
-Colori coloriInModifica[6];
+Colore coloriInModifica[6];
 
 Mossa mossaInCorso;
 bool pulsantePremuto;
 vector<Mossa> mosseEffettuate;
-int scattoRotazione = 90;
+int gradiRotazioneMossa = 90;
+float angolo_rotazione = 0;
 Point puntoRiferimentoRotazione;
 
 //variabili necessarie per il controllo della rotazione del cubo nella sua interezza
@@ -73,9 +75,6 @@ GLUI* glui;
 GLUI_Panel *panel;
 GLUI_RadioGroup *radio_group;
 
-float angolo_rotazione = 0;
-const float DIMENSIONE_FACCIA = 1.0;
-
 GLuint white_textureId;
 GLuint red_textureId;
 GLuint blue_textureId;
@@ -83,12 +82,12 @@ GLuint green_textureId;
 GLuint yellow_textureId;
 GLuint orange_textureId;
 
-GLuint texture_0;
-GLuint texture_1;
-GLuint texture_2;
-GLuint texture_3;
-GLuint texture_4;
-GLuint texture_5;
+GLuint texture_faccia_anteriore;	//texture della faccia anteriore
+GLuint texture_faccia_posteriore;	//texture della faccia posteriore
+GLuint texture_faccia_destra;	//texture della faccia destra
+GLuint texture_faccia_sinistra;	//texture della faccia sinistra
+GLuint texture_faccia_superiore;	//texture della faccia superiore
+GLuint texture_faccia_inferiore;	//texture della faccia inferiore
 
 // fraction of the length to use as height of the characters:
 const float LENFRAC = 0.10f;
@@ -150,7 +149,7 @@ const GLfloat Colors[6][3] =
 };
 
 //Carica il file, lo converte in texture e ritorna l'id della texture in base all'id del colore immesso
-GLuint loadTexture(Colori colore) {
+GLuint caricaTexture(Colore colore) {
 
 	Image* image = NULL;
 	GLuint textureId;
@@ -196,7 +195,7 @@ GLuint loadTexture(Colori colore) {
 }
 
 //restituisce l'id della texture in base al colore cercato
-GLuint selezionaTextureCaricata(Colori colore){
+GLuint selezionaTextureCaricata(Colore colore){
 	GLuint textureId;
 
 	switch (colore){
@@ -307,140 +306,119 @@ void disegnaAssi(float lunghezza)
 	glColor3f(1.0, 1.0, 1.0);
 }
 
-void cuboSingolo(Colori colori[6])
+void cuboSingolo(Colore colori[6])
 {
-	texture_0 = selezionaTextureCaricata(colori[0]);	//texture faccia anteriore
-	texture_1 = selezionaTextureCaricata(colori[1]);	//texture faccia posteriore
-	texture_2 = selezionaTextureCaricata(colori[2]);	//texture faccia destra
-	texture_3 = selezionaTextureCaricata(colori[3]);	//texture faccia sinistra
-	texture_4 = selezionaTextureCaricata(colori[4]);	//texture faccia sopra
-	texture_5 = selezionaTextureCaricata(colori[5]);	//texture faccia sotto
+	texture_faccia_anteriore = selezionaTextureCaricata(colori[0]);	//texture faccia anteriore
+	texture_faccia_posteriore = selezionaTextureCaricata(colori[1]);	//texture faccia posteriore
+	texture_faccia_destra = selezionaTextureCaricata(colori[2]);	//texture faccia destra
+	texture_faccia_sinistra = selezionaTextureCaricata(colori[3]);	//texture faccia sinistra
+	texture_faccia_superiore = selezionaTextureCaricata(colori[4]);	//texture faccia superiore
+	texture_faccia_inferiore = selezionaTextureCaricata(colori[5]);	//texture faccia inferiore
 
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texture_0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glBegin(GL_QUADS);
 	//Faccia Anteriore
-
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture_faccia_anteriore);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
+	glVertex3f(-DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA, DIMENSIONE_FACCIA);
 	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
+	glVertex3f(DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA, DIMENSIONE_FACCIA);
 	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
+	glVertex3f(DIMENSIONE_FACCIA, DIMENSIONE_FACCIA, DIMENSIONE_FACCIA);
 	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
-
+	glVertex3f(-DIMENSIONE_FACCIA, DIMENSIONE_FACCIA, DIMENSIONE_FACCIA);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texture_1);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glBegin(GL_QUADS);
 	//Faccia Posteriore
-
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture_faccia_posteriore);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
+	glVertex3f(-DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA);
 	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(-DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
+	glVertex3f(-DIMENSIONE_FACCIA, DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA);
 	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
+	glVertex3f(DIMENSIONE_FACCIA, DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA);
 	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
-
+	glVertex3f(DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texture_2);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glBegin(GL_QUADS);
 	//Faccia Destra
-
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture_faccia_destra);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
+	glVertex3f(DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA);
 	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
+	glVertex3f(DIMENSIONE_FACCIA, DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA);
 	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
+	glVertex3f(DIMENSIONE_FACCIA, DIMENSIONE_FACCIA, DIMENSIONE_FACCIA);
 	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
-
+	glVertex3f(DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA, DIMENSIONE_FACCIA);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 
+	//Faccia Sinistra
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texture_3);
+	glBindTexture(GL_TEXTURE_2D, texture_faccia_sinistra);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 	glBegin(GL_QUADS);
-	//Faccia Sinistra
-
 	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
+	glVertex3f(-DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA);
 	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(-DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
+	glVertex3f(-DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA, DIMENSIONE_FACCIA);
 	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(-DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
+	glVertex3f(-DIMENSIONE_FACCIA, DIMENSIONE_FACCIA, DIMENSIONE_FACCIA);
 	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
-
+	glVertex3f(-DIMENSIONE_FACCIA, DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);	
 
-
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texture_4);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glBegin(GL_QUADS);
 	//Faccia Superiore
-
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(-DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
-
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
-
-	//cambio texture
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, texture_5);
+	glBindTexture(GL_TEXTURE_2D, texture_faccia_superiore);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 	glBegin(GL_QUADS);
-	//Faccia Inferiore
-
 	glTexCoord2f(0.0f, 0.0f);
-	glVertex3f(-DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
+	glVertex3f(-DIMENSIONE_FACCIA, DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA);
 	glTexCoord2f(1.0f, 0.0f);
-	glVertex3f(DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2);
+	glVertex3f(-DIMENSIONE_FACCIA, DIMENSIONE_FACCIA, DIMENSIONE_FACCIA);
 	glTexCoord2f(1.0f, 1.0f);
-	glVertex3f(DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
+	glVertex3f(DIMENSIONE_FACCIA, DIMENSIONE_FACCIA, DIMENSIONE_FACCIA);
 	glTexCoord2f(0.0f, 1.0f);
-	glVertex3f(-DIMENSIONE_FACCIA / 2, -DIMENSIONE_FACCIA / 2, DIMENSIONE_FACCIA / 2);
-
+	glVertex3f(DIMENSIONE_FACCIA, DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 
+	//Faccia Inferiore
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture_faccia_inferiore);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex3f(-DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex3f(DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex3f(DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA, DIMENSIONE_FACCIA);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex3f(-DIMENSIONE_FACCIA, -DIMENSIONE_FACCIA, DIMENSIONE_FACCIA);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
 }
 
-void cambiaColoreCuboColonna(Colori coloriCubo[6],bool direzione){
+void cambiaColoreCuboColonna(Colore coloriCubo[6],bool direzione){
 	if(direzione){
 		//ruota in avanti
 		coloriInModifica[4] = coloriCubo[1];	//il colore sopra viene sostituito dal colore dietro
@@ -460,7 +438,7 @@ void cambiaColoreCuboColonna(Colori coloriCubo[6],bool direzione){
 	coloriInModifica[3] = coloriCubo[3];
 }
 
-void cambiaColoreCuboRiga(Colori coloriCubo[6],bool direzione){
+void cambiaColoreCuboRiga(Colore coloriCubo[6],bool direzione){
 	if (direzione){
 		//ruota verso destra
 		coloriInModifica[2] = coloriCubo[0];	//il colore destra viene sostituito dal colore frontale
@@ -479,7 +457,7 @@ void cambiaColoreCuboRiga(Colori coloriCubo[6],bool direzione){
 	coloriInModifica[5] = coloriCubo[5];
 }
 
-void cambiaColoreCuboSezione(Colori coloriCubo[6],bool direzione){
+void cambiaColoreCuboSezione(Colore coloriCubo[6],bool direzione){
 	if(direzione){
 		//ruota verso destra
 		coloriInModifica[2] = coloriCubo[4];	//il colore destra viene sostituito dal colore sopra
@@ -528,8 +506,6 @@ void ruotaColonnaRubik(int x, bool direzione){
 		cout<<"Direzione opposta"<<endl;
 
 	}else{
-
-
 		Cubo temp = cuboRubik[x][0][0];
 
 		cambiaColoreCuboColonna(cuboRubik[x][2][0].colorifacce,direzione);
@@ -1148,12 +1124,12 @@ void init()
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 
 	//carico le texture delle immagini bitmap
-	white_textureId = loadTexture(WHITE);
-	red_textureId = loadTexture(RED);
-	blue_textureId = loadTexture(BLUE);
-	green_textureId = loadTexture(GREEN);
-	yellow_textureId = loadTexture(YELLOW);
-	orange_textureId = loadTexture(ORANGE);
+	white_textureId = caricaTexture(WHITE);
+	red_textureId = caricaTexture(RED);
+	blue_textureId = caricaTexture(BLUE);
+	green_textureId = caricaTexture(GREEN);
+	yellow_textureId = caricaTexture(YELLOW);
+	orange_textureId = caricaTexture(ORANGE);
 
 }
 
@@ -1242,7 +1218,7 @@ void timer(int value) {
 	}
 	if (pulsantePremuto){
 
-		if (angolo_rotazione < scattoRotazione) {
+		if (angolo_rotazione < gradiRotazioneMossa) {
 			angolo_rotazione += 2.0; //controllare velocità rotazione
 		}else{
 			angolo_rotazione = 0;
@@ -1259,6 +1235,7 @@ void timer(int value) {
 
 void creaPannelloGlui()
 {
+	//nascondere quei valori con delle variabili
 	glui = GLUI_Master.create_glui("Comandi Giocatore", GLUI_SUBWINDOW_TOP, (glutGet(GLUT_SCREEN_WIDTH)-larghezza-400)/2, (glutGet(GLUT_SCREEN_HEIGHT)-altezza)/2);
 
 	panel = glui -> add_panel("Movimenti cubo", GLUI_PANEL_EMBOSSED);
@@ -1327,9 +1304,7 @@ void main(int argc,char** argv)
 	glutInitWindowSize(larghezza,altezza);
 	glutInitWindowPosition (window_x, window_y);
 	windowsID = glutCreateWindow("Cubo Di Rubik");
-
 	inizializzaCubo();
-
 	init();
 	glutDisplayFunc(display);
 	glutKeyboardFunc(keyboard);

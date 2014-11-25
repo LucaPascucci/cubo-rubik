@@ -12,6 +12,9 @@
 
 #include "imageloader.h"
 
+#define spostamentoFinestra 400
+#define spessoreAssi 3
+
 // Nasconde la console
 //#pragma comment(linker,"/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
 
@@ -69,6 +72,7 @@ int window_x,window_y;
 
 GLUI* glui;
 GLUI_Panel *panel;
+GLUI_RadioGroup *radio_group;
 
 float angolo_rotazione = 0;
 const float DIMENSIONE_FACCIA = 1.0;
@@ -87,6 +91,26 @@ GLuint texture_2;
 GLuint texture_3;
 GLuint texture_4;
 GLuint texture_5;
+
+// fraction of the length to use as height of the characters:
+const float LENFRAC = 0.10f;
+
+// fraction of length to use as start location of the characters:
+const float BASEFRAC = 1.10f;
+
+int coloreAssi = WHITE;
+
+// Le definizioni dei colori
+// L'ordine deve rispecchiare l'ordine dei radiobutton
+const GLfloat Colors[ ][3] = 
+{
+	{ 1.0, 1.0, 1.0 },	//bianco
+	{ 0.0, 0.0, 0.0 },	//nero
+	{ 1.0, 0.0, 0.0 },	//rosso
+	{ 0.0, 1.0, 0.0 },	//verde
+	{ 0.0, 0.0, 1.0 },	//blu
+	{ 1.0, 1.0, 0.0 },	//giallo
+};
 
 //Carica il file, lo converte in texture e ritorna l'id della texture in base all'id del colore immesso
 GLuint loadTexture(Colori colore) {
@@ -178,6 +202,112 @@ void disegnaTesto(float x, float y, string text)
 	{
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, text[i]);
 	}
+}
+
+// the stroke characters 'X' 'Y' 'Z' :
+
+static float xx[ ] = {
+		0.f, 1.f, 0.f, 1.f
+	      };
+
+static float xy[ ] = {
+		-.5f, .5f, .5f, -.5f
+	      };
+
+static int xorder[ ] = {
+		1, 2, -3, 4
+		};
+
+
+static float yx[ ] = {
+		0.f, 0.f, -.5f, .5f
+	      };
+
+static float yy[ ] = {
+		0.f, .6f, 1.f, 1.f
+	      };
+
+static int yorder[ ] = {
+		1, 2, 3, -2, 4
+		};
+
+
+static float zx[ ] = {
+		1.f, 0.f, 1.f, 0.f, .25f, .75f
+	      };
+
+static float zy[ ] = {
+		.5f, .5f, -.5f, -.5f, 0.f, 0.f
+	      };
+
+static int zorder[ ] = {
+		1, 2, 3, 4, -5, 6
+		};
+
+void disegnaAssi(float lunghezza)
+{
+	glColor3fv(Colors[coloreAssi]);
+	glBegin(GL_LINE_STRIP);
+		glVertex3f(lunghezza, 0, 0);
+		glVertex3f(0, 0, 0);
+		glVertex3f(0, lunghezza, 0);
+	glEnd();
+	glBegin(GL_LINE_STRIP);
+		glVertex3f(0, 0, 0);
+		glVertex3f(0, 0, lunghezza);
+	glEnd();
+
+	float fact = LENFRAC * lunghezza;
+	float base = BASEFRAC * lunghezza;
+
+	glBegin( GL_LINE_STRIP );
+		for( int i = 0; i < 4; i++ )
+		{
+			int j = xorder[i];
+			if( j < 0 )
+			{
+				
+				glEnd( );
+				glBegin( GL_LINE_STRIP );
+				j = -j;
+			}
+			j--;
+			glVertex3f( base + fact*xx[j], fact*xy[j], 0.0 );
+		}
+	glEnd( );
+
+	glBegin( GL_LINE_STRIP );
+		for( int i = 0; i < 5; i++ )
+		{
+			int j = yorder[i];
+			if( j < 0 )
+			{
+				
+				glEnd( );
+				glBegin( GL_LINE_STRIP );
+				j = -j;
+			}
+			j--;
+			glVertex3f( fact*yx[j], base + fact*yy[j], 0.0 );
+		}
+	glEnd( );
+
+	glBegin( GL_LINE_STRIP );
+		for( int i = 0; i < 6; i++ )
+		{
+			int j = zorder[i];
+			if( j < 0 )
+			{
+				
+				glEnd( );
+				glBegin( GL_LINE_STRIP );
+				j = -j;
+			}
+			j--;
+			glVertex3f( 0.0, fact*zy[j], base + fact*zx[j] );
+		}
+	glEnd( );
+	glColor3f(1.0, 1.0, 1.0);
 }
 
 void cuboSingolo(Colori colori[6])
@@ -941,6 +1071,10 @@ void display()
 	glRotatef(valorePrecY, rotate_y.x, rotate_y.y, rotate_y.z); 
 	glRotatef(valorePrecZ, rotate_z.x, rotate_z.y, rotate_z.z);
 
+	glLineWidth(spessoreAssi);
+	disegnaAssi(2.5);
+	glLineWidth(1.0);
+
 	glutWireCube(4.0);
 
 	for (int x = 0; x < 3;x++){
@@ -1095,12 +1229,21 @@ void creaPannelloGlui()
 	glui->add_column_to_panel( panel, false );
 	glui->add_button_to_panel( panel, "Quit", 0, gestioneBottoni);
 
+	panel = glui -> add_panel("Colori assi", true);
+	radio_group = glui -> add_radiogroup_to_panel(panel, &coloreAssi);
+	glui -> add_radiobutton_to_group(radio_group, "Bianco");
+	glui -> add_radiobutton_to_group(radio_group, "Nero");
+	glui -> add_radiobutton_to_group(radio_group, "Rosso");
+	glui -> add_radiobutton_to_group(radio_group, "Verde");
+	glui -> add_radiobutton_to_group(radio_group, "Blu");
+	glui -> add_radiobutton_to_group(radio_group, "Giallo");
+
 	glui -> set_main_gfx_window(windowsID);
 }
 
 void centraFinestraDesktop()
 {
-	window_x = (glutGet (GLUT_SCREEN_WIDTH) - larghezza)/2;
+	window_x = (glutGet (GLUT_SCREEN_WIDTH) - larghezza)/2 + spostamentoFinestra;
 	window_y = (glutGet (GLUT_SCREEN_HEIGHT) - altezza)/2;
 }
 

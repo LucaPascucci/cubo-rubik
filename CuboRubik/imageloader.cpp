@@ -42,7 +42,6 @@ namespace {
         return toShort(buffer);
     }
     
-    //Just like auto_ptr, but for arrays
     template<class T>
     class auto_array {
         private:
@@ -161,7 +160,7 @@ Image* loadBMP(const char* filename) {
     input.seekg(dataOffset, ios_base::beg);
     input.read(pixels.get(), size);
     
-    //Get the data into the right format
+    //Prende i dati nel giusto formato
     auto_array<char> pixels2(new char[width * height * 3]);
     for(int y = 0; y < height; y++) {
         for(int x = 0; x < width; x++) {

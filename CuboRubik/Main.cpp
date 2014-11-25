@@ -39,9 +39,9 @@ typedef struct{
 } Cubo;
 
 typedef struct{
-	int numeroVisuale;
+	int numeroVisuale; //non dovrebbe servire
 	char riga_colonna_sezione; //c = colonna, r = righa, s = sezione
-	int valore_riga_colonna_sezione; //si intende quale riga o colonna vuole muovere.
+	int valore; //si intende quale riga o colonna vuole muovere.
 	bool direzione;
 } Mossa;
 
@@ -98,44 +98,44 @@ const float BASEFRAC = 1.10f;
 
 // Il carattere 'X':
 static float xx[ ] = {
-		0.f, 1.f, 0.f, 1.f
-	      };
+	0.f, 1.f, 0.f, 1.f
+};
 
 static float xy[ ] = {
-		-.5f, .5f, .5f, -.5f
-	      };
+	-.5f, .5f, .5f, -.5f
+};
 
 static int xorder[ ] = {
-		1, 2, -3, 4
-		};
+	1, 2, -3, 4
+};
 
 // Il carattere 'Y':
 static float yx[ ] = {
-		0.f, 0.f, -.5f, .5f
-	      };
+	0.f, 0.f, -.5f, .5f
+};
 
 static float yy[ ] = {
-		0.f, .6f, 1.f, 1.f
-	      };
+	0.f, .6f, 1.f, 1.f
+};
 
 static int yorder[ ] = {
-		1, 2, 3, -2, 4
-		};
+	1, 2, 3, -2, 4
+};
 
 // Il carattere 'Z':
 static float zx[ ] = {
-		1.f, 0.f, 1.f, 0.f, .25f, .75f
-	      };
+	1.f, 0.f, 1.f, 0.f, .25f, .75f
+};
 
 static float zy[ ] = {
-		.5f, .5f, -.5f, -.5f, 0.f, 0.f
-	      };
+	.5f, .5f, -.5f, -.5f, 0.f, 0.f
+};
 
 static int zorder[ ] = {
-		1, 2, 3, 4, -5, 6
-		};
+	1, 2, 3, 4, -5, 6
+};
 
-int coloreAssi = WHITE;
+int coloreAssi = 0;
 
 // Le definizioni dei colori
 // L'ordine deve rispecchiare l'ordine dei radiobutton
@@ -245,64 +245,64 @@ void disegnaAssi(float lunghezza)
 {
 	glColor3fv(Colors[coloreAssi]);
 	glBegin(GL_LINE_STRIP);
-		glVertex3f(lunghezza, 0, 0);
-		glVertex3f(0, 0, 0);
-		glVertex3f(0, lunghezza, 0);
+	glVertex3f(lunghezza, 0, 0);
+	glVertex3f(0, 0, 0);
+	glVertex3f(0, lunghezza, 0);
 	glEnd();
 	glBegin(GL_LINE_STRIP);
-		glVertex3f(0, 0, 0);
-		glVertex3f(0, 0, lunghezza);
+	glVertex3f(0, 0, 0);
+	glVertex3f(0, 0, lunghezza);
 	glEnd();
 
 	float fact = LENFRAC * lunghezza;
 	float base = BASEFRAC * lunghezza;
 
 	glBegin( GL_LINE_STRIP );
-		for( int i = 0; i < 4; i++ )
+	for( int i = 0; i < 4; i++ )
+	{
+		int j = xorder[i];
+		if( j < 0 )
 		{
-			int j = xorder[i];
-			if( j < 0 )
-			{
-				
-				glEnd( );
-				glBegin( GL_LINE_STRIP );
-				j = -j;
-			}
-			j--;
-			glVertex3f( base + fact*xx[j], fact*xy[j], 0.0 );
+
+			glEnd( );
+			glBegin( GL_LINE_STRIP );
+			j = -j;
 		}
+		j--;
+		glVertex3f( base + fact*xx[j], fact*xy[j], 0.0 );
+	}
 	glEnd( );
 
 	glBegin( GL_LINE_STRIP );
-		for( int i = 0; i < 5; i++ )
+	for( int i = 0; i < 5; i++ )
+	{
+		int j = yorder[i];
+		if( j < 0 )
 		{
-			int j = yorder[i];
-			if( j < 0 )
-			{
-				
-				glEnd( );
-				glBegin( GL_LINE_STRIP );
-				j = -j;
-			}
-			j--;
-			glVertex3f( fact*yx[j], base + fact*yy[j], 0.0 );
+
+			glEnd( );
+			glBegin( GL_LINE_STRIP );
+			j = -j;
 		}
+		j--;
+		glVertex3f( fact*yx[j], base + fact*yy[j], 0.0 );
+	}
 	glEnd( );
 
 	glBegin( GL_LINE_STRIP );
-		for( int i = 0; i < 6; i++ )
+	for( int i = 0; i < 6; i++ )
+	{
+		int j = zorder[i];
+		if( j < 0 )
 		{
-			int j = zorder[i];
-			if( j < 0 )
-			{
-				
-				glEnd( );
-				glBegin( GL_LINE_STRIP );
-				j = -j;
-			}
-			j--;
-			glVertex3f( 0.0, fact*zy[j], base + fact*zx[j] );
+
+			glEnd( );
+			glBegin( GL_LINE_STRIP );
+			j = -j;
 		}
+		j--;
+		glVertex3f( 0.0, fact*zy[j], base + fact*zx[j] );
+	}
 	glEnd( );
 	glColor3f(1.0, 1.0, 1.0);
 }
@@ -440,38 +440,59 @@ void cuboSingolo(Colori colori[6])
 
 }
 
-void cambiaColoreCuboColonna(Colori coloriCubo[6]){
-	//ruota verso dietro
-	coloriInModifica[4] = coloriCubo[0];	//il colore sopra viene sostituito dal colore frontale
-	coloriInModifica[0] = coloriCubo[5];	//il colore frontale viene sostituito dal colore sotto
-	coloriInModifica[5] = coloriCubo[1];	//il colore sotto viene sostituito dal colore dietro
-	coloriInModifica[1] = coloriCubo[4];	//il colore dietro viene sostituito dal colore sopra
+void cambiaColoreCuboColonna(Colori coloriCubo[6],bool direzione){
+	if(direzione){
+		//ruota in avanti
+		coloriInModifica[4] = coloriCubo[1];	//il colore sopra viene sostituito dal colore dietro
+		coloriInModifica[0] = coloriCubo[4];	//il colore frontale viene sostituito dal colore sopra
+		coloriInModifica[5] = coloriCubo[0];	//il colore sotto viene sostituito dal colore frontale
+		coloriInModifica[1] = coloriCubo[5];	//il colore dietro viene sostituito dal colore sotto
+	}else{
+		//ruota in dietro
+		coloriInModifica[4] = coloriCubo[0];	//il colore sopra viene sostituito dal colore frontale
+		coloriInModifica[0] = coloriCubo[5];	//il colore frontale viene sostituito dal colore sotto
+		coloriInModifica[5] = coloriCubo[1];	//il colore sotto viene sostituito dal colore dietro
+		coloriInModifica[1] = coloriCubo[4];	//il colore dietro viene sostituito dal colore sopra
+	}
 
 	//colori invariati
 	coloriInModifica[2] = coloriCubo[2];
 	coloriInModifica[3] = coloriCubo[3];
 }
 
-void cambiaColoreCuboRiga(Colori coloriCubo[6]){
-	//ruota verso destra
-	coloriInModifica[2] = coloriCubo[0];	//il colore destra viene sostituito dal colore frontale
-	coloriInModifica[0] = coloriCubo[3];	//il colore frontale viene sostituito dal colore sinistra
-	coloriInModifica[3] = coloriCubo[1];	//il colore sinistra viene sostituito dal colore dietro
-	coloriInModifica[1] = coloriCubo[2];	//il colore dietro viene sostituito dal colore destra
-
+void cambiaColoreCuboRiga(Colori coloriCubo[6],bool direzione){
+	if (direzione){
+		//ruota verso destra
+		coloriInModifica[2] = coloriCubo[0];	//il colore destra viene sostituito dal colore frontale
+		coloriInModifica[0] = coloriCubo[3];	//il colore frontale viene sostituito dal colore sinistro
+		coloriInModifica[3] = coloriCubo[1];	//il colore sinistra viene sostituito dal colore posteriore
+		coloriInModifica[1] = coloriCubo[2];	//il colore dietro viene sostituito dal colore destro
+	}else{
+		//ruota verso sinistra
+		coloriInModifica[2] = coloriCubo[1];	//il colore destra viene sostituito dal colore posteriore
+		coloriInModifica[0] = coloriCubo[2];	//il colore frontale viene sostituito dal colore destro
+		coloriInModifica[3] = coloriCubo[0];	//il colore sinistra viene sostituito dal colore frontale
+		coloriInModifica[1] = coloriCubo[3];	//il colore dietro viene sostituito dal colore sinistro
+	}
 	//colori invariati
 	coloriInModifica[4] = coloriCubo[4];
 	coloriInModifica[5] = coloriCubo[5];
 }
 
-void cambiaColoreCuboSezione(Colori coloriCubo[6]){
-
-	//ruota verso destra
-	coloriInModifica[2] = coloriCubo[4];	//il colore destra viene sostituito dal colore sopra
-	coloriInModifica[4] = coloriCubo[3];	//il colore sopra viene sostituito dal colore sinistra
-	coloriInModifica[3] = coloriCubo[5];	//il colore sinistra viene sostituito dal colore sotto
-	coloriInModifica[5] = coloriCubo[2];	//il colore sotto viene sostituito dal colore destra
-
+void cambiaColoreCuboSezione(Colori coloriCubo[6],bool direzione){
+	if(direzione){
+		//ruota verso destra
+		coloriInModifica[2] = coloriCubo[4];	//il colore destra viene sostituito dal colore sopra
+		coloriInModifica[4] = coloriCubo[3];	//il colore sopra viene sostituito dal colore sinistro
+		coloriInModifica[3] = coloriCubo[5];	//il colore sinistra viene sostituito dal colore sotto
+		coloriInModifica[5] = coloriCubo[2];	//il colore sotto viene sostituito dal colore destro
+	}else{
+		//ruota verso sinistra
+		coloriInModifica[2] = coloriCubo[5];	//il colore destra viene sostituito dal colore sotto
+		coloriInModifica[4] = coloriCubo[2];	//il colore sopra viene sostituito dal colore destro
+		coloriInModifica[3] = coloriCubo[4];	//il colore sinistra viene sostituito dal colore sopra
+		coloriInModifica[5] = coloriCubo[3];	//il colore sotto viene sostituito dal colore sinistro
+	}
 	//colori invariati
 	coloriInModifica[1] = coloriCubo[1];
 	coloriInModifica[0] = coloriCubo[0];
@@ -502,101 +523,107 @@ void inizializzaCubo(){
 
 }
 
-void ruotaColonnaRubik(int x){
+void ruotaColonnaRubik(int x, bool direzione){
+	if (direzione){
+		cout<<"Direzione opposta"<<endl;
 
-	Cubo temp = cuboRubik[x][0][0];
+	}else{
 
-	cambiaColoreCuboColonna(cuboRubik[x][2][0].colorifacce);
-	cuboRubik[x][2][0].colorifacce[0] = coloriInModifica[0];
-	cuboRubik[x][2][0].colorifacce[1] = coloriInModifica[1];
-	cuboRubik[x][2][0].colorifacce[2] = coloriInModifica[2];
-	cuboRubik[x][2][0].colorifacce[3] = coloriInModifica[3];
-	cuboRubik[x][2][0].colorifacce[4] = coloriInModifica[4];
-	cuboRubik[x][2][0].colorifacce[5] = coloriInModifica[5];
 
-	cout<<"Il cubo: "<< cuboRubik[x][2][0].numeroCubo <<" va al posto del cubo: " << cuboRubik[x][0][0].numeroCubo<<endl;
-	cuboRubik[x][0][0] = cuboRubik[x][2][0];
+		Cubo temp = cuboRubik[x][0][0];
 
-	cambiaColoreCuboColonna(cuboRubik[x][2][2].colorifacce);
-	cuboRubik[x][2][2].colorifacce[0] = coloriInModifica[0];
-	cuboRubik[x][2][2].colorifacce[1] = coloriInModifica[1];
-	cuboRubik[x][2][2].colorifacce[2] = coloriInModifica[2];
-	cuboRubik[x][2][2].colorifacce[3] = coloriInModifica[3];
-	cuboRubik[x][2][2].colorifacce[4] = coloriInModifica[4];
-	cuboRubik[x][2][2].colorifacce[5] = coloriInModifica[5];
+		cambiaColoreCuboColonna(cuboRubik[x][2][0].colorifacce,direzione);
+		cuboRubik[x][2][0].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[x][2][0].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[x][2][0].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[x][2][0].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[x][2][0].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[x][2][0].colorifacce[5] = coloriInModifica[5];
 
-	cout<<"Il cubo: "<< cuboRubik[x][2][2].numeroCubo <<" va al posto del cubo: " << cuboRubik[x][2][0].numeroCubo<<endl;
-	cuboRubik[x][2][0] = cuboRubik[x][2][2];
+		cout<<"Il cubo: "<< cuboRubik[x][2][0].numeroCubo <<" va al posto del cubo: " << cuboRubik[x][0][0].numeroCubo<<endl;
+		cuboRubik[x][0][0] = cuboRubik[x][2][0];
 
-	cambiaColoreCuboColonna(cuboRubik[x][0][2].colorifacce);
-	cuboRubik[x][0][2].colorifacce[0] = coloriInModifica[0];
-	cuboRubik[x][0][2].colorifacce[1] = coloriInModifica[1];
-	cuboRubik[x][0][2].colorifacce[2] = coloriInModifica[2];
-	cuboRubik[x][0][2].colorifacce[3] = coloriInModifica[3];
-	cuboRubik[x][0][2].colorifacce[4] = coloriInModifica[4];
-	cuboRubik[x][0][2].colorifacce[5] = coloriInModifica[5];
+		cambiaColoreCuboColonna(cuboRubik[x][2][2].colorifacce,direzione);
+		cuboRubik[x][2][2].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[x][2][2].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[x][2][2].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[x][2][2].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[x][2][2].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[x][2][2].colorifacce[5] = coloriInModifica[5];
 
-	cout<<"Il cubo: "<< cuboRubik[x][0][2].numeroCubo <<" va al posto del cubo: " << cuboRubik[x][2][2].numeroCubo<<endl;
-	cuboRubik[x][2][2] = cuboRubik[x][0][2];
+		cout<<"Il cubo: "<< cuboRubik[x][2][2].numeroCubo <<" va al posto del cubo: " << cuboRubik[x][2][0].numeroCubo<<endl;
+		cuboRubik[x][2][0] = cuboRubik[x][2][2];
 
-	cambiaColoreCuboColonna(temp.colorifacce);
-	temp.colorifacce[0] = coloriInModifica[0];
-	temp.colorifacce[1] = coloriInModifica[1];
-	temp.colorifacce[2] = coloriInModifica[2];
-	temp.colorifacce[3] = coloriInModifica[3];
-	temp.colorifacce[4] = coloriInModifica[4];
-	temp.colorifacce[5] = coloriInModifica[5];
+		cambiaColoreCuboColonna(cuboRubik[x][0][2].colorifacce,direzione);
+		cuboRubik[x][0][2].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[x][0][2].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[x][0][2].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[x][0][2].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[x][0][2].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[x][0][2].colorifacce[5] = coloriInModifica[5];
 
-	cout<<"Il cubo: "<< temp.numeroCubo <<" va al posto del cubo: " << cuboRubik[x][0][2].numeroCubo<<endl;
-	cuboRubik[x][0][2] = temp;
+		cout<<"Il cubo: "<< cuboRubik[x][0][2].numeroCubo <<" va al posto del cubo: " << cuboRubik[x][2][2].numeroCubo<<endl;
+		cuboRubik[x][2][2] = cuboRubik[x][0][2];
 
-	temp = cuboRubik[x][0][1];
+		cambiaColoreCuboColonna(temp.colorifacce,direzione);
+		temp.colorifacce[0] = coloriInModifica[0];
+		temp.colorifacce[1] = coloriInModifica[1];
+		temp.colorifacce[2] = coloriInModifica[2];
+		temp.colorifacce[3] = coloriInModifica[3];
+		temp.colorifacce[4] = coloriInModifica[4];
+		temp.colorifacce[5] = coloriInModifica[5];
 
-	cambiaColoreCuboColonna(cuboRubik[x][1][0].colorifacce);
-	cuboRubik[x][1][0].colorifacce[0] = coloriInModifica[0];
-	cuboRubik[x][1][0].colorifacce[1] = coloriInModifica[1];
-	cuboRubik[x][1][0].colorifacce[2] = coloriInModifica[2];
-	cuboRubik[x][1][0].colorifacce[3] = coloriInModifica[3];
-	cuboRubik[x][1][0].colorifacce[4] = coloriInModifica[4];
-	cuboRubik[x][1][0].colorifacce[5] = coloriInModifica[5];
+		cout<<"Il cubo: "<< temp.numeroCubo <<" va al posto del cubo: " << cuboRubik[x][0][2].numeroCubo<<endl;
+		cuboRubik[x][0][2] = temp;
 
-	cout<<"Il cubo: "<< cuboRubik[x][1][0].numeroCubo <<" va al posto del cubo: " << cuboRubik[x][0][1].numeroCubo<<endl;
-	cuboRubik[x][0][1] = cuboRubik[x][1][0];
+		temp = cuboRubik[x][0][1];
 
-	cambiaColoreCuboColonna(cuboRubik[x][2][1].colorifacce);
-	cuboRubik[x][2][1].colorifacce[0] = coloriInModifica[0];
-	cuboRubik[x][2][1].colorifacce[1] = coloriInModifica[1];
-	cuboRubik[x][2][1].colorifacce[2] = coloriInModifica[2];
-	cuboRubik[x][2][1].colorifacce[3] = coloriInModifica[3];
-	cuboRubik[x][2][1].colorifacce[4] = coloriInModifica[4];
-	cuboRubik[x][2][1].colorifacce[5] = coloriInModifica[5];
+		cambiaColoreCuboColonna(cuboRubik[x][1][0].colorifacce,direzione);
+		cuboRubik[x][1][0].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[x][1][0].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[x][1][0].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[x][1][0].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[x][1][0].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[x][1][0].colorifacce[5] = coloriInModifica[5];
 
-	cout<<"Il cubo: "<< cuboRubik[x][2][1].numeroCubo <<" va al posto del cubo: " << cuboRubik[x][1][0].numeroCubo<<endl;
-	cuboRubik[x][1][0] = cuboRubik[x][2][1];
+		cout<<"Il cubo: "<< cuboRubik[x][1][0].numeroCubo <<" va al posto del cubo: " << cuboRubik[x][0][1].numeroCubo<<endl;
+		cuboRubik[x][0][1] = cuboRubik[x][1][0];
 
-	cambiaColoreCuboColonna(cuboRubik[x][1][2].colorifacce);
-	cuboRubik[x][1][2].colorifacce[0] = coloriInModifica[0];
-	cuboRubik[x][1][2].colorifacce[1] = coloriInModifica[1];
-	cuboRubik[x][1][2].colorifacce[2] = coloriInModifica[2];
-	cuboRubik[x][1][2].colorifacce[3] = coloriInModifica[3];
-	cuboRubik[x][1][2].colorifacce[4] = coloriInModifica[4];
-	cuboRubik[x][1][2].colorifacce[5] = coloriInModifica[5];
+		cambiaColoreCuboColonna(cuboRubik[x][2][1].colorifacce,direzione);
+		cuboRubik[x][2][1].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[x][2][1].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[x][2][1].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[x][2][1].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[x][2][1].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[x][2][1].colorifacce[5] = coloriInModifica[5];
 
-	cout<<"Il cubo: "<< cuboRubik[x][1][2].numeroCubo <<" va al posto del cubo: " << cuboRubik[x][2][1].numeroCubo<<endl;
-	cuboRubik[x][2][1] = cuboRubik[x][1][2];
+		cout<<"Il cubo: "<< cuboRubik[x][2][1].numeroCubo <<" va al posto del cubo: " << cuboRubik[x][1][0].numeroCubo<<endl;
+		cuboRubik[x][1][0] = cuboRubik[x][2][1];
 
-	cambiaColoreCuboColonna(temp.colorifacce);
-	temp.colorifacce[0] = coloriInModifica[0];
-	temp.colorifacce[1] = coloriInModifica[1];
-	temp.colorifacce[2] = coloriInModifica[2];
-	temp.colorifacce[3] = coloriInModifica[3];
-	temp.colorifacce[4] = coloriInModifica[4];
-	temp.colorifacce[5] = coloriInModifica[5];
+		cambiaColoreCuboColonna(cuboRubik[x][1][2].colorifacce,direzione);
+		cuboRubik[x][1][2].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[x][1][2].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[x][1][2].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[x][1][2].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[x][1][2].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[x][1][2].colorifacce[5] = coloriInModifica[5];
 
-	cout<<"Il cubo: "<< temp.numeroCubo <<" va al posto del cubo: " << cuboRubik[x][1][2].numeroCubo<<endl;
-	cuboRubik[x][1][2] = temp;
+		cout<<"Il cubo: "<< cuboRubik[x][1][2].numeroCubo <<" va al posto del cubo: " << cuboRubik[x][2][1].numeroCubo<<endl;
+		cuboRubik[x][2][1] = cuboRubik[x][1][2];
 
-	cambiaColoreCuboColonna(cuboRubik[x][1][1].colorifacce);	//modifica i colori del cubo centrale che non si vede
+		cambiaColoreCuboColonna(temp.colorifacce,direzione);
+		temp.colorifacce[0] = coloriInModifica[0];
+		temp.colorifacce[1] = coloriInModifica[1];
+		temp.colorifacce[2] = coloriInModifica[2];
+		temp.colorifacce[3] = coloriInModifica[3];
+		temp.colorifacce[4] = coloriInModifica[4];
+		temp.colorifacce[5] = coloriInModifica[5];
+
+		cout<<"Il cubo: "<< temp.numeroCubo <<" va al posto del cubo: " << cuboRubik[x][1][2].numeroCubo<<endl;
+		cuboRubik[x][1][2] = temp;
+	}
+
+	cambiaColoreCuboColonna(cuboRubik[x][1][1].colorifacce,direzione);	//modifica i colori del cubo centrale che non si vede
 	cuboRubik[x][1][1].colorifacce[0] = coloriInModifica[0];
 	cuboRubik[x][1][1].colorifacce[1] = coloriInModifica[1];
 	cuboRubik[x][1][1].colorifacce[2] = coloriInModifica[2];
@@ -605,93 +632,97 @@ void ruotaColonnaRubik(int x){
 	cuboRubik[x][1][1].colorifacce[5] = coloriInModifica[5];
 }
 
-void ruotaRigaRubik(int y){
+void ruotaRigaRubik(int y,bool direzione){
+	if (direzione){
+		Cubo temp = cuboRubik[0][y][0];
 
-	Cubo temp = cuboRubik[0][y][0];
+		cambiaColoreCuboRiga(cuboRubik[2][y][0].colorifacce,direzione);
+		cuboRubik[2][y][0].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[2][y][0].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[2][y][0].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[2][y][0].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[2][y][0].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[2][y][0].colorifacce[5] = coloriInModifica[5];
 
-	cambiaColoreCuboRiga(cuboRubik[2][y][0].colorifacce);
-	cuboRubik[2][y][0].colorifacce[0] = coloriInModifica[0];
-	cuboRubik[2][y][0].colorifacce[1] = coloriInModifica[1];
-	cuboRubik[2][y][0].colorifacce[2] = coloriInModifica[2];
-	cuboRubik[2][y][0].colorifacce[3] = coloriInModifica[3];
-	cuboRubik[2][y][0].colorifacce[4] = coloriInModifica[4];
-	cuboRubik[2][y][0].colorifacce[5] = coloriInModifica[5];
+		cuboRubik[0][y][0] = cuboRubik[2][y][0];
 
-	cuboRubik[0][y][0] = cuboRubik[2][y][0];
+		cambiaColoreCuboRiga(cuboRubik[2][y][2].colorifacce,direzione);
+		cuboRubik[2][y][2].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[2][y][2].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[2][y][2].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[2][y][2].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[2][y][2].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[2][y][2].colorifacce[5] = coloriInModifica[5];
 
-	cambiaColoreCuboRiga(cuboRubik[2][y][2].colorifacce);
-	cuboRubik[2][y][2].colorifacce[0] = coloriInModifica[0];
-	cuboRubik[2][y][2].colorifacce[1] = coloriInModifica[1];
-	cuboRubik[2][y][2].colorifacce[2] = coloriInModifica[2];
-	cuboRubik[2][y][2].colorifacce[3] = coloriInModifica[3];
-	cuboRubik[2][y][2].colorifacce[4] = coloriInModifica[4];
-	cuboRubik[2][y][2].colorifacce[5] = coloriInModifica[5];
-	
-	cuboRubik[2][y][0] = cuboRubik[2][y][2];
+		cuboRubik[2][y][0] = cuboRubik[2][y][2];
 
-	cambiaColoreCuboRiga(cuboRubik[0][y][2].colorifacce);
-	cuboRubik[0][y][2].colorifacce[0] = coloriInModifica[0];
-	cuboRubik[0][y][2].colorifacce[1] = coloriInModifica[1];
-	cuboRubik[0][y][2].colorifacce[2] = coloriInModifica[2];
-	cuboRubik[0][y][2].colorifacce[3] = coloriInModifica[3];
-	cuboRubik[0][y][2].colorifacce[4] = coloriInModifica[4];
-	cuboRubik[0][y][2].colorifacce[5] = coloriInModifica[5];
+		cambiaColoreCuboRiga(cuboRubik[0][y][2].colorifacce,direzione);
+		cuboRubik[0][y][2].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[0][y][2].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[0][y][2].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[0][y][2].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[0][y][2].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[0][y][2].colorifacce[5] = coloriInModifica[5];
 
-	cuboRubik[2][y][2] = cuboRubik[0][y][2];
+		cuboRubik[2][y][2] = cuboRubik[0][y][2];
 
-	cambiaColoreCuboRiga(temp.colorifacce);
-	temp.colorifacce[0] = coloriInModifica[0];
-	temp.colorifacce[1] = coloriInModifica[1];
-	temp.colorifacce[2] = coloriInModifica[2];
-	temp.colorifacce[3] = coloriInModifica[3];
-	temp.colorifacce[4] = coloriInModifica[4];
-	temp.colorifacce[5] = coloriInModifica[5];
+		cambiaColoreCuboRiga(temp.colorifacce,direzione);
+		temp.colorifacce[0] = coloriInModifica[0];
+		temp.colorifacce[1] = coloriInModifica[1];
+		temp.colorifacce[2] = coloriInModifica[2];
+		temp.colorifacce[3] = coloriInModifica[3];
+		temp.colorifacce[4] = coloriInModifica[4];
+		temp.colorifacce[5] = coloriInModifica[5];
 
-	cuboRubik[0][y][2] = temp;
+		cuboRubik[0][y][2] = temp;
 
-    temp = cuboRubik[0][y][1];
+		temp = cuboRubik[0][y][1];
 
-	cambiaColoreCuboRiga(cuboRubik[1][y][0].colorifacce);
-	cuboRubik[1][y][0].colorifacce[0] = coloriInModifica[0];
-	cuboRubik[1][y][0].colorifacce[1] = coloriInModifica[1];
-	cuboRubik[1][y][0].colorifacce[2] = coloriInModifica[2];
-	cuboRubik[1][y][0].colorifacce[3] = coloriInModifica[3];
-	cuboRubik[1][y][0].colorifacce[4] = coloriInModifica[4];
-	cuboRubik[1][y][0].colorifacce[5] = coloriInModifica[5];
+		cambiaColoreCuboRiga(cuboRubik[1][y][0].colorifacce,direzione);
+		cuboRubik[1][y][0].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[1][y][0].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[1][y][0].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[1][y][0].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[1][y][0].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[1][y][0].colorifacce[5] = coloriInModifica[5];
 
-	cuboRubik[0][y][1] = cuboRubik[1][y][0];
+		cuboRubik[0][y][1] = cuboRubik[1][y][0];
 
-	cambiaColoreCuboRiga(cuboRubik[2][y][1].colorifacce);
-	cuboRubik[2][y][1].colorifacce[0] = coloriInModifica[0];
-	cuboRubik[2][y][1].colorifacce[1] = coloriInModifica[1];
-	cuboRubik[2][y][1].colorifacce[2] = coloriInModifica[2];
-	cuboRubik[2][y][1].colorifacce[3] = coloriInModifica[3];
-	cuboRubik[2][y][1].colorifacce[4] = coloriInModifica[4];
-	cuboRubik[2][y][1].colorifacce[5] = coloriInModifica[5];
+		cambiaColoreCuboRiga(cuboRubik[2][y][1].colorifacce,direzione);
+		cuboRubik[2][y][1].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[2][y][1].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[2][y][1].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[2][y][1].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[2][y][1].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[2][y][1].colorifacce[5] = coloriInModifica[5];
 
-	cuboRubik[1][y][0] = cuboRubik[2][y][1];
+		cuboRubik[1][y][0] = cuboRubik[2][y][1];
 
-	cambiaColoreCuboRiga(cuboRubik[1][y][2].colorifacce);
-	cuboRubik[1][y][2].colorifacce[0] = coloriInModifica[0];
-	cuboRubik[1][y][2].colorifacce[1] = coloriInModifica[1];
-	cuboRubik[1][y][2].colorifacce[2] = coloriInModifica[2];
-	cuboRubik[1][y][2].colorifacce[3] = coloriInModifica[3];
-	cuboRubik[1][y][2].colorifacce[4] = coloriInModifica[4];
-	cuboRubik[1][y][2].colorifacce[5] = coloriInModifica[5];
+		cambiaColoreCuboRiga(cuboRubik[1][y][2].colorifacce,direzione);
+		cuboRubik[1][y][2].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[1][y][2].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[1][y][2].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[1][y][2].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[1][y][2].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[1][y][2].colorifacce[5] = coloriInModifica[5];
 
-	cuboRubik[2][y][1] = cuboRubik[1][y][2];
+		cuboRubik[2][y][1] = cuboRubik[1][y][2];
 
-	cambiaColoreCuboRiga(temp.colorifacce);
-	temp.colorifacce[0] = coloriInModifica[0];
-	temp.colorifacce[1] = coloriInModifica[1];
-	temp.colorifacce[2] = coloriInModifica[2];
-	temp.colorifacce[3] = coloriInModifica[3];
-	temp.colorifacce[4] = coloriInModifica[4];
-	temp.colorifacce[5] = coloriInModifica[5];
+		cambiaColoreCuboRiga(temp.colorifacce,direzione);
+		temp.colorifacce[0] = coloriInModifica[0];
+		temp.colorifacce[1] = coloriInModifica[1];
+		temp.colorifacce[2] = coloriInModifica[2];
+		temp.colorifacce[3] = coloriInModifica[3];
+		temp.colorifacce[4] = coloriInModifica[4];
+		temp.colorifacce[5] = coloriInModifica[5];
 
-	cuboRubik[1][y][2] = temp;
+		cuboRubik[1][y][2] = temp;
 
-	cambiaColoreCuboRiga(cuboRubik[1][y][1].colorifacce);	//modifica i colori del cubo centrale che non si vede
+	}else{
+		cout<<"Direzione opposta"<<endl;
+	}
+
+	cambiaColoreCuboRiga(cuboRubik[1][y][1].colorifacce,direzione);	//modifica i colori del cubo centrale che non si vede
 	cuboRubik[1][y][1].colorifacce[0] = coloriInModifica[0];
 	cuboRubik[1][y][1].colorifacce[1] = coloriInModifica[1];
 	cuboRubik[1][y][1].colorifacce[2] = coloriInModifica[2];
@@ -701,9 +732,12 @@ void ruotaRigaRubik(int y){
 
 }
 
-void ruotaSezioneRubik(int z){
-	Cubo temp = cuboRubik[0][0][z];
+void ruotaSezioneRubik(int z,bool direzione){
+	if (direzione){
 
+	}else{
+
+	}
 }
 
 void drawGround()
@@ -721,7 +755,6 @@ void drawGround()
 }
 
 void gestioneBottoni(int opzione){
-	Mossa mossaAttiva;
 	switch (opzione)
 	{
 	case 0: //premuto quit
@@ -732,121 +765,110 @@ void gestioneBottoni(int opzione){
 	case -1:	//Prima riga a sinistra
 		if (!pulsantePremuto){
 			pulsantePremuto = !pulsantePremuto;
-			mossaAttiva.riga_colonna_sezione = 'r';
-			mossaAttiva.valore_riga_colonna_sezione = 2.0;
-			mossaAttiva.direzione = false;
-			mossaInCorso = mossaAttiva;
+			mossaInCorso.riga_colonna_sezione = 'r';
+			mossaInCorso.valore = 2.0;
+			mossaInCorso.direzione = false;
 		}
 		break;
 
 	case -2:	//Seconda riga a sinistra
 		if (!pulsantePremuto){
 			pulsantePremuto = !pulsantePremuto;
-			mossaAttiva.riga_colonna_sezione = 'r';
-			mossaAttiva.valore_riga_colonna_sezione = 1.0;
-			mossaAttiva.direzione = false;
-			mossaInCorso = mossaAttiva;
+			mossaInCorso.riga_colonna_sezione = 'r';
+			mossaInCorso.valore = 1.0;
+			mossaInCorso.direzione = false;
 		}
 		break;
 
 	case -3:	//Terza riga a sinistra
 		if (!pulsantePremuto){
 			pulsantePremuto = !pulsantePremuto;
-			mossaAttiva.riga_colonna_sezione = 'r';
-			mossaAttiva.valore_riga_colonna_sezione = 0.0;
-			mossaAttiva.direzione = false;
-			mossaInCorso = mossaAttiva;
+			mossaInCorso.riga_colonna_sezione = 'r';
+			mossaInCorso.valore = 0.0;
+			mossaInCorso.direzione = false;
 		}
 		break;
 
 	case 1:		//Prima riga a destra
 		if (!pulsantePremuto){
 			pulsantePremuto = !pulsantePremuto;
-			mossaAttiva.riga_colonna_sezione = 'r';
-			mossaAttiva.valore_riga_colonna_sezione = 2.0;
-			mossaAttiva.direzione = true;
-			mossaAttiva.direzione = 'r';
-			mossaInCorso = mossaAttiva;
+			mossaInCorso.riga_colonna_sezione = 'r';
+			mossaInCorso.valore = 2.0;
+			mossaInCorso.direzione = true;
+			mossaInCorso.direzione = 'r';
 		}
 		break;
 
 	case 2:		//Seconda riga a destra
 		if (!pulsantePremuto){
 			pulsantePremuto = !pulsantePremuto;
-			mossaAttiva.riga_colonna_sezione = 'r';
-			mossaAttiva.valore_riga_colonna_sezione = 1.0;
-			mossaAttiva.direzione = true;
-			mossaInCorso = mossaAttiva;
+			mossaInCorso.riga_colonna_sezione = 'r';
+			mossaInCorso.valore = 1.0;
+			mossaInCorso.direzione = true;
 		}
 		break;
 
 	case 3:		//Terza riga a destra 
 		if (!pulsantePremuto){
 			pulsantePremuto = !pulsantePremuto;
-			mossaAttiva.riga_colonna_sezione = 'r';
-			mossaAttiva.valore_riga_colonna_sezione = 0.0;
-			mossaAttiva.direzione = true;
-			mossaInCorso = mossaAttiva;
+			mossaInCorso.riga_colonna_sezione = 'r';
+			mossaInCorso.valore = 0.0;
+			mossaInCorso.direzione = true;
 		}
 		break;
 
 	case -4:	//Prima colonna sù
 		if (!pulsantePremuto){
 			pulsantePremuto = !pulsantePremuto;
-			mossaAttiva.riga_colonna_sezione = 'c',
-				mossaAttiva.valore_riga_colonna_sezione = 0.0;
-			mossaAttiva.direzione = false;
-			mossaInCorso = mossaAttiva;
+			mossaInCorso.riga_colonna_sezione = 'c',
+			mossaInCorso.valore = 0.0;
+			mossaInCorso.direzione = false;
 		}
 		break;
 
 	case -5:	//Seconda colonna sù
 		if (!pulsantePremuto){
 			pulsantePremuto = !pulsantePremuto;
-			mossaAttiva.riga_colonna_sezione = 'c';
-			mossaAttiva.valore_riga_colonna_sezione = 1.0;
-			mossaAttiva.direzione = false;
-			mossaInCorso = mossaAttiva;
+			mossaInCorso.riga_colonna_sezione = 'c';
+			mossaInCorso.valore = 1.0;
+			mossaInCorso.direzione = false;
 		}
 		break;
 
 	case -6:	//Terza colonna sù
 		if (!pulsantePremuto){
 			pulsantePremuto = !pulsantePremuto;
-			mossaAttiva.riga_colonna_sezione = 'c';
-			mossaAttiva.valore_riga_colonna_sezione = 2.0;
-			mossaAttiva.direzione = false;
-			mossaInCorso = mossaAttiva;
+			mossaInCorso.riga_colonna_sezione = 'c';
+			mossaInCorso.valore = 2.0;
+			mossaInCorso.direzione = false;
 		}
 		break;
 
 	case 4:		//Prima colonna giù
 		if (!pulsantePremuto){
 			pulsantePremuto = !pulsantePremuto;
-			mossaAttiva.riga_colonna_sezione = 'c';
-			mossaAttiva.valore_riga_colonna_sezione = 0.0;
-			mossaAttiva.direzione = true;
-			mossaInCorso = mossaAttiva;
+			mossaInCorso.riga_colonna_sezione = 'c';
+			mossaInCorso.valore = 0.0;
+			mossaInCorso.direzione = true;
 		}
 		break;
 
 	case 5:		//Seconda colonna giù
 		if (!pulsantePremuto){
 			pulsantePremuto = !pulsantePremuto;
-			mossaAttiva.riga_colonna_sezione = 'c';
-			mossaAttiva.valore_riga_colonna_sezione = 1.0;
-			mossaAttiva.direzione = true;
-			mossaInCorso = mossaAttiva;
+			mossaInCorso.riga_colonna_sezione = 'c';
+			mossaInCorso.valore = 1.0;
+			mossaInCorso.direzione = true;
+			
 		}
 		break;
 
 	case 6:		//Terza colonna giù
 		if (!pulsantePremuto){
 			pulsantePremuto = !pulsantePremuto;
-			mossaAttiva.riga_colonna_sezione = 'c';
-			mossaAttiva.valore_riga_colonna_sezione = 2.0;
-			mossaAttiva.direzione = true;
-			mossaInCorso = mossaAttiva;
+			mossaInCorso.riga_colonna_sezione = 'c';
+			mossaInCorso.valore = 2.0;
+			mossaInCorso.direzione = true;
 		}
 		break;
 
@@ -885,7 +907,7 @@ bool attivazioneMossa(Mossa mossaCorrente, Point posizioneCuboCorrente){
 		}else {
 			puntoRiferimentoRotazione.y = -1.0;
 		}
-		if (posizioneCuboCorrente.y == mossaCorrente.valore_riga_colonna_sezione){
+		if (posizioneCuboCorrente.y == mossaCorrente.valore){
 			attivaMovimento = true;
 		}
 		break;
@@ -893,11 +915,11 @@ bool attivazioneMossa(Mossa mossaCorrente, Point posizioneCuboCorrente){
 		puntoRiferimentoRotazione.y = 0.0;
 		puntoRiferimentoRotazione.z = 0.0;
 		if (mossaCorrente.direzione){
-			puntoRiferimentoRotazione.x = -1.0;
-		}else {
 			puntoRiferimentoRotazione.x = 1.0;
+		}else {
+			puntoRiferimentoRotazione.x = -1.0;
 		}
-		if (posizioneCuboCorrente.x == mossaCorrente.valore_riga_colonna_sezione){
+		if (posizioneCuboCorrente.x == mossaCorrente.valore){
 			attivaMovimento = true;
 		}
 		break;
@@ -910,7 +932,7 @@ bool attivazioneMossa(Mossa mossaCorrente, Point posizioneCuboCorrente){
 		}else {
 			puntoRiferimentoRotazione.z = 1.0;
 		}
-		if (posizioneCuboCorrente.z == mossaCorrente.valore_riga_colonna_sezione){
+		if (posizioneCuboCorrente.z == mossaCorrente.valore){
 			attivaMovimento = true;
 		}
 		break;
@@ -921,18 +943,17 @@ bool attivazioneMossa(Mossa mossaCorrente, Point posizioneCuboCorrente){
 
 void memorizzaMossa(){
 
-	//mettere anche il caso per il senso della rotazione
 	switch (mossaInCorso.riga_colonna_sezione)
 	{
 	case 'r':
-		ruotaRigaRubik(mossaInCorso.valore_riga_colonna_sezione);
+		ruotaRigaRubik(mossaInCorso.valore,mossaInCorso.direzione);
 		break;
 	case 'c':
-		ruotaColonnaRubik(mossaInCorso.valore_riga_colonna_sezione);
+		ruotaColonnaRubik(mossaInCorso.valore,mossaInCorso.direzione);
 		break;
 
 	case 's':
-		ruotaSezioneRubik(mossaInCorso.valore_riga_colonna_sezione);
+		ruotaSezioneRubik(mossaInCorso.valore,mossaInCorso.direzione);
 		break;
 	}
 	mosseEffettuate.push_back(mossaInCorso);
@@ -940,7 +961,6 @@ void memorizzaMossa(){
 
 void keyboard(unsigned char key,int x,int y)
 {
-	Mossa mossaAttiva;
 	switch(key)
 	{
 	case 27: //esc
@@ -951,60 +971,54 @@ void keyboard(unsigned char key,int x,int y)
 	case 'q': // sezione posteriore a sinistra
 		if (!pulsantePremuto){
 			pulsantePremuto = !pulsantePremuto;
-			mossaAttiva.riga_colonna_sezione = 's';
-			mossaAttiva.valore_riga_colonna_sezione = 0.0;
-			mossaAttiva.direzione = false;
-			mossaInCorso = mossaAttiva;
+			mossaInCorso.riga_colonna_sezione = 's';
+			mossaInCorso.valore = 0.0;
+			mossaInCorso.direzione = false;
 		}
 		break;
 
 	case 'a': //sezione centrale a sinistra
 		if (!pulsantePremuto){
 			pulsantePremuto = !pulsantePremuto;
-			mossaAttiva.riga_colonna_sezione = 's';
-			mossaAttiva.valore_riga_colonna_sezione = 1.0;
-			mossaAttiva.direzione = false;
-			mossaInCorso = mossaAttiva;
+			mossaInCorso.riga_colonna_sezione = 's';
+			mossaInCorso.valore = 1.0;
+			mossaInCorso.direzione = false;
 		}
 		break;
 
 	case 'z': //sezione frontale a sinistra
 		if (!pulsantePremuto){
 			pulsantePremuto = !pulsantePremuto;
-			mossaAttiva.riga_colonna_sezione = 's';
-			mossaAttiva.valore_riga_colonna_sezione = 2.0;
-			mossaAttiva.direzione = false;
-			mossaInCorso = mossaAttiva;
+			mossaInCorso.riga_colonna_sezione = 's';
+			mossaInCorso.valore = 2.0;
+			mossaInCorso.direzione = false;
 		}
 		break;
 
 	case 'w': //sezione posteriore a destra
 		if (!pulsantePremuto){
 			pulsantePremuto = !pulsantePremuto;
-			mossaAttiva.riga_colonna_sezione = 's';
-			mossaAttiva.valore_riga_colonna_sezione = 0.0;
-			mossaAttiva.direzione = true;
-			mossaInCorso = mossaAttiva;
+			mossaInCorso.riga_colonna_sezione = 's';
+			mossaInCorso.valore = 0.0;
+			mossaInCorso.direzione = true;
 		}
 		break;
 
 	case 's': //sezione centrale a destra
 		if (!pulsantePremuto){
 			pulsantePremuto = !pulsantePremuto;
-			mossaAttiva.riga_colonna_sezione = 's';
-			mossaAttiva.valore_riga_colonna_sezione = 1.0;
-			mossaAttiva.direzione = true;
-			mossaInCorso = mossaAttiva;
+			mossaInCorso.riga_colonna_sezione = 's';
+			mossaInCorso.valore = 1.0;
+			mossaInCorso.direzione = true;
 		}
 		break;
 
 	case 'x': //sezione frontale a destra
 		if (!pulsantePremuto){
 			pulsantePremuto = !pulsantePremuto;
-			mossaAttiva.riga_colonna_sezione = 's';
-			mossaAttiva.valore_riga_colonna_sezione = 2.0;
-			mossaAttiva.direzione = true;
-			mossaInCorso = mossaAttiva;
+			mossaInCorso.riga_colonna_sezione = 's';
+			mossaInCorso.valore = 2.0;
+			mossaInCorso.direzione = true;
 		}
 		break;
 	}
@@ -1131,7 +1145,7 @@ void init()
 	glEnable(GL_CULL_FACE);
 	glShadeModel(GL_SMOOTH);
 	/* colore di sfondo nero */
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
 
 	//carico le texture delle immagini bitmap
 	white_textureId = loadTexture(WHITE);
@@ -1183,7 +1197,6 @@ void display()
 	}
 
 	glutSwapBuffers();
-
 }
 
 void timer(int value) {
@@ -1230,7 +1243,7 @@ void timer(int value) {
 	if (pulsantePremuto){
 
 		if (angolo_rotazione < scattoRotazione) {
-			angolo_rotazione += 3.0;
+			angolo_rotazione += 2.0; //controllare velocità rotazione
 		}else{
 			angolo_rotazione = 0;
 			pulsantePremuto = false;

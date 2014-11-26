@@ -152,6 +152,39 @@ const GLfloat Colors[6][3] =
 	{1.0, 1.0, 0.0},	//giallo
 };
 
+GLuint caricaTexture(Colore colore);
+GLuint selezionaTextureCaricata(Colore colore);
+string int2str(int x);
+char randomChar(char r, char c, char s);
+bool randomBool();
+int randomInt(int primo, int secondo , int terzo);
+void disegnaTesto(float x, float y, string text);
+void disegnaAssi(float lunghezza);
+void cuboSingolo(Colore colori[6]);
+void cambiaColoreCuboColonna(Colore coloriCubo[6],bool direzione);
+void cambiaColoreCuboRiga(Colore coloriCubo[6],bool direzione);
+void cambiaColoreCuboSezione(Colore coloriCubo[6],bool direzione);
+void inizializzaCubo();
+void ruotaColonnaRubik(int x, bool direzione);
+void ruotaRigaRubik(int y,bool direzione);
+void ruotaSezioneRubik(int z,bool direzione);
+void mischiaRubik();
+void mossaPrecedente();
+void mossaSuccessiva();
+void disegnaSuolo();
+void gestioneBottoni(int opzione);
+bool attivazioneMossa(Mossa mossaCorrente, Point posizioneCuboCorrente);
+bool controllaVittoria();
+void keyboard(unsigned char key,int x,int y);
+void specialKeyboard(int key, int x, int y);
+void reshape(GLsizei width, GLsizei height);
+void init();
+void display();
+void timer(int value);
+void creaPannelloGlui();
+void centraFinestraDesktop();
+void main(int argc,char** argv);
+
 //Carica il file, lo converte in texture e ritorna l'id della texture in base all'id del colore immesso
 GLuint caricaTexture(Colore colore) {
 
@@ -160,28 +193,22 @@ GLuint caricaTexture(Colore colore) {
 	switch (colore){
 	case WHITE:
 		image = loadBMP("white.bmp");
-		cout << "caricato bianco" << endl;
 		break;
 	case YELLOW:
 		image = loadBMP("yellow.bmp");
-		cout << "caricato giallo" << endl;
 		break;
 	case BLUE:
 		image = loadBMP("blue.bmp");
-		cout << "caricato blu" << endl;
 		break;
 	case GREEN:
 		image = loadBMP("green.bmp");
-		cout << "caricato verde" << endl;
 		break;
 
 	case ORANGE:
 		image = loadBMP("orange.bmp");
-		cout << "caricato arancione" << endl;
 		break;
 	case RED:
 		image = loadBMP("red.bmp");
-		cout << "caricato rosso" << endl;
 		break;
 	}
 	glGenTextures(1, &textureId);
@@ -194,7 +221,6 @@ GLuint caricaTexture(Colore colore) {
 		GL_RGB,
 		GL_UNSIGNED_BYTE,
 		image->pixels);
-	//delete image;
 	return textureId;
 }
 
@@ -346,12 +372,12 @@ void disegnaAssi(float lunghezza)
 
 void cuboSingolo(Colore colori[6])
 {
-	texture_faccia_anteriore = selezionaTextureCaricata(colori[0]);	//texture faccia anteriore
+	texture_faccia_anteriore = selezionaTextureCaricata(colori[0]);		//texture faccia anteriore
 	texture_faccia_posteriore = selezionaTextureCaricata(colori[1]);	//texture faccia posteriore
-	texture_faccia_destra = selezionaTextureCaricata(colori[2]);	//texture faccia destra
-	texture_faccia_sinistra = selezionaTextureCaricata(colori[3]);	//texture faccia sinistra
-	texture_faccia_superiore = selezionaTextureCaricata(colori[4]);	//texture faccia superiore
-	texture_faccia_inferiore = selezionaTextureCaricata(colori[5]);	//texture faccia inferiore
+	texture_faccia_destra = selezionaTextureCaricata(colori[2]);		//texture faccia destra
+	texture_faccia_sinistra = selezionaTextureCaricata(colori[3]);		//texture faccia sinistra
+	texture_faccia_superiore = selezionaTextureCaricata(colori[4]);		//texture faccia superiore
+	texture_faccia_inferiore = selezionaTextureCaricata(colori[5]);		//texture faccia inferiore
 
 	//Faccia Anteriore
 	glEnable(GL_TEXTURE_2D);
@@ -531,7 +557,6 @@ void inizializzaCubo(){
 				nuovoCubo.numeroCubo = numeroCubo;
 
 				cuboRubik[x][y][z] = nuovoCubo;
-				cout <<"Numero cubo: " << numeroCubo <<" x: "<< x << " y: "<< y << " z: " << z << " PosReale x: " << x-1  << " PosReale y: "<< y-1 << " PosReale z: "<< z-1 << endl;
 				numeroCubo++;
 			}
 		}
@@ -638,7 +663,6 @@ void ruotaColonnaRubik(int x, bool direzione){
 		cuboRubik[x][2][0].colorifacce[4] = coloriInModifica[4];
 		cuboRubik[x][2][0].colorifacce[5] = coloriInModifica[5];
 
-		cout<<"Il cubo: "<< cuboRubik[x][2][0].numeroCubo <<" va al posto del cubo: " << cuboRubik[x][0][0].numeroCubo<<endl;
 		cuboRubik[x][0][0] = cuboRubik[x][2][0];
 
 		cambiaColoreCuboColonna(cuboRubik[x][2][2].colorifacce,direzione);
@@ -649,7 +673,6 @@ void ruotaColonnaRubik(int x, bool direzione){
 		cuboRubik[x][2][2].colorifacce[4] = coloriInModifica[4];
 		cuboRubik[x][2][2].colorifacce[5] = coloriInModifica[5];
 
-		cout<<"Il cubo: "<< cuboRubik[x][2][2].numeroCubo <<" va al posto del cubo: " << cuboRubik[x][2][0].numeroCubo<<endl;
 		cuboRubik[x][2][0] = cuboRubik[x][2][2];
 
 		cambiaColoreCuboColonna(cuboRubik[x][0][2].colorifacce,direzione);
@@ -660,7 +683,6 @@ void ruotaColonnaRubik(int x, bool direzione){
 		cuboRubik[x][0][2].colorifacce[4] = coloriInModifica[4];
 		cuboRubik[x][0][2].colorifacce[5] = coloriInModifica[5];
 
-		cout<<"Il cubo: "<< cuboRubik[x][0][2].numeroCubo <<" va al posto del cubo: " << cuboRubik[x][2][2].numeroCubo<<endl;
 		cuboRubik[x][2][2] = cuboRubik[x][0][2];
 
 		cambiaColoreCuboColonna(temp.colorifacce,direzione);
@@ -671,7 +693,6 @@ void ruotaColonnaRubik(int x, bool direzione){
 		temp.colorifacce[4] = coloriInModifica[4];
 		temp.colorifacce[5] = coloriInModifica[5];
 
-		cout<<"Il cubo: "<< temp.numeroCubo <<" va al posto del cubo: " << cuboRubik[x][0][2].numeroCubo<<endl;
 		cuboRubik[x][0][2] = temp;
 
 		temp = cuboRubik[x][0][1];
@@ -684,7 +705,6 @@ void ruotaColonnaRubik(int x, bool direzione){
 		cuboRubik[x][1][0].colorifacce[4] = coloriInModifica[4];
 		cuboRubik[x][1][0].colorifacce[5] = coloriInModifica[5];
 
-		cout<<"Il cubo: "<< cuboRubik[x][1][0].numeroCubo <<" va al posto del cubo: " << cuboRubik[x][0][1].numeroCubo<<endl;
 		cuboRubik[x][0][1] = cuboRubik[x][1][0];
 
 		cambiaColoreCuboColonna(cuboRubik[x][2][1].colorifacce,direzione);
@@ -695,7 +715,6 @@ void ruotaColonnaRubik(int x, bool direzione){
 		cuboRubik[x][2][1].colorifacce[4] = coloriInModifica[4];
 		cuboRubik[x][2][1].colorifacce[5] = coloriInModifica[5];
 
-		cout<<"Il cubo: "<< cuboRubik[x][2][1].numeroCubo <<" va al posto del cubo: " << cuboRubik[x][1][0].numeroCubo<<endl;
 		cuboRubik[x][1][0] = cuboRubik[x][2][1];
 
 		cambiaColoreCuboColonna(cuboRubik[x][1][2].colorifacce,direzione);
@@ -706,7 +725,6 @@ void ruotaColonnaRubik(int x, bool direzione){
 		cuboRubik[x][1][2].colorifacce[4] = coloriInModifica[4];
 		cuboRubik[x][1][2].colorifacce[5] = coloriInModifica[5];
 
-		cout<<"Il cubo: "<< cuboRubik[x][1][2].numeroCubo <<" va al posto del cubo: " << cuboRubik[x][2][1].numeroCubo<<endl;
 		cuboRubik[x][2][1] = cuboRubik[x][1][2];
 
 		cambiaColoreCuboColonna(temp.colorifacce,direzione);
@@ -717,7 +735,6 @@ void ruotaColonnaRubik(int x, bool direzione){
 		temp.colorifacce[4] = coloriInModifica[4];
 		temp.colorifacce[5] = coloriInModifica[5];
 
-		cout<<"Il cubo: "<< temp.numeroCubo <<" va al posto del cubo: " << cuboRubik[x][1][2].numeroCubo<<endl;
 		cuboRubik[x][1][2] = temp;
 	}
 
@@ -1111,6 +1128,9 @@ void memorizzaMossa(bool effettuatoOMischiato){ //se true la mossa è stata fatt
 	}
 	if (effettuatoOMischiato && !mossaAnnullata) { 
 		mosseEffettuate.push_back(mossaInCorso);
+		if (controllaVittoria()){
+			cout << "hai vinto" << endl;	//fare altro se hai vinto
+		}
 	} else {
 		mosseMischiate.push_back(mossaInCorso);
 	}

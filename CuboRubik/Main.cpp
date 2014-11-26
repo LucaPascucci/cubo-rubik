@@ -54,6 +54,8 @@ Mossa mossaInCorso;
 bool pulsantePremuto;
 vector<Mossa> mosseEffettuate;
 vector<Mossa> mosseMischiate;
+vector<Mossa> mosseAnnullate;
+bool mossaAnnullata = false;
 int gradiRotazioneMossa = 90;
 float angolo_rotazione = 0;
 Point puntoRiferimentoRotazione;
@@ -1092,7 +1094,7 @@ void ruotaSezioneRubik(int z,bool direzione){
 	cuboRubik[1][1][z].colorifacce[5] = coloriInModifica[5];
 }
 
-void memorizzaMossa(bool effettuatoOMischiato){
+void memorizzaMossa(bool effettuatoOMischiato){ //se true la mossa è stata fatta dall'utente, altrimenti dal tasto mischia
 
 	switch (mossaInCorso.riga_colonna_sezione)
 	{
@@ -1107,11 +1109,12 @@ void memorizzaMossa(bool effettuatoOMischiato){
 		ruotaSezioneRubik(mossaInCorso.valore,mossaInCorso.direzione);
 		break;
 	}
-	if (effettuatoOMischiato) { //se true la mossa è stata fatta dall'utente, altrimenti dal tasto mischia
+	if (effettuatoOMischiato && !mossaAnnullata) { 
 		mosseEffettuate.push_back(mossaInCorso);
 	} else {
 		mosseMischiate.push_back(mossaInCorso);
 	}
+	mossaAnnullata = false;
 }
 
 void mischiaRubik() {
@@ -1126,11 +1129,25 @@ void mischiaRubik() {
 }
 
 void mossaPrecedente() {
-
+	if (!mosseEffettuate.empty()) {
+		mossaInCorso.riga_colonna_sezione = mosseEffettuate.back().riga_colonna_sezione;
+		mossaInCorso.valore = mosseEffettuate.back().valore;
+		mossaInCorso.direzione = !mosseEffettuate.back().direzione;
+		mosseEffettuate.erase(mosseEffettuate.begin() + mosseEffettuate.size() - 1);
+		mosseAnnullate.push_back(mossaInCorso);
+		mossaAnnullata = true;
+		pulsantePremuto = true;
+	}
 }
 
 void mossaSuccessiva() {
-
+	if (!mosseAnnullate.empty()) {
+		mossaInCorso.riga_colonna_sezione = mosseAnnullate.back().riga_colonna_sezione;
+		mossaInCorso.valore = mosseAnnullate.back().valore;
+		mossaInCorso.direzione = !mosseAnnullate.back().direzione;
+		mosseAnnullate.erase(mosseAnnullate.begin() + mosseAnnullate.size() - 1);
+		pulsantePremuto = true;
+	}
 }
 
 void disegnaSuolo()
@@ -1161,6 +1178,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.riga_colonna_sezione = 'r';
 			mossaInCorso.valore = 2.0;
 			mossaInCorso.direzione = false;
+			mosseAnnullate.clear();
 		}
 		break;
 
@@ -1170,6 +1188,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.riga_colonna_sezione = 'r';
 			mossaInCorso.valore = 1.0;
 			mossaInCorso.direzione = false;
+			mosseAnnullate.clear();
 		}
 		break;
 
@@ -1179,6 +1198,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.riga_colonna_sezione = 'r';
 			mossaInCorso.valore = 0.0;
 			mossaInCorso.direzione = false;
+			mosseAnnullate.clear();
 		}
 		break;
 
@@ -1189,6 +1209,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 2.0;
 			mossaInCorso.direzione = true;
 			mossaInCorso.direzione = 'r';
+			mosseAnnullate.clear();
 		}
 		break;
 
@@ -1198,6 +1219,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.riga_colonna_sezione = 'r';
 			mossaInCorso.valore = 1.0;
 			mossaInCorso.direzione = true;
+			mosseAnnullate.clear();
 		}
 		break;
 
@@ -1207,6 +1229,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.riga_colonna_sezione = 'r';
 			mossaInCorso.valore = 0.0;
 			mossaInCorso.direzione = true;
+			mosseAnnullate.clear();
 		}
 		break;
 
@@ -1216,6 +1239,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.riga_colonna_sezione = 'c',
 			mossaInCorso.valore = 0.0;
 			mossaInCorso.direzione = false;
+			mosseAnnullate.clear();
 		}
 		break;
 
@@ -1225,6 +1249,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.riga_colonna_sezione = 'c';
 			mossaInCorso.valore = 1.0;
 			mossaInCorso.direzione = false;
+			mosseAnnullate.clear();
 		}
 		break;
 
@@ -1234,6 +1259,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.riga_colonna_sezione = 'c';
 			mossaInCorso.valore = 2.0;
 			mossaInCorso.direzione = false;
+			mosseAnnullate.clear();
 		}
 		break;
 
@@ -1243,6 +1269,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.riga_colonna_sezione = 'c';
 			mossaInCorso.valore = 0.0;
 			mossaInCorso.direzione = true;
+			mosseAnnullate.clear();
 		}
 		break;
 
@@ -1252,6 +1279,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.riga_colonna_sezione = 'c';
 			mossaInCorso.valore = 1.0;
 			mossaInCorso.direzione = true;
+			mosseAnnullate.clear();
 			
 		}
 		break;
@@ -1262,6 +1290,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.riga_colonna_sezione = 'c';
 			mossaInCorso.valore = 2.0;
 			mossaInCorso.direzione = true;
+			mosseAnnullate.clear();
 		}
 		break;
 
@@ -1275,6 +1304,7 @@ void gestioneBottoni(int opzione){
 			inizializzaCubo();
 			mosseEffettuate.clear();
 			mosseMischiate.clear();
+			mosseAnnullate.clear();
 			angolo_asse_x = 0;
 			angolo_asse_y = 0;
 			angolo_asse_z = 0;
@@ -1284,16 +1314,10 @@ void gestioneBottoni(int opzione){
 		}
 		break;
 	case 9:
-		if (!pulsantePremuto) {
-			pulsantePremuto = !pulsantePremuto;
-			//creare un metodo per fargli fare la mossa precedente
-		}
+		mossaPrecedente();
 		break;
 	case 10:
-		if (!pulsantePremuto) {
-			pulsantePremuto = !pulsantePremuto;
-			//creare un metodo per fargli fare la mossa successiva (controllare che prima abbia premuto "Precedente)
-		}
+		mossaSuccessiva();
 		break;
 	}
 }
@@ -1341,8 +1365,6 @@ bool attivazioneMossa(Mossa mossaCorrente, Point posizioneCuboCorrente){
 		break;
 	}
 	return attivaMovimento;
-
-}
 
 }
 
@@ -1412,6 +1434,8 @@ bool controllaVittoria(){
 	}
 
 	return vittoriaParziale;
+}
+
 void keyboard(unsigned char key,int x,int y)
 {
 	switch(key)
@@ -1427,6 +1451,7 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.riga_colonna_sezione = 's';
 			mossaInCorso.valore = 0.0;
 			mossaInCorso.direzione = false;
+			mosseAnnullate.clear();
 		}
 		break;
 
@@ -1436,6 +1461,7 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.riga_colonna_sezione = 's';
 			mossaInCorso.valore = 1.0;
 			mossaInCorso.direzione = false;
+			mosseAnnullate.clear();
 		}
 		break;
 
@@ -1445,6 +1471,7 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.riga_colonna_sezione = 's';
 			mossaInCorso.valore = 2.0;
 			mossaInCorso.direzione = false;
+			mosseAnnullate.clear();
 		}
 		break;
 
@@ -1454,6 +1481,7 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.riga_colonna_sezione = 's';
 			mossaInCorso.valore = 0.0;
 			mossaInCorso.direzione = true;
+			mosseAnnullate.clear();
 		}
 		break;
 
@@ -1463,6 +1491,7 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.riga_colonna_sezione = 's';
 			mossaInCorso.valore = 1.0;
 			mossaInCorso.direzione = true;
+			mosseAnnullate.clear();
 		}
 		break;
 
@@ -1472,6 +1501,7 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.riga_colonna_sezione = 's';
 			mossaInCorso.valore = 2.0;
 			mossaInCorso.direzione = true;
+			mosseAnnullate.clear();
 		}
 		break;
 	}

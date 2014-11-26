@@ -26,7 +26,7 @@ typedef enum _Colori{
 	YELLOW = 1,
 	BLUE = 2,
 	GREEN = 3,
-ORANGE = 4,
+	ORANGE = 4,
 	RED = 5	
 }Colore;
 
@@ -86,8 +86,8 @@ GLuint orange_textureId;
 
 GLuint texture_faccia_anteriore;	//texture della faccia anteriore
 GLuint texture_faccia_posteriore;	//texture della faccia posteriore
-GLuint texture_faccia_destra;	//texture della faccia destra
-GLuint texture_faccia_sinistra;	//texture della faccia sinistra
+GLuint texture_faccia_destra;		//texture della faccia destra
+GLuint texture_faccia_sinistra;		//texture della faccia sinistra
 GLuint texture_faccia_superiore;	//texture della faccia superiore
 GLuint texture_faccia_inferiore;	//texture della faccia inferiore
 
@@ -1344,6 +1344,74 @@ bool attivazioneMossa(Mossa mossaCorrente, Point posizioneCuboCorrente){
 
 }
 
+}
+
+bool controllaVittoria(){
+
+	bool vittoriaParziale = true;
+
+	Colore facciaSinistra = cuboRubik[0][0][0].colorifacce[3];		//colore di un cubo della faccia sinistra
+	Colore facciaDestra = cuboRubik[2][0][0].colorifacce[2];		//colore di un cubo della faccia destra
+	Colore facciaFrontale = cuboRubik[0][0][2].colorifacce[0];		//colore di un cubo della faccia frontale
+	Colore facciaPosteriore = cuboRubik[0][0][0].colorifacce[1];	//colore di un cubo della faccia posteriore
+	Colore facciaSuperiore = cuboRubik[0][2][0].colorifacce[4];		//colore di un cubo della faccia superiore
+	Colore facciaInferiore = cuboRubik[0][0][0].colorifacce[5];		//colore di un cubo della faccia inferiore
+
+	//controllo faccia sinistra quindi x = 0;
+	for (int y = 0; y < 3 && vittoriaParziale; y++){
+		for (int z = 0; z < 3 && vittoriaParziale; z++){
+			if (cuboRubik[0][y][z].colorifacce[3] != facciaSinistra){
+				vittoriaParziale = false;
+			}
+		}
+	}
+
+	//controllo faccia destra quindi x = 2
+	for (int y = 0; y < 3 && vittoriaParziale; y++){
+		for (int z = 0; z < 3 && vittoriaParziale; z++){
+			if (cuboRubik[2][y][z].colorifacce[2] != facciaDestra){
+				vittoriaParziale = false;
+			}
+		}
+	}
+
+	//controllo faccia frontale quindi z = 2;
+	for (int x = 0; x < 3 && vittoriaParziale; x++){
+		for (int y = 0; y < 3 && vittoriaParziale; y++){
+			if (cuboRubik[x][y][2].colorifacce[0] != facciaFrontale){
+				vittoriaParziale = false;
+			}
+		}
+	}
+
+	//controllo faccia posteriore quindi z = 0;
+	for (int x = 0; x < 3 && vittoriaParziale; x++){
+		for (int y = 0; y < 3 && vittoriaParziale; y++){
+			if (cuboRubik[x][y][0].colorifacce[1] != facciaPosteriore){
+				vittoriaParziale = false;
+			}
+		}
+	}
+
+	//controllo faccia superiore quindi y = 2;
+	for (int x = 0; x < 3 && vittoriaParziale; x++){
+		for (int z = 0; z < 3 && vittoriaParziale; z++){
+			if (cuboRubik[x][2][z].colorifacce[4] != facciaSuperiore){
+				vittoriaParziale = false;
+			}
+		}
+	}
+
+	//controllo faccia inferiore quindi y = 0;
+	for (int x = 0; x < 3 && vittoriaParziale; x++){
+		for (int z = 0; z < 3 && vittoriaParziale; z++){
+			if (cuboRubik[x][0][z].colorifacce[5] != facciaInferiore){
+				vittoriaParziale = false;
+			}
+		}
+	}
+
+	return vittoriaParziale;
 void keyboard(unsigned char key,int x,int y)
 {
 	switch(key)

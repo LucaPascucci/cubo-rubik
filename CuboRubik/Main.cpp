@@ -9,6 +9,7 @@
 #include <cmath>
 #include <vector>
 #include <sstream>
+#include <time.h>
 
 #include "imageloader.h"
 
@@ -52,6 +53,7 @@ Colore coloriInModifica[6];
 Mossa mossaInCorso;
 bool pulsantePremuto;
 vector<Mossa> mosseEffettuate;
+vector<Mossa> mosseMischiate;
 int gradiRotazioneMossa = 90;
 float angolo_rotazione = 0;
 Point puntoRiferimentoRotazione;
@@ -140,12 +142,12 @@ int coloreAssi = 0;
 // L'ordine deve rispecchiare l'ordine dei radiobutton
 const GLfloat Colors[6][3] = 
 {
-	{ 0.0, 0.0, 0.0 },	//nero
-	{ 1.0, 1.0, 1.0 },	//bianco
-	{ 1.0, 0.0, 0.0 },	//rosso
-	{ 0.0, 1.0, 0.0 },	//verde
-	{ 0.0, 0.0, 1.0 },	//blu
-	{ 1.0, 1.0, 0.0 },	//giallo
+	{0.0, 0.0, 0.0},	//nero
+	{1.0, 1.0, 1.0},	//bianco
+	{1.0, 0.0, 0.0},	//rosso
+	{0.0, 1.0, 0.0},	//verde
+	{0.0, 0.0, 1.0},	//blu
+	{1.0, 1.0, 0.0},	//giallo
 };
 
 //Carica il file, lo converte in texture e ritorna l'id della texture in base all'id del colore immesso
@@ -228,6 +230,40 @@ string int2str(int x)
 	stringstream ss;
 	ss << x;
 	return ss.str( );
+}
+
+char randomChar(char r, char c, char s) {
+	int random = rand()%3;
+
+	if (random == 0) {
+		return r;
+	} else if (random == 1) {
+		return c;
+	} else {
+		return s;
+	}
+}
+
+bool randomBool() {
+	int r = rand()%2;
+
+	if (r == 0) {
+		return false;
+	} else {
+		return true;
+	}
+}
+
+int randomInt(int primo, int secondo , int terzo) {
+	int r = rand()%3;
+
+	if (r == 0) {
+		return primo;
+	} else if (r == 1) {
+		return secondo;
+	} else {
+		return terzo;
+	}
 }
 
 void disegnaTesto(float x, float y, string text)
@@ -1056,6 +1092,47 @@ void ruotaSezioneRubik(int z,bool direzione){
 	cuboRubik[1][1][z].colorifacce[5] = coloriInModifica[5];
 }
 
+void memorizzaMossa(bool effettuatoOMischiato){
+
+	switch (mossaInCorso.riga_colonna_sezione)
+	{
+	case 'r':
+		ruotaRigaRubik(mossaInCorso.valore,mossaInCorso.direzione);
+		break;
+	case 'c':
+		ruotaColonnaRubik(mossaInCorso.valore,mossaInCorso.direzione);
+		break;
+
+	case 's':
+		ruotaSezioneRubik(mossaInCorso.valore,mossaInCorso.direzione);
+		break;
+	}
+	if (effettuatoOMischiato) { //se true la mossa è stata fatta dall'utente, altrimenti dal tasto mischia
+		mosseEffettuate.push_back(mossaInCorso);
+	} else {
+		mosseMischiate.push_back(mossaInCorso);
+	}
+}
+
+void mischiaRubik() {
+	srand(time(NULL));
+	for (int i = 0; i < 30; i++)
+	{
+		mossaInCorso.riga_colonna_sezione = randomChar('r', 'c', 's');
+		mossaInCorso.valore = randomInt(0, 1, 2);
+		mossaInCorso.direzione = randomBool();
+		memorizzaMossa(false);
+	}
+}
+
+void mossaPrecedente() {
+
+}
+
+void mossaSuccessiva() {
+
+}
+
 void disegnaSuolo()
 { 
 	glPushMatrix();
@@ -1188,11 +1265,8 @@ void gestioneBottoni(int opzione){
 		}
 		break;
 
-	case 7:		//Shuffle
-		if (!pulsantePremuto){
-			pulsantePremuto = !pulsantePremuto;
-			//creare un metodo per lo shuffle
-		}
+	case 7:		//Mischia
+		mischiaRubik();
 		break;
 
 	case 8:		//Reset
@@ -1200,12 +1274,25 @@ void gestioneBottoni(int opzione){
 			pulsantePremuto = !pulsantePremuto;
 			inizializzaCubo();
 			mosseEffettuate.clear();
+			mosseMischiate.clear();
 			angolo_asse_x = 0;
 			angolo_asse_y = 0;
 			angolo_asse_z = 0;
 			frecciaPremuta = true;
 			pulsantePremuto = !pulsantePremuto;
 			glutPostRedisplay();	
+		}
+		break;
+	case 9:
+		if (!pulsantePremuto) {
+			pulsantePremuto = !pulsantePremuto;
+			//creare un metodo per fargli fare la mossa precedente
+		}
+		break;
+	case 10:
+		if (!pulsantePremuto) {
+			pulsantePremuto = !pulsantePremuto;
+			//creare un metodo per fargli fare la mossa successiva (controllare che prima abbia premuto "Precedente)
 		}
 		break;
 	}
@@ -1255,24 +1342,6 @@ bool attivazioneMossa(Mossa mossaCorrente, Point posizioneCuboCorrente){
 	}
 	return attivaMovimento;
 
-}
-
-void memorizzaMossa(){
-
-	switch (mossaInCorso.riga_colonna_sezione)
-	{
-	case 'r':
-		ruotaRigaRubik(mossaInCorso.valore,mossaInCorso.direzione);
-		break;
-	case 'c':
-		ruotaColonnaRubik(mossaInCorso.valore,mossaInCorso.direzione);
-		break;
-
-	case 's':
-		ruotaSezioneRubik(mossaInCorso.valore,mossaInCorso.direzione);
-		break;
-	}
-	mosseEffettuate.push_back(mossaInCorso);
 }
 
 void keyboard(unsigned char key,int x,int y)
@@ -1554,7 +1623,7 @@ void timer(int value) {
 		}else{
 			angolo_rotazione = 0;
 			pulsantePremuto = false;
-			memorizzaMossa();
+			memorizzaMossa(true);
 		}
 	}
 
@@ -1601,11 +1670,13 @@ void creaPannelloGlui()
 	glui -> add_statictext_to_panel(panel,"");
 
 	panel = glui->add_panel( "", false );
-	glui -> add_button_to_panel(panel, "Shuffle", 7, gestioneBottoni);
+	glui -> add_button_to_panel(panel, "Mischia", 7, gestioneBottoni);
 	glui->add_column_to_panel( panel, false );
 	glui->add_button_to_panel( panel, "Reset", 8, gestioneBottoni);
 	glui->add_column_to_panel( panel, false );
-	glui->add_button_to_panel( panel, "Quit", 0, gestioneBottoni);
+	glui -> add_button_to_panel(panel, "Precedente", 9, gestioneBottoni);
+	glui->add_column_to_panel( panel, false );
+	glui -> add_button_to_panel(panel, "Successivo", 10, gestioneBottoni);
 
 	panel = glui -> add_panel("Colori assi", true);
 	radio_group = glui -> add_radiogroup_to_panel(panel, &coloreAssi);
@@ -1615,6 +1686,15 @@ void creaPannelloGlui()
 	glui -> add_radiobutton_to_group(radio_group, "Verde");
 	glui -> add_radiobutton_to_group(radio_group, "Blu");
 	glui -> add_radiobutton_to_group(radio_group, "Giallo");
+
+	panel = glui -> add_panel("", false);
+	glui -> add_statictext_to_panel(panel,"");
+	glui->add_column_to_panel( panel, false );
+	glui -> add_statictext_to_panel(panel,"");
+	glui->add_column_to_panel( panel, false );
+	glui -> add_statictext_to_panel(panel,"");
+	glui->add_column_to_panel( panel, false );
+	glui->add_button_to_panel( panel, "Esci", 0, gestioneBottoni);
 
 	glui -> set_main_gfx_window(windowsID);
 }

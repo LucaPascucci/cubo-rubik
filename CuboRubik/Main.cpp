@@ -159,7 +159,6 @@ void mossaSuccessiva();
 void disegnaSuolo();
 void gestioneBottoni(int opzione);
 bool attivazioneMossa(Mossa mossaCorrente, Point posizioneCuboCorrente);
-void risolviCubo();
 bool controllaVittoria();
 void keyboard(unsigned char key,int x,int y);
 void specialKeyboard(int key, int x, int y);
@@ -1225,6 +1224,7 @@ void mossaPrecedente() {
 			mossaAnnullata = true;
 			pulsantePremuto = true;
 			contatoreMosse++;
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 }
 
@@ -1235,6 +1235,7 @@ void mossaSuccessiva() {
 		mossaInCorso.direzione = !mosseAnnullate.back().direzione;
 		mosseAnnullate.erase(mosseAnnullate.begin() + mosseAnnullate.size() - 1);
 		pulsantePremuto = true;
+		PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 	}
 }
 
@@ -1268,6 +1269,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
 			contatoreMosse++;
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
 
@@ -1279,6 +1281,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
 			contatoreMosse++;
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
 
@@ -1290,6 +1293,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
 			contatoreMosse++;
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
 
@@ -1302,6 +1306,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.direzione = 'r';
 			mosseAnnullate.clear();
 			contatoreMosse++;
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
 
@@ -1313,6 +1318,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
 			contatoreMosse++;
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
 
@@ -1324,6 +1330,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
 			contatoreMosse++;
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
 
@@ -1335,6 +1342,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
 			contatoreMosse++;
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
 
@@ -1346,6 +1354,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
 			contatoreMosse++;
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
 
@@ -1357,6 +1366,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
 			contatoreMosse++;
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
 
@@ -1368,6 +1378,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
 			contatoreMosse++;
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
 
@@ -1379,6 +1390,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
 			contatoreMosse++;
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
 
@@ -1390,6 +1402,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
 			contatoreMosse++;
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
 
@@ -1561,6 +1574,7 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
 			contatoreMosse++;
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
 
@@ -1572,6 +1586,7 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
 			contatoreMosse++;
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
 
@@ -1583,6 +1598,7 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
 			contatoreMosse++;
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
 
@@ -1594,6 +1610,7 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
 			contatoreMosse++;
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
 
@@ -1605,6 +1622,7 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
 			contatoreMosse++;
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
 
@@ -1616,6 +1634,7 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
 			contatoreMosse++;
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
 	}
@@ -1843,14 +1862,17 @@ void timer(int value) {
 			mosseEffettuate.erase(mosseEffettuate.begin() + mosseEffettuate.size() - 1);
 			pulsantePremuto = true;
 			mossaAnnullata = true;
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}else if (!mosseMischiate.empty()){
 			mossaInCorso = mosseMischiate.back();
 			mossaInCorso.direzione = !mosseMischiate.back().direzione;
 			mosseMischiate.erase(mosseMischiate.begin() + mosseMischiate.size() - 1);
 			pulsantePremuto = true;
 			mossaAnnullata = true;
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}else{
 			risolvi = false;
+			contatoreMosse = 0;
 		}
 	}
 

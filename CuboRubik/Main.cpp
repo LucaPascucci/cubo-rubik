@@ -56,9 +56,12 @@ vector<Mossa> mosseEffettuate;
 vector<Mossa> mosseMischiate;
 vector<Mossa> mosseAnnullate;
 bool mossaAnnullata = false;
+int contatoreMosse = 0;
 int gradiRotazioneMossa = 90;
 float angolo_rotazione = 0;
 Point puntoRiferimentoRotazione;
+bool risolvi = false;
+bool vittoria = false;
 
 //variabili necessarie per il controllo della rotazione del cubo nella sua interezza
 int angolo_asse_y = 0;
@@ -156,6 +159,7 @@ void mossaSuccessiva();
 void disegnaSuolo();
 void gestioneBottoni(int opzione);
 bool attivazioneMossa(Mossa mossaCorrente, Point posizioneCuboCorrente);
+void risolviCubo();
 bool controllaVittoria();
 void keyboard(unsigned char key,int x,int y);
 void specialKeyboard(int key, int x, int y);
@@ -1184,20 +1188,25 @@ void memorizzaMossa(bool effettuatoOMischiato){ //se true la mossa è stata fatt
 		ruotaSezioneRubik(mossaInCorso.valore,mossaInCorso.direzione);
 		break;
 	}
-	if (effettuatoOMischiato && !mossaAnnullata) { 
-		mosseEffettuate.push_back(mossaInCorso);
-		if (controllaVittoria()){
-			cout << "hai vinto" << endl;	//fare altro se hai vinto
+	if (effettuatoOMischiato) {
+		if (!mossaAnnullata){
+			mosseEffettuate.push_back(mossaInCorso);
+			if (controllaVittoria()){
+				cout << "hai vinto" << endl;	//fare altro se hai vinto
+				vittoria = true;
+			}
+		}else{
+			mossaAnnullata = false;
 		}
 	} else {
 		mosseMischiate.push_back(mossaInCorso);
 	}
-	mossaAnnullata = false;
+
 }
 
 void mischiaRubik() {
 	srand(time(NULL));
-	for (int i = 0; i < 30; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		mossaInCorso.riga_colonna_sezione = randomChar('r', 'c', 's');
 		mossaInCorso.valore = randomInt(0, 1, 2);
@@ -1207,15 +1216,16 @@ void mischiaRubik() {
 }
 
 void mossaPrecedente() {
-	if (!mosseEffettuate.empty()) {
-		mossaInCorso.riga_colonna_sezione = mosseEffettuate.back().riga_colonna_sezione;
-		mossaInCorso.valore = mosseEffettuate.back().valore;
-		mossaInCorso.direzione = !mosseEffettuate.back().direzione;
-		mosseEffettuate.erase(mosseEffettuate.begin() + mosseEffettuate.size() - 1);
-		mosseAnnullate.push_back(mossaInCorso);
-		mossaAnnullata = true;
-		pulsantePremuto = true;
-	}
+		if (!mosseEffettuate.empty()) {
+			mossaInCorso.riga_colonna_sezione = mosseEffettuate.back().riga_colonna_sezione;
+			mossaInCorso.valore = mosseEffettuate.back().valore;
+			mossaInCorso.direzione = !mosseEffettuate.back().direzione;
+			mosseEffettuate.erase(mosseEffettuate.begin() + mosseEffettuate.size() - 1);
+			mosseAnnullate.push_back(mossaInCorso);
+			mossaAnnullata = true;
+			pulsantePremuto = true;
+			contatoreMosse++;
+		}
 }
 
 void mossaSuccessiva() {
@@ -1257,6 +1267,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 2.0;
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
+			contatoreMosse++;
 		}
 		break;
 
@@ -1267,6 +1278,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 1.0;
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
+			contatoreMosse++;
 		}
 		break;
 
@@ -1277,6 +1289,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 0.0;
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
+			contatoreMosse++;
 		}
 		break;
 
@@ -1288,6 +1301,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.direzione = true;
 			mossaInCorso.direzione = 'r';
 			mosseAnnullate.clear();
+			contatoreMosse++;
 		}
 		break;
 
@@ -1298,6 +1312,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 1.0;
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
+			contatoreMosse++;
 		}
 		break;
 
@@ -1308,6 +1323,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 0.0;
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
+			contatoreMosse++;
 		}
 		break;
 
@@ -1318,6 +1334,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 0.0;
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
+			contatoreMosse++;
 		}
 		break;
 
@@ -1328,6 +1345,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 1.0;
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
+			contatoreMosse++;
 		}
 		break;
 
@@ -1338,6 +1356,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 2.0;
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
+			contatoreMosse++;
 		}
 		break;
 
@@ -1348,6 +1367,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 0.0;
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
+			contatoreMosse++;
 		}
 		break;
 
@@ -1358,7 +1378,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 1.0;
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
-			
+			contatoreMosse++;
 		}
 		break;
 
@@ -1369,6 +1389,7 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 2.0;
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
+			contatoreMosse++;
 		}
 		break;
 
@@ -1392,10 +1413,19 @@ void gestioneBottoni(int opzione){
 		}
 		break;
 	case 9:
-		mossaPrecedente();
+		if (!pulsantePremuto){
+			mossaPrecedente();
+		}
 		break;
 	case 10:
-		mossaSuccessiva();
+		if (!pulsantePremuto){
+			mossaSuccessiva();
+		}
+		break;
+	case 11:
+		if (!pulsantePremuto){
+			risolvi = true;
+		}
 		break;
 	}
 }
@@ -1530,6 +1560,7 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.valore = 0.0;
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
+			contatoreMosse++;
 		}
 		break;
 
@@ -1540,6 +1571,7 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.valore = 1.0;
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
+			contatoreMosse++;
 		}
 		break;
 
@@ -1550,6 +1582,7 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.valore = 2.0;
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
+			contatoreMosse++;
 		}
 		break;
 
@@ -1560,6 +1593,7 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.valore = 0.0;
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
+			contatoreMosse++;
 		}
 		break;
 
@@ -1570,6 +1604,7 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.valore = 1.0;
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
+			contatoreMosse++;
 		}
 		break;
 
@@ -1580,6 +1615,7 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.valore = 2.0;
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
+			contatoreMosse++;
 		}
 		break;
 	}
@@ -1718,7 +1754,7 @@ void display()
 
 	disegnaSuolo();
 
-	disegnaTesto(-4, 4.9, "Numero di mosse effettuate: " + int2str(mosseEffettuate.size()));
+	disegnaTesto(-4, 4.9, "Numero di mosse effettuate: " + int2str(contatoreMosse));
 
 	//per far ruotare il cubo nella sua interezza
 	glRotatef(valorePrecX, rotate_x.x, rotate_x.y, rotate_x.z);
@@ -1771,9 +1807,6 @@ void timer(int value) {
 			valorePrecZ += 3;
 		}
 		if (valorePrecX == angolo_asse_x && valorePrecY == angolo_asse_y && valorePrecZ == angolo_asse_z){
-			cout << "Il valore di x e' : " << angolo_asse_x << endl;
-			cout << "Il valore di y e' : " << angolo_asse_y << endl;
-			cout << "Il valore di z e' : " << angolo_asse_z << endl << endl;
 			frecciaPremuta = false;
 			if (angolo_asse_x == 360 || angolo_asse_x == -360)
 			{
@@ -1795,11 +1828,29 @@ void timer(int value) {
 	if (pulsantePremuto){
 
 		if (angolo_rotazione < gradiRotazioneMossa) {
-			angolo_rotazione += 2.0; //controllare velocità rotazione
+			angolo_rotazione += 2.0;
 		}else{
 			angolo_rotazione = 0;
 			pulsantePremuto = false;
 			memorizzaMossa(true);
+		}
+	}
+	if (risolvi && angolo_rotazione == 0){
+		mosseAnnullate.clear();
+		if (!mosseEffettuate.empty()){
+			mossaInCorso = mosseEffettuate.back();
+			mossaInCorso.direzione = !mosseEffettuate.back().direzione;
+			mosseEffettuate.erase(mosseEffettuate.begin() + mosseEffettuate.size() - 1);
+			pulsantePremuto = true;
+			mossaAnnullata = true;
+		}else if (!mosseMischiate.empty()){
+			mossaInCorso = mosseMischiate.back();
+			mossaInCorso.direzione = !mosseMischiate.back().direzione;
+			mosseMischiate.erase(mosseMischiate.begin() + mosseMischiate.size() - 1);
+			pulsantePremuto = true;
+			mossaAnnullata = true;
+		}else{
+			risolvi = false;
 		}
 	}
 
@@ -1853,6 +1904,8 @@ void creaPannelloGlui()
 	glui -> add_button_to_panel(panel, "Precedente", 9, gestioneBottoni);
 	glui->add_column_to_panel( panel, false );
 	glui -> add_button_to_panel(panel, "Successivo", 10, gestioneBottoni);
+	glui->add_column_to_panel( panel, false );
+	glui -> add_button_to_panel(panel, "Risolvi", 11, gestioneBottoni);
 
 	panel = glui -> add_panel("Colori assi", true);
 	radio_group = glui -> add_radiogroup_to_panel(panel, &coloreAssi);

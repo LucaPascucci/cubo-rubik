@@ -100,43 +100,25 @@ const float LENFRAC = 0.10f;
 const float BASEFRAC = 1.10f;
 
 // Il carattere 'X':
-static float xx[ ] = {
-	0.f, 1.f, 0.f, 1.f
-};
+float xx[4] = {0.0f, 1.0f, 0.0f, 1.0f};
 
-static float xy[ ] = {
-	-.5f, .5f, .5f, -.5f
-};
+float xy[4] = {-0.5f, 0.5f, 0.5f, -0.5f};
 
-static int xorder[ ] = {
-	1, 2, -3, 4
-};
+int xorder[4] = {1, 2, -3, 4};
 
 // Il carattere 'Y':
-static float yx[ ] = {
-	0.f, 0.f, -.5f, .5f
-};
+float yx[4] = {0.0f, 0.0f, -0.5f, 0.5f};
 
-static float yy[ ] = {
-	0.f, .6f, 1.f, 1.f
-};
+float yy[4] = {0.0f, 0.6f, 1.0f, 1.0f};
 
-static int yorder[ ] = {
-	1, 2, 3, -2, 4
-};
+int yorder[5] = {1, 2, 3, -2, 4};
 
 // Il carattere 'Z':
-static float zx[ ] = {
-	1.f, 0.f, 1.f, 0.f, .25f, .75f
-};
+float zx[6] = {1.0f, 0.0f, 1.0f, 0.0f, 0.25f, 0.75f};
 
-static float zy[ ] = {
-	.5f, .5f, -.5f, -.5f, 0.f, 0.f
-};
+float zy[6] = {0.5f, 0.5f, -0.5f, -0.5f, 0.0f, 0.0f};
 
-static int zorder[ ] = {
-	1, 2, 3, 4, -5, 6
-};
+int zorder[6] = {1, 2, 3, 4, -5, 6};
 
 int coloreAssi = 0;
 
@@ -306,6 +288,7 @@ void disegnaTesto(float x, float y, string text)
 
 void disegnaAssi(float lunghezza)
 {
+	//per fare gli assi standard
 	glColor3fv(Colors[coloreAssi]);
 	glBegin(GL_LINE_STRIP);
 	glVertex3f(lunghezza, 0, 0);
@@ -317,9 +300,22 @@ void disegnaAssi(float lunghezza)
 	glVertex3f(0, 0, lunghezza);
 	glEnd();
 
+	//per fare gli assi speculari
+	glColor3fv(Colors[coloreAssi]);
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(-lunghezza, 0, 0);
+	glVertex3f(0, 0, 0);
+	glVertex3f(0, -lunghezza, 0);
+	glEnd();
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(0, 0, 0);
+	glVertex3f(0, 0, -lunghezza);
+	glEnd();
+
 	float fact = LENFRAC * lunghezza;
 	float base = BASEFRAC * lunghezza;
 
+	//per fare la x standard
 	glBegin( GL_LINE_STRIP );
 	for( int i = 0; i < 4; i++ )
 	{
@@ -336,6 +332,27 @@ void disegnaAssi(float lunghezza)
 	}
 	glEnd( );
 
+	//per fare la x speculare
+	glPushMatrix();
+	glRotatef(180, 0.0, 0.0, 1.0);
+	glBegin( GL_LINE_STRIP );
+	for( int i = 0; i < 4; i++ )
+	{
+		int j = xorder[i];
+		if( j < 0 )
+		{
+
+			glEnd( );
+			glBegin( GL_LINE_STRIP );
+			j = -j;
+		}
+		j--;
+		glVertex3f( base + fact*xx[j], fact*xy[j], 0.0 );
+	}
+	glEnd( );
+	glPopMatrix();
+
+	//per fare la y standard
 	glBegin( GL_LINE_STRIP );
 	for( int i = 0; i < 5; i++ )
 	{
@@ -352,6 +369,26 @@ void disegnaAssi(float lunghezza)
 	}
 	glEnd( );
 
+	//per fare la y speculare
+	glPushMatrix();
+	glRotatef(180, 0.0, 0.0, 1.0);
+	glBegin(GL_LINE_STRIP);
+	for(int i = 0; i < 5; i++)
+	{
+		int j = yorder[i];
+		if(j < 0)
+		{
+			glEnd();
+			glBegin(GL_LINE_STRIP);
+			j = -j;
+		}
+		j--;
+		glVertex3f(fact*yx[j], base + fact*yy[j], 0.0);
+	}
+	glEnd();
+	glPopMatrix();
+
+	//per fare la z standard
 	glBegin( GL_LINE_STRIP );
 	for( int i = 0; i < 6; i++ )
 	{
@@ -367,6 +404,27 @@ void disegnaAssi(float lunghezza)
 		glVertex3f( 0.0, fact*zy[j], base + fact*zx[j] );
 	}
 	glEnd( );
+
+	//per fare la z speculare
+	glPushMatrix();
+	glRotatef(180, 0.0, 1.0, 0.0);
+	glBegin( GL_LINE_STRIP );
+	for( int i = 0; i < 6; i++ )
+	{
+		int j = zorder[i];
+		if( j < 0 )
+		{
+
+			glEnd( );
+			glBegin( GL_LINE_STRIP );
+			j = -j;
+		}
+		j--;
+		glVertex3f( 0.0, fact*zy[j], base + fact*zx[j] );
+	}
+	glEnd();
+	glPopMatrix();
+
 	glColor3f(1.0, 1.0, 1.0);
 }
 
@@ -1175,8 +1233,8 @@ void disegnaSuolo()
 	glPushMatrix();
 	glBegin(GL_QUADS);
 	glColor3ub(0, 0, 0);
-	glVertex3f(600.0f, -50.0f, -400.0f);
-	glVertex3f(-600.0f, -50.0f, -400.0f);
+	glVertex3f(600.0f, -50.0f, -200.0f);
+	glVertex3f(-600.0f, -50.0f, -650.0f);
 	glColor3ub(200, 200, 200);
 	glVertex3f(-600.0f, -50.0f, 30.0f);
 	glVertex3f(600.0f, -50.0f, 30.0f);

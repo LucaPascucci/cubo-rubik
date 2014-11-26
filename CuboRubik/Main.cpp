@@ -11,7 +11,10 @@
 #include <sstream>
 #include <time.h>
 
+
 #include "imageloader.h"
+
+#include "resource.h"
 
 #define spostamentoFinestra 400
 #define spessoreAssi 3
@@ -1223,7 +1226,9 @@ void mossaPrecedente() {
 			mosseAnnullate.push_back(mossaInCorso);
 			mossaAnnullata = true;
 			pulsantePremuto = true;
-			contatoreMosse++;
+			if (!vittoria){
+				contatoreMosse++;
+			}
 			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 }
@@ -1268,7 +1273,9 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 2.0;
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
-			contatoreMosse++;
+			if (!vittoria){
+				contatoreMosse++;
+			}
 			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
@@ -1280,7 +1287,9 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 1.0;
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
-			contatoreMosse++;
+			if (!vittoria){
+				contatoreMosse++;
+			}
 			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
@@ -1292,7 +1301,9 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 0.0;
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
-			contatoreMosse++;
+			if (!vittoria){
+				contatoreMosse++;
+			}
 			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
@@ -1305,7 +1316,9 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.direzione = true;
 			mossaInCorso.direzione = 'r';
 			mosseAnnullate.clear();
-			contatoreMosse++;
+			if (!vittoria){
+				contatoreMosse++;
+			}
 			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
@@ -1317,7 +1330,9 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 1.0;
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
-			contatoreMosse++;
+			if (!vittoria){
+				contatoreMosse++;
+			}
 			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
@@ -1329,7 +1344,9 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 0.0;
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
-			contatoreMosse++;
+			if (!vittoria){
+				contatoreMosse++;
+			}
 			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
@@ -1341,7 +1358,9 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 0.0;
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
-			contatoreMosse++;
+			if (!vittoria){
+				contatoreMosse++;
+			}
 			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
@@ -1353,7 +1372,9 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 1.0;
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
-			contatoreMosse++;
+			if (!vittoria){
+				contatoreMosse++;
+			}
 			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
@@ -1365,7 +1386,9 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 2.0;
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
-			contatoreMosse++;
+			if (!vittoria){
+				contatoreMosse++;
+			}
 			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
@@ -1377,7 +1400,9 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 0.0;
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
-			contatoreMosse++;
+			if (!vittoria){
+				contatoreMosse++;
+			}
 			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
@@ -1389,7 +1414,9 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 1.0;
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
-			contatoreMosse++;
+			if (!vittoria){
+				contatoreMosse++;
+			}
 			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
@@ -1401,7 +1428,9 @@ void gestioneBottoni(int opzione){
 			mossaInCorso.valore = 2.0;
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
-			contatoreMosse++;
+			if (!vittoria){
+				contatoreMosse++;
+			}
 			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
@@ -1422,6 +1451,7 @@ void gestioneBottoni(int opzione){
 			angolo_asse_z = 0;
 			frecciaPremuta = true;
 			vittoria = false;
+			contatoreMosse = 0;
 			pulsantePremuto = !pulsantePremuto;
 			glutPostRedisplay();
 		}
@@ -1437,7 +1467,7 @@ void gestioneBottoni(int opzione){
 		}
 		break;
 	case 11:
-		if (!pulsantePremuto){
+		if (!pulsantePremuto && !vittoria){
 			risolvi = true;
 		}
 		break;
@@ -1574,7 +1604,9 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.valore = 0.0;
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
-			contatoreMosse++;
+			if (!vittoria){
+				contatoreMosse++;
+			}
 			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
@@ -1586,7 +1618,9 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.valore = 1.0;
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
-			contatoreMosse++;
+			if (!vittoria){
+				contatoreMosse++;
+			}
 			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
@@ -1598,7 +1632,9 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.valore = 2.0;
 			mossaInCorso.direzione = false;
 			mosseAnnullate.clear();
-			contatoreMosse++;
+			if (!vittoria){
+				contatoreMosse++;
+			}
 			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
@@ -1610,7 +1646,9 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.valore = 0.0;
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
-			contatoreMosse++;
+			if (!vittoria){
+				contatoreMosse++;
+			}
 			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
@@ -1622,7 +1660,9 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.valore = 1.0;
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
-			contatoreMosse++;
+			if (!vittoria){
+				contatoreMosse++;
+			}
 			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
@@ -1634,7 +1674,9 @@ void keyboard(unsigned char key,int x,int y)
 			mossaInCorso.valore = 2.0;
 			mossaInCorso.direzione = true;
 			mosseAnnullate.clear();
-			contatoreMosse++;
+			if (!vittoria){
+				contatoreMosse++;
+			}
 			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
 		}
 		break;
@@ -1906,21 +1948,21 @@ void creaPannelloGlui()
 	glui -> add_statictext_to_panel(panel,"");
 	glui->add_column_to_panel( panel, false );
 	glui -> add_button_to_panel(panel, "^", -4, gestioneBottoni);	//Prima colonna giù
-	glui -> add_statictext_to_panel(panel,"");
-	glui -> add_statictext_to_panel(panel,"");
-	glui -> add_statictext_to_panel(panel,"");
+	glui -> add_statictext_to_panel(panel,"sezione posteriore");
+	glui -> add_statictext_to_panel(panel,"sezione centrale");
+	glui -> add_statictext_to_panel(panel,"sezione frontale");
 	glui -> add_button_to_panel(panel, "v", 4, gestioneBottoni);	//Prima colonna sù
 	glui->add_column_to_panel( panel, false );
 	glui -> add_button_to_panel(panel, "^", -5, gestioneBottoni);	//Seconda colonna giù
-	glui -> add_statictext_to_panel(panel,"");
-	glui -> add_statictext_to_panel(panel,"");
-	glui -> add_statictext_to_panel(panel,"");
+	glui -> add_statictext_to_panel(panel,"q = sinistra");
+	glui -> add_statictext_to_panel(panel,"a = sinistra");
+	glui -> add_statictext_to_panel(panel,"z = sinistra");
 	glui -> add_button_to_panel(panel, "v", 5, gestioneBottoni);	//Seconda colonna sù
 	glui->add_column_to_panel( panel, false );
 	glui -> add_button_to_panel(panel, "^", -6, gestioneBottoni);	//Terza colonna giù
-	glui -> add_statictext_to_panel(panel,"");
-	glui -> add_statictext_to_panel(panel,"");
-	glui -> add_statictext_to_panel(panel,"");
+	glui -> add_statictext_to_panel(panel,"w = destra");
+	glui -> add_statictext_to_panel(panel,"s = destra");
+	glui -> add_statictext_to_panel(panel,"x = destra");
 	glui -> add_button_to_panel(panel, "v", 6, gestioneBottoni);	//Terza colonna sù
 	glui->add_column_to_panel( panel, false );
 	glui -> add_statictext_to_panel(panel,"");
@@ -1956,6 +1998,8 @@ void creaPannelloGlui()
 	glui->add_column_to_panel( panel, false );
 	glui -> add_statictext_to_panel(panel,"");
 	glui->add_column_to_panel( panel, false );
+	glui -> add_statictext_to_panel(panel,"");
+	glui->add_column_to_panel( panel, false );
 	glui->add_button_to_panel( panel, "Esci", 0, gestioneBottoni);
 
 	glui -> set_main_gfx_window(windowsID);
@@ -1977,6 +2021,7 @@ void main(int argc,char** argv)
 	glutInitWindowSize(larghezza,altezza);
 	glutInitWindowPosition (window_x, window_y);
 	windowsID = glutCreateWindow("Cubo Di Rubik");
+	glutSetIconTitle("Icon.jpg");
 	inizializzaCubo();
 	init();
 	glutDisplayFunc(display);

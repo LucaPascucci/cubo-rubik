@@ -877,10 +877,183 @@ void ruotaRigaRubik(int y,bool direzione){
 
 void ruotaSezioneRubik(int z,bool direzione){
 	if (direzione){
+		Cubo temp = cuboRubik[0][0][z];
 
-	}else{
+		cambiaColoreCuboSezione(cuboRubik[2][0][z].colorifacce,direzione);
+		cuboRubik[2][0][z].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[2][0][z].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[2][0][z].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[2][0][z].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[2][0][z].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[2][0][z].colorifacce[5] = coloriInModifica[5];
 
+		cuboRubik[0][0][z] = cuboRubik[2][0][z];
+
+
+		cambiaColoreCuboSezione(cuboRubik[2][2][z].colorifacce,direzione);
+		cuboRubik[2][2][z].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[2][2][z].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[2][2][z].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[2][2][z].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[2][2][z].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[2][2][z].colorifacce[5] = coloriInModifica[5];
+
+		cuboRubik[2][0][z] = cuboRubik[2][2][z];
+
+		cambiaColoreCuboSezione(cuboRubik[0][2][z].colorifacce,direzione);
+		cuboRubik[0][2][z].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[0][2][z].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[0][2][z].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[0][2][z].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[0][2][z].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[0][2][z].colorifacce[5] = coloriInModifica[5];
+
+		cuboRubik[2][2][z] = cuboRubik[0][2][z];
+
+		cambiaColoreCuboSezione(temp.colorifacce,direzione);
+		temp.colorifacce[0] = coloriInModifica[0];
+		temp.colorifacce[1] = coloriInModifica[1];
+		temp.colorifacce[2] = coloriInModifica[2];
+		temp.colorifacce[3] = coloriInModifica[3];
+		temp.colorifacce[4] = coloriInModifica[4];
+		temp.colorifacce[5] = coloriInModifica[5];
+
+		cuboRubik[0][2][z] = temp;
+
+		temp = cuboRubik[0][1][z];
+
+		cambiaColoreCuboSezione(cuboRubik[1][0][z].colorifacce,direzione);
+		cuboRubik[1][0][z].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[1][0][z].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[1][0][z].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[1][0][z].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[1][0][z].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[1][0][z].colorifacce[5] = coloriInModifica[5];
+
+		cuboRubik[0][1][z] = cuboRubik[1][0][z];
+
+		cambiaColoreCuboSezione(cuboRubik[2][1][z].colorifacce,direzione);
+		cuboRubik[2][1][z].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[2][1][z].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[2][1][z].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[2][1][z].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[2][1][z].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[2][1][z].colorifacce[5] = coloriInModifica[5];
+
+		cuboRubik[1][0][z] = cuboRubik[2][1][z];
+
+		cambiaColoreCuboSezione(cuboRubik[1][2][z].colorifacce,direzione);
+		cuboRubik[1][2][z].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[1][2][z].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[1][2][z].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[1][2][z].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[1][2][z].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[1][2][z].colorifacce[5] = coloriInModifica[5];
+
+		cuboRubik[2][1][z] = cuboRubik[1][2][z];
+
+		cambiaColoreCuboSezione(temp.colorifacce,direzione);
+		temp.colorifacce[0] = coloriInModifica[0];
+		temp.colorifacce[1] = coloriInModifica[1];
+		temp.colorifacce[2] = coloriInModifica[2];
+		temp.colorifacce[3] = coloriInModifica[3];
+		temp.colorifacce[4] = coloriInModifica[4];
+		temp.colorifacce[5] = coloriInModifica[5];
+
+		cuboRubik[1][2][z] = temp;
+	} else {
+		Cubo temp = cuboRubik[0][0][z];
+
+		cambiaColoreCuboSezione(cuboRubik[0][2][z].colorifacce,direzione);
+		cuboRubik[0][2][z].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[0][2][z].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[0][2][z].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[0][2][z].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[0][2][z].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[0][2][z].colorifacce[5] = coloriInModifica[5];
+
+		cuboRubik[0][0][z] = cuboRubik[0][2][z];
+
+		cambiaColoreCuboSezione(cuboRubik[2][2][z].colorifacce,direzione);
+		cuboRubik[2][2][z].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[2][2][z].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[2][2][z].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[2][2][z].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[2][2][z].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[2][2][z].colorifacce[5] = coloriInModifica[5];
+
+		cuboRubik[0][2][z] = cuboRubik[2][2][z];
+
+		cambiaColoreCuboSezione(cuboRubik[2][0][z].colorifacce,direzione);
+		cuboRubik[2][0][z].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[2][0][z].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[2][0][z].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[2][0][z].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[2][0][z].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[2][0][z].colorifacce[5] = coloriInModifica[5];
+
+		cuboRubik[2][2][z] = cuboRubik[2][0][z];
+
+		cambiaColoreCuboSezione(temp.colorifacce,direzione);
+		temp.colorifacce[0] = coloriInModifica[0];
+		temp.colorifacce[1] = coloriInModifica[1];
+		temp.colorifacce[2] = coloriInModifica[2];
+		temp.colorifacce[3] = coloriInModifica[3];
+		temp.colorifacce[4] = coloriInModifica[4];
+		temp.colorifacce[5] = coloriInModifica[5];
+
+		cuboRubik[2][0][z] = temp;
+
+		temp = cuboRubik[0][1][z];
+
+		cambiaColoreCuboSezione(cuboRubik[1][2][z].colorifacce,direzione);
+		cuboRubik[1][2][z].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[1][2][z].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[1][2][z].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[1][2][z].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[1][2][z].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[1][2][z].colorifacce[5] = coloriInModifica[5];
+
+		cuboRubik[0][1][z] = cuboRubik[1][2][z];
+
+		cambiaColoreCuboSezione(cuboRubik[2][1][z].colorifacce,direzione);
+		cuboRubik[2][1][z].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[2][1][z].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[2][1][z].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[2][1][z].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[2][1][z].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[2][1][z].colorifacce[5] = coloriInModifica[5];
+
+		cuboRubik[1][2][z] = cuboRubik[2][1][z];
+
+		cambiaColoreCuboSezione(cuboRubik[1][0][z].colorifacce,direzione);
+		cuboRubik[1][0][z].colorifacce[0] = coloriInModifica[0];
+		cuboRubik[1][0][z].colorifacce[1] = coloriInModifica[1];
+		cuboRubik[1][0][z].colorifacce[2] = coloriInModifica[2];
+		cuboRubik[1][0][z].colorifacce[3] = coloriInModifica[3];
+		cuboRubik[1][0][z].colorifacce[4] = coloriInModifica[4];
+		cuboRubik[1][0][z].colorifacce[5] = coloriInModifica[5];
+
+		cuboRubik[2][1][z] = cuboRubik[1][0][z];
+
+		cambiaColoreCuboSezione(temp.colorifacce,direzione);
+		temp.colorifacce[0] = coloriInModifica[0];
+		temp.colorifacce[1] = coloriInModifica[1];
+		temp.colorifacce[2] = coloriInModifica[2];
+		temp.colorifacce[3] = coloriInModifica[3];
+		temp.colorifacce[4] = coloriInModifica[4];
+		temp.colorifacce[5] = coloriInModifica[5];
+
+		cuboRubik[1][0][z] = temp;
 	}
+
+	cambiaColoreCuboSezione(cuboRubik[1][1][z].colorifacce,direzione);	//modifica i colori del cubo centrale che non si vede
+	cuboRubik[1][1][z].colorifacce[0] = coloriInModifica[0];
+	cuboRubik[1][1][z].colorifacce[1] = coloriInModifica[1];
+	cuboRubik[1][1][z].colorifacce[2] = coloriInModifica[2];
+	cuboRubik[1][1][z].colorifacce[3] = coloriInModifica[3];
+	cuboRubik[1][1][z].colorifacce[4] = coloriInModifica[4];
+	cuboRubik[1][1][z].colorifacce[5] = coloriInModifica[5];
 }
 
 void disegnaSuolo()
@@ -1182,9 +1355,6 @@ void specialKeyboard(int key, int x, int y)
 			} else {
 				angolo_asse_x -= 90;
 			}
-			cout << "Il valore di x e' : " << angolo_asse_x << endl;
-			cout << "Il valore di y e' : " << angolo_asse_y << endl;
-			cout << "Il valore di z e' : " << angolo_asse_z << endl << endl;
 		}
 
 		if(key == GLUT_KEY_DOWN)
@@ -1198,9 +1368,6 @@ void specialKeyboard(int key, int x, int y)
 			} else {
 				angolo_asse_x += 90;
 			}
-			cout << "Il valore di x e' : " << angolo_asse_x << endl;
-			cout << "Il valore di y e' : " << angolo_asse_y << endl;
-			cout << "Il valore di z e' : " << angolo_asse_z << endl << endl;
 		}
 
 		if(key == GLUT_KEY_LEFT)
@@ -1224,9 +1391,6 @@ void specialKeyboard(int key, int x, int y)
 			} else {
 				angolo_asse_y += 90;
 			}
-			cout << "Il valore di x e' : " << angolo_asse_x << endl;
-			cout << "Il valore di y e' : " << angolo_asse_y << endl;
-			cout << "Il valore di z e' : " << angolo_asse_z << endl << endl;
 		}
 
 		if(key == GLUT_KEY_RIGHT)
@@ -1250,9 +1414,6 @@ void specialKeyboard(int key, int x, int y)
 			} else {
 				angolo_asse_y -= 90;
 			}
-			cout << "Il valore di x e' : " << angolo_asse_x << endl;
-			cout << "Il valore di y e' : " << angolo_asse_y << endl;
-			cout << "Il valore di z e' : " << angolo_asse_z << endl << endl;
 		}
 
 		glutPostRedisplay();
@@ -1365,6 +1526,9 @@ void timer(int value) {
 			valorePrecZ += 3;
 		}
 		if (valorePrecX == angolo_asse_x && valorePrecY == angolo_asse_y && valorePrecZ == angolo_asse_z){
+			cout << "Il valore di x e' : " << angolo_asse_x << endl;
+			cout << "Il valore di y e' : " << angolo_asse_y << endl;
+			cout << "Il valore di z e' : " << angolo_asse_z << endl << endl;
 			frecciaPremuta = false;
 			if (angolo_asse_x == 360 || angolo_asse_x == -360)
 			{

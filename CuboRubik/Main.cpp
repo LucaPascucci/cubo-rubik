@@ -17,7 +17,7 @@
 #define spessoreAssi 3
 
 // Nasconde la console
-//#pragma comment(linker,"/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
+#pragma comment(linker,"/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
 
 using namespace std;
 
@@ -62,6 +62,7 @@ float angolo_rotazione = 0;
 Point puntoRiferimentoRotazione;
 bool risolvi = false;
 bool vittoria = false;
+int timerApparizione = 0;
 
 //variabili necessarie per il controllo della rotazione del cubo nella sua interezza
 int angolo_asse_y = 0;
@@ -143,7 +144,7 @@ string int2str(int x);
 char randomChar(char r, char c, char s);
 bool randomBool();
 int randomInt(int primo, int secondo , int terzo);
-void disegnaTesto(float x, float y, string text);
+void disegnaTestoBitmap(float x, float y, string text);
 void disegnaAssi(float lunghezza);
 void cuboSingolo(Colore colori[6]);
 void cambiaColoreCuboColonna(Colore coloriCubo[6],bool direzione);
@@ -279,7 +280,7 @@ int randomInt(int primo, int secondo , int terzo) {
 	}
 }
 
-void disegnaTesto(float x, float y, string text)
+void disegnaTestoBitmap(float x, float y, string text)
 {
 	glRasterPos2f(x, y);
 	int len = text.length();
@@ -350,7 +351,7 @@ void disegnaAssi(float lunghezza)
 			j = -j;
 		}
 		j--;
-		glVertex3f( base + fact*xx[j], fact*xy[j], 0.0 );
+		glVertex3f(base + fact*xx[j], fact*xy[j], 0.0 );
 	}
 	glEnd( );
 	glPopMatrix();
@@ -1191,7 +1192,6 @@ void memorizzaMossa(bool effettuatoOMischiato){ //se true la mossa è stata fatt
 		if (!mossaAnnullata){
 			mosseEffettuate.push_back(mossaInCorso);
 			if (controllaVittoria()){
-				cout << "hai vinto" << endl;	//fare altro se hai vinto
 				vittoria = true;
 			}
 		}else{
@@ -1421,8 +1421,9 @@ void gestioneBottoni(int opzione){
 			angolo_asse_y = 0;
 			angolo_asse_z = 0;
 			frecciaPremuta = true;
+			vittoria = false;
 			pulsantePremuto = !pulsantePremuto;
-			glutPostRedisplay();	
+			glutPostRedisplay();
 		}
 		break;
 	case 9:
@@ -1773,7 +1774,12 @@ void display()
 
 	disegnaSuolo();
 
-	disegnaTesto(-4, 4.9, "Numero di mosse effettuate: " + int2str(contatoreMosse));
+	disegnaTestoBitmap(-4, 4.9, "Numero di mosse effettuate: " + int2str(contatoreMosse));
+	if (vittoria && timerApparizione < 0){
+		glColor3f(0.0,0.4,0.0);
+		disegnaTestoBitmap(-0.7,3.9,"HAI VINTO!");
+		glColor3f(1.0,1.0,1.0);
+	}
 
 	//per far ruotare il cubo nella sua interezza
 	glRotatef(valorePrecX, rotate_x.x, rotate_x.y, rotate_x.z);
@@ -1806,6 +1812,11 @@ void display()
 void timer(int value) {
 
 	SetActiveWindow(FindWindowA(0,"Cubo Di Rubik"));
+
+	timerApparizione--;
+	if (timerApparizione == -20){
+		timerApparizione = 20;
+	}
 
 	//per permettere una rotazione progressiva dell'intero cubo
 	if (frecciaPremuta)

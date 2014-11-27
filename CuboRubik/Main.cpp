@@ -41,7 +41,6 @@ typedef struct{
 } Cubo;
 
 typedef struct{
-	int numeroVisuale; //non dovrebbe servire
 	char riga_colonna_sezione; //c = colonna, r = righa, s = sezione
 	int valore; //si intende quale riga o colonna vuole muovere.
 	bool direzione;
@@ -64,6 +63,8 @@ Point puntoRiferimentoRotazione;
 bool risolvi = false;
 bool vittoria = false;
 int timerApparizione = 0;
+bool mischiaCubo = false;
+int numeroMosseMischiate = 30;
 
 //variabili necessarie per il controllo della rotazione del cubo nella sua interezza
 int angolo_asse_y = 0;
@@ -83,6 +84,7 @@ int window_x,window_y;
 GLUI* glui;
 GLUI_Panel *panel;
 GLUI_RadioGroup *radio_group;
+GLUI_Spinner *spinner;
 
 GLuint white_textureId;
 GLuint red_textureId;
@@ -105,25 +107,20 @@ const float LENFRAC = 0.10f;
 const float BASEFRAC = 1.10f;
 
 // Il carattere 'X':
-float xx[4] = {0.0f, 1.0f, 0.0f, 1.0f};
-
-float xy[4] = {-0.5f, 0.5f, 0.5f, -0.5f};
-
-int xorder[4] = {1, 2, -3, 4};
+float xx[4] = {0.0f, 1.0f, 0.0f, 1.0f};		//coordinate x dei punti per il carattere x
+float xy[4] = {-0.5f, 0.5f, 0.5f, -0.5f};	//coordinate y dei punti per il carattere x
+int xorder[4] = {0, 1, -2, 3};				//ordine di prelevamento dei punti per il carattere x
 
 // Il carattere 'Y':
-float yx[4] = {0.0f, 0.0f, -0.5f, 0.5f};
-
-float yy[4] = {0.0f, 0.6f, 1.0f, 1.0f};
-
-int yorder[5] = {1, 2, 3, -2, 4};
+float yx[4] = {0.0f, 0.0f, -0.5f, 0.5f};	//coordinate x dei punti per il carattere y
+float yy[4] = {0.0f, 0.6f, 1.0f, 1.0f};		//coordinate y dei punti per il carattere y
+int yorder[5] = {0, 1, 2, -1, 3};			//ordine di prelevamento dei punti per il carattere y
 
 // Il carattere 'Z':
-float zx[6] = {1.0f, 0.0f, 1.0f, 0.0f, 0.25f, 0.75f};
+float zx[6] = {1.0f, 0.0f, 1.0f, 0.0f, 0.10f, 0.90f};	//coordinate x dei punti per il carattere z
+float zy[6] = {0.5f, 0.5f, -0.5f, -0.5f, 0.0f, 0.0f};	//coordinate y dei punti per il carattere z
+int zorder[6] = {0, 1, 2, 3, -4, 5};					//ordine di prelevamento dei punti per il carattere z
 
-float zy[6] = {0.5f, 0.5f, -0.5f, -0.5f, 0.0f, 0.0f};
-
-int zorder[6] = {1, 2, 3, 4, -5, 6};
 
 int coloreAssi = 0;
 
@@ -147,21 +144,22 @@ bool randomBool();
 int randomInt(int primo, int secondo , int terzo);
 void disegnaTestoBitmap(float x, float y, string text);
 void disegnaAssi(float lunghezza);
+void disegnaSuolo();
 void cuboSingolo(Colore colori[6]);
 void cambiaColoreCuboColonna(Colore coloriCubo[6],bool direzione);
 void cambiaColoreCuboRiga(Colore coloriCubo[6],bool direzione);
 void cambiaColoreCuboSezione(Colore coloriCubo[6],bool direzione);
 void inizializzaCubo();
+void mischiaRubik();
 void ruotaColonnaRubik(int x, bool direzione);
 void ruotaRigaRubik(int y,bool direzione);
 void ruotaSezioneRubik(int z,bool direzione);
-void mischiaRubik();
+bool controllaVittoria();
 void mossaPrecedente();
 void mossaSuccessiva();
-void disegnaSuolo();
-void gestioneBottoni(int opzione);
+void memorizzaMossa(bool effettuatoOMischiato);
 bool attivazioneMossa(Mossa mossaCorrente, Point posizioneCuboCorrente);
-bool controllaVittoria();
+void gestioneBottoni(int opzione);
 void keyboard(unsigned char key,int x,int y);
 void specialKeyboard(int key, int x, int y);
 void reshape(GLsizei width, GLsizei height);
@@ -293,142 +291,97 @@ void disegnaTestoBitmap(float x, float y, string text)
 
 void disegnaAssi(float lunghezza)
 {
-	//per fare gli assi standard
+	//per fare asse x
 	glColor3fv(Colors[coloreAssi]);
 	glBegin(GL_LINE_STRIP);
 	glVertex3f(lunghezza, 0, 0);
-	glVertex3f(0, 0, 0);
-	glVertex3f(0, lunghezza, 0);
-	glEnd();
-	glBegin(GL_LINE_STRIP);
-	glVertex3f(0, 0, 0);
-	glVertex3f(0, 0, lunghezza);
+	glVertex3f(-lunghezza, 0, 0);
 	glEnd();
 
-	//per fare gli assi speculari
-	glColor3fv(Colors[coloreAssi]);
+	//per fare asse y
 	glBegin(GL_LINE_STRIP);
-	glVertex3f(-lunghezza, 0, 0);
-	glVertex3f(0, 0, 0);
+	glVertex3f(0, lunghezza, 0);
 	glVertex3f(0, -lunghezza, 0);
 	glEnd();
+
+	//per fare asse z
 	glBegin(GL_LINE_STRIP);
-	glVertex3f(0, 0, 0);
+	glVertex3f(0, 0, lunghezza);
 	glVertex3f(0, 0, -lunghezza);
 	glEnd();
 
-	float fact = LENFRAC * lunghezza;
-	float base = BASEFRAC * lunghezza;
+	float scalerLettere = LENFRAC * lunghezza;	// grandezza delle lettere
+	float base = BASEFRAC * lunghezza;	// distanza dove iniziare a disegnare
 
-	//per fare la x standard
-	glBegin( GL_LINE_STRIP );
-	for( int i = 0; i < 4; i++ )
-	{
-		int j = xorder[i];
-		if( j < 0 )
-		{
-
-			glEnd( );
-			glBegin( GL_LINE_STRIP );
-			j = -j;
+	//per fare le due x
+	for (int doppio = 0; doppio < 2; doppio++){
+		glPushMatrix();
+		if (doppio == 1){
+			glRotatef(180, 0.0, 1.0, 0.0);
 		}
-		j--;
-		glVertex3f( base + fact*xx[j], fact*xy[j], 0.0 );
-	}
-	glEnd( );
-
-	//per fare la x speculare
-	glPushMatrix();
-	glRotatef(180, 0.0, 0.0, 1.0);
-	glBegin( GL_LINE_STRIP );
-	for( int i = 0; i < 4; i++ )
-	{
-		int j = xorder[i];
-		if( j < 0 )
+		glBegin( GL_LINE_STRIP );
+		for( int i = 0; i < 4; i++ )	//ciclo della grandezza dell'ordine di prelevamento dei punti
 		{
+			int j = xorder[i]; 
+			if( j < 0 ) //caso in cui deve smettere di disegnare perchè i punti non sono collegati
+			{
 
-			glEnd( );
-			glBegin( GL_LINE_STRIP );
-			j = -j;
+				glEnd( ); //interrompe il disegno
+				glBegin( GL_LINE_STRIP );
+				j = -j;	//inverte il numero per utilizzarlo come indice del vettore
+			}
+			glVertex3f( base + scalerLettere*xx[j], scalerLettere*xy[j], 0.0 );
 		}
-		j--;
-		glVertex3f(base + fact*xx[j], fact*xy[j], 0.0 );
-	}
-	glEnd( );
-	glPopMatrix();
+		glEnd( );
+		glPopMatrix();
 
-	//per fare la y standard
-	glBegin( GL_LINE_STRIP );
-	for( int i = 0; i < 5; i++ )
-	{
-		int j = yorder[i];
-		if( j < 0 )
+	}
+
+	//per fare le due y
+	for (int doppio = 0; doppio < 2; doppio++){
+		glPushMatrix();
+		if (doppio == 1){
+			glRotatef(180, 0.0, 0.0, 1.0);
+		}
+		glBegin( GL_LINE_STRIP );
+		for( int i = 0; i < 5; i++ )
 		{
+			int j = yorder[i];
+			if( j < 0 )
+			{
 
-			glEnd( );
-			glBegin( GL_LINE_STRIP );
-			j = -j;
+				glEnd( );
+				glBegin( GL_LINE_STRIP );
+				j = -j;
+			}
+			glVertex3f(scalerLettere*yx[j], base + scalerLettere*yy[j], 0.0 );
 		}
-		j--;
-		glVertex3f( fact*yx[j], base + fact*yy[j], 0.0 );
+		glEnd( );
+		glPopMatrix();
 	}
-	glEnd( );
 
-	//per fare la y speculare
-	glPushMatrix();
-	glRotatef(180, 0.0, 0.0, 1.0);
-	glBegin(GL_LINE_STRIP);
-	for(int i = 0; i < 5; i++)
-	{
-		int j = yorder[i];
-		if(j < 0)
+	//per fare le due z
+	for (int doppio = 0; doppio < 2; doppio++){
+		glPushMatrix();
+		if (doppio == 1){
+			glRotatef(180, 0.0, 1.0, 0.0);
+		}
+		glBegin( GL_LINE_STRIP );
+		for( int i = 0; i < 6; i++ )
 		{
-			glEnd();
-			glBegin(GL_LINE_STRIP);
-			j = -j;
+			int j = zorder[i];
+			if( j < 0 )
+			{
+
+				glEnd( );
+				glBegin( GL_LINE_STRIP );
+				j = -j;
+			}
+			glVertex3f( 0.0, scalerLettere*zy[j], base + scalerLettere*zx[j] );
 		}
-		j--;
-		glVertex3f(fact*yx[j], base + fact*yy[j], 0.0);
+		glEnd();
+		glPopMatrix();
 	}
-	glEnd();
-	glPopMatrix();
-
-	//per fare la z standard
-	glBegin( GL_LINE_STRIP );
-	for( int i = 0; i < 6; i++ )
-	{
-		int j = zorder[i];
-		if( j < 0 )
-		{
-
-			glEnd( );
-			glBegin( GL_LINE_STRIP );
-			j = -j;
-		}
-		j--;
-		glVertex3f( 0.0, fact*zy[j], base + fact*zx[j] );
-	}
-	glEnd( );
-
-	//per fare la z speculare
-	glPushMatrix();
-	glRotatef(180, 0.0, 1.0, 0.0);
-	glBegin( GL_LINE_STRIP );
-	for( int i = 0; i < 6; i++ )
-	{
-		int j = zorder[i];
-		if( j < 0 )
-		{
-
-			glEnd( );
-			glBegin( GL_LINE_STRIP );
-			j = -j;
-		}
-		j--;
-		glVertex3f( 0.0, fact*zy[j], base + fact*zx[j] );
-	}
-	glEnd();
-	glPopMatrix();
 
 	glColor3f(1.0, 1.0, 1.0);
 }
@@ -1206,7 +1159,7 @@ void memorizzaMossa(bool effettuatoOMischiato){ //se true la mossa è stata fatt
 
 void mischiaRubik() {
 	srand(time(NULL));
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < numeroMosseMischiate; i++)
 	{
 		mossaInCorso.riga_colonna_sezione = randomChar('r', 'c', 's');
 		mossaInCorso.valore = randomInt(0, 1, 2);
@@ -1434,7 +1387,10 @@ void gestioneBottoni(int opzione){
 		break;
 
 	case 7:		//Mischia
-		mischiaRubik();
+		if (!mischiaCubo){
+			mischiaCubo = !mischiaCubo;
+			mischiaRubik();
+		}
 		break;
 
 	case 8:		//Reset
@@ -1449,6 +1405,7 @@ void gestioneBottoni(int opzione){
 			angolo_asse_z = 0;
 			frecciaPremuta = true;
 			vittoria = false;
+			mischiaCubo = false;
 			contatoreMosse = 0;
 			pulsantePremuto = !pulsantePremuto;
 			glutPostRedisplay();
@@ -1468,6 +1425,8 @@ void gestioneBottoni(int opzione){
 		if (!pulsantePremuto && !vittoria){
 			risolvi = true;
 		}
+		break;
+	case 12: //caso dell'aumento dello spinner che viene gia gestito automaticamente dalla glui
 		break;
 	}
 }
@@ -1935,8 +1894,7 @@ void timer(int value) {
 
 void creaPannelloGlui()
 {
-	//nascondere quei valori con delle variabili
-	glui = GLUI_Master.create_glui("Comandi Giocatore", GLUI_SUBWINDOW_TOP, (glutGet(GLUT_SCREEN_WIDTH)-larghezza-400)/2, (glutGet(GLUT_SCREEN_HEIGHT)-altezza)/2);
+	glui = GLUI_Master.create_glui("Comandi Giocatore", GLUI_SUBWINDOW_TOP, (glutGet(GLUT_SCREEN_WIDTH)-larghezza-spostamentoFinestra)/2, (glutGet(GLUT_SCREEN_HEIGHT)-altezza)/2);
 
 	panel = glui -> add_panel("Movimenti cubo", GLUI_PANEL_EMBOSSED);
 	glui -> add_statictext_to_panel(panel,"");
@@ -1945,23 +1903,23 @@ void creaPannelloGlui()
 	glui -> add_button_to_panel(panel, "<", -3, gestioneBottoni);	//Terza riga a sinistra
 	glui -> add_statictext_to_panel(panel,"");
 	glui->add_column_to_panel( panel, false );
-	glui -> add_button_to_panel(panel, "^", -4, gestioneBottoni);	//Prima colonna giù
+	glui -> add_button_to_panel(panel, "^", -4, gestioneBottoni);	//Prima colonna sù
 	glui -> add_statictext_to_panel(panel,"sezione posteriore");
 	glui -> add_statictext_to_panel(panel,"sezione centrale");
 	glui -> add_statictext_to_panel(panel,"sezione frontale");
-	glui -> add_button_to_panel(panel, "v", 4, gestioneBottoni);	//Prima colonna sù
+	glui -> add_button_to_panel(panel, "v", 4, gestioneBottoni);	//Prima colonna giù
 	glui->add_column_to_panel( panel, false );
-	glui -> add_button_to_panel(panel, "^", -5, gestioneBottoni);	//Seconda colonna giù
+	glui -> add_button_to_panel(panel, "^", -5, gestioneBottoni);	//Seconda colonna sù
 	glui -> add_statictext_to_panel(panel,"q = sinistra");
 	glui -> add_statictext_to_panel(panel,"a = sinistra");
 	glui -> add_statictext_to_panel(panel,"z = sinistra");
-	glui -> add_button_to_panel(panel, "v", 5, gestioneBottoni);	//Seconda colonna sù
+	glui -> add_button_to_panel(panel, "v", 5, gestioneBottoni);	//Seconda colonna giù
 	glui->add_column_to_panel( panel, false );
-	glui -> add_button_to_panel(panel, "^", -6, gestioneBottoni);	//Terza colonna giù
+	glui -> add_button_to_panel(panel, "^", -6, gestioneBottoni);	//Terza colonna sù
 	glui -> add_statictext_to_panel(panel,"w = destra");
 	glui -> add_statictext_to_panel(panel,"s = destra");
 	glui -> add_statictext_to_panel(panel,"x = destra");
-	glui -> add_button_to_panel(panel, "v", 6, gestioneBottoni);	//Terza colonna sù
+	glui -> add_button_to_panel(panel, "v", 6, gestioneBottoni);	//Terza colonna giù
 	glui->add_column_to_panel( panel, false );
 	glui -> add_statictext_to_panel(panel,"");
 	glui -> add_button_to_panel(panel, ">", 1, gestioneBottoni);	//Prima riga a destra
@@ -1970,8 +1928,14 @@ void creaPannelloGlui()
 	glui -> add_statictext_to_panel(panel,"");
 
 	panel = glui->add_panel( "", false );
-	glui -> add_button_to_panel(panel, "Mischia", 7, gestioneBottoni);
+	spinner = glui ->add_spinner_to_panel(panel,"Mosse:",GLUI_SPINNER_INT,&numeroMosseMischiate,12,gestioneBottoni);
+	spinner -> set_int_limits(1,100,GLUI_LIMIT_CLAMP);
+	spinner -> set_speed(0.1);
+	spinner -> set_int_val(numeroMosseMischiate);
 	glui->add_column_to_panel( panel, false );
+	glui -> add_button_to_panel(panel, "Mischia", 7, gestioneBottoni);
+	
+	panel = glui->add_panel( "", false );
 	glui->add_button_to_panel( panel, "Reset", 8, gestioneBottoni);
 	glui->add_column_to_panel( panel, false );
 	glui -> add_button_to_panel(panel, "Precedente", 9, gestioneBottoni);
@@ -2013,8 +1977,8 @@ void main(int argc,char** argv)
 {
 	glutInit(&argc,argv);
 	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH);
-	larghezza = 800;
-	altezza = 800;
+	larghezza = 700;
+	altezza = 700;
 	centraFinestraDesktop();
 	glutInitWindowSize(larghezza,altezza);
 	glutInitWindowPosition (window_x, window_y);

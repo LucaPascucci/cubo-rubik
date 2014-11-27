@@ -10,7 +10,7 @@
 #include <vector>
 #include <sstream>
 #include <time.h>
-
+#include <tchar.h>
 
 #include "imageloader.h"
 
@@ -2019,7 +2019,12 @@ void main(int argc,char** argv)
 	glutInitWindowSize(larghezza,altezza);
 	glutInitWindowPosition (window_x, window_y);
 	windowsID = glutCreateWindow("Cubo Di Rubik");
-	glutSetIconTitle("Icon.jpg");
+
+	//per impostare l'icona nella finestra principale
+	HWND hwnd = FindWindow(NULL, _T("Cubo di Rubik") );
+	HANDLE icon = LoadImage(GetModuleHandle(NULL), _T("rubik64.ico"), IMAGE_ICON, 64, 64, LR_LOADFROMFILE | LR_COLOR);
+	SendMessage(hwnd, (UINT)WM_SETICON, ICON_BIG, (LPARAM)icon);
+
 	inizializzaCubo();
 	init();
 	glutDisplayFunc(display);
@@ -2029,6 +2034,10 @@ void main(int argc,char** argv)
 	glutSpecialFunc(specialKeyboard);
 
 	creaPannelloGlui();
+
+	//per impostare l'icona nella finestra dei comandi
+	hwnd = FindWindow(NULL, _T("Comandi Giocatore") );
+	SendMessage(hwnd, (UINT)WM_SETICON, ICON_BIG, (LPARAM)icon);
 
 	glutMainLoop();
 }

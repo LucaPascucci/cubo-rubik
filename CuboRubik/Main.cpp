@@ -14,8 +14,6 @@
 
 #include "imageloader.h"
 
-#include "resource.h"
-
 #define spostamentoFinestra 400
 #define spessoreAssi 3
 
@@ -100,10 +98,10 @@ GLuint texture_faccia_sinistra;		//texture della faccia sinistra
 GLuint texture_faccia_superiore;	//texture della faccia superiore
 GLuint texture_faccia_inferiore;	//texture della faccia inferiore
 
-// fraction of the length to use as height of the characters:
+//frazione della lunghezza da usare come altezza dei caratteri degli assi
 const float LENFRAC = 0.10f;
 
-// fraction of length to use as start location of the characters:
+//frazione della lunghezza da usare come locazione di partenza dei caratteri
 const float BASEFRAC = 1.10f;
 
 // Il carattere 'X':
@@ -1763,17 +1761,17 @@ void specialKeyboard(int key, int x, int y)
 	}
 }
 
-void reshape(GLsizei width, GLsizei height) // GLsizei for non-negative integer
+void reshape(GLsizei width, GLsizei height) // GLsizei per interi non negativi
 { 
-	// Compute aspect ratio of the new window
+	//calcola l'aspect ratio della nuova finestra
 	if (height == 0) {
 		height = 1;
-	}// To prevent divide by 0
+	}//per evitare di dividere per 0
 	GLfloat aspect = (GLfloat)width / (GLfloat)height;
-	// Set the aspect ratio of the clipping volume to match the viewport
+	//imposta l'aspect ratio del volume di ritaglio per abbinare la viewport
 	glMatrixMode(GL_PROJECTION); // To operate on the Projection matrix
 	glLoadIdentity(); // Reset
-	// Enable perspective projection with fovy, aspect, zNear and zFar
+	//abilita la proiezione prospettica
 	gluPerspective(60.0f, aspect, 1.0f, 1000.0f);
 
 	//metodo per non fare modificare la grandezza della finestra
@@ -1791,7 +1789,7 @@ void init()
 
 	glEnable(GL_CULL_FACE);
 	glShadeModel(GL_SMOOTH);
-	/* colore di sfondo nero */
+	//colore di sfondo nero
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 
 	//carico le texture delle immagini bitmap

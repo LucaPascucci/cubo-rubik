@@ -59,7 +59,7 @@ bool mossaAnnullata = false;
 int contatoreMosse = 0;
 int gradiRotazioneMossa = 90;
 float angolo_rotazione = 0;
-Point puntoRiferimentoRotazione;
+Point puntoRiferimentoRotazione = {0.0,0.0,0.0};
 bool risolvi = false;
 bool vittoria = false;
 int timerApparizione = 0;
@@ -86,12 +86,12 @@ GLUI_Panel *panel;
 GLUI_RadioGroup *radio_group;
 GLUI_Spinner *spinner;
 
-GLuint white_textureId;
-GLuint red_textureId;
-GLuint blue_textureId;
-GLuint green_textureId;
-GLuint yellow_textureId;
-GLuint orange_textureId;
+GLuint ID_Texture_Bianco;
+GLuint ID_Texture_Rosso;
+GLuint ID_Texture_Blu;
+GLuint ID_Texture_Verde;
+GLuint ID_Texture_Giallo;
+GLuint ID_Texture_Arancione;
 
 GLuint texture_faccia_anteriore;	//texture della faccia anteriore
 GLuint texture_faccia_posteriore;	//texture della faccia posteriore
@@ -100,7 +100,7 @@ GLuint texture_faccia_sinistra;		//texture della faccia sinistra
 GLuint texture_faccia_superiore;	//texture della faccia superiore
 GLuint texture_faccia_inferiore;	//texture della faccia inferiore
 
-//frazione della lunghezza da usare come altezza dei caratteri degli assi
+//frazione della lunghezza da usare come scaler dei caratteri degli assi
 const float LENFRAC = 0.10f;
 
 //frazione della lunghezza da usare come locazione di partenza dei caratteri
@@ -109,17 +109,17 @@ const float BASEFRAC = 1.10f;
 // Il carattere 'X':
 float xx[4] = {0.0f, 1.0f, 0.0f, 1.0f};		//coordinate x dei punti per il carattere x
 float xy[4] = {-0.5f, 0.5f, 0.5f, -0.5f};	//coordinate y dei punti per il carattere x
-int xorder[4] = {0, 1, -2, 3};				//ordine di prelevamento dei punti per il carattere x
+int ordine_Punti_X[4] = {0, 1, -2, 3};		//ordine di prelevamento dei punti per il carattere x
 
 // Il carattere 'Y':
 float yx[4] = {0.0f, 0.0f, -0.5f, 0.5f};	//coordinate x dei punti per il carattere y
 float yy[4] = {0.0f, 0.6f, 1.0f, 1.0f};		//coordinate y dei punti per il carattere y
-int yorder[5] = {0, 1, 2, -1, 3};			//ordine di prelevamento dei punti per il carattere y
+int ordine_Punti_Y[5] = {0, 1, 2, -1, 3};	//ordine di prelevamento dei punti per il carattere y
 
 // Il carattere 'Z':
 float zx[6] = {1.0f, 0.0f, 1.0f, 0.0f, 0.10f, 0.90f};	//coordinate x dei punti per il carattere z
 float zy[6] = {0.5f, 0.5f, -0.5f, -0.5f, 0.0f, 0.0f};	//coordinate y dei punti per il carattere z
-int zorder[6] = {0, 1, 2, 3, -4, 5};					//ordine di prelevamento dei punti per il carattere z
+int ordine_Punti_Z[6] = {0, 1, 2, 3, -4, 5};			//ordine di prelevamento dei punti per il carattere z
 
 
 int coloreAssi = 0;
@@ -215,23 +215,23 @@ GLuint selezionaTextureCaricata(Colore colore){
 
 	switch (colore){
 	case WHITE:
-		textureId = white_textureId;
+		textureId = ID_Texture_Bianco;
 		break;
 	case YELLOW:
-		textureId = yellow_textureId;
+		textureId = ID_Texture_Giallo;
 		break;
 	case BLUE:
-		textureId = blue_textureId;
+		textureId = ID_Texture_Blu;
 		break;
 	case GREEN:
-		textureId = green_textureId;
+		textureId = ID_Texture_Verde;
 		break;
 
 	case ORANGE:
-		textureId = orange_textureId;
+		textureId = ID_Texture_Arancione;
 		break;
 	case RED:
-		textureId = red_textureId;
+		textureId = ID_Texture_Rosso;
 		break;
 	}
 
@@ -316,13 +316,13 @@ void disegnaAssi(float lunghezza)
 	//per fare le due x
 	for (int doppio = 0; doppio < 2; doppio++){
 		glPushMatrix();
-		if (doppio == 1){
+		if (doppio == 1){	//caso utilizzato per disegnare l'opposto
 			glRotatef(180, 0.0, 1.0, 0.0);
 		}
 		glBegin( GL_LINE_STRIP );
 		for( int i = 0; i < 4; i++ )	//ciclo della grandezza dell'ordine di prelevamento dei punti
 		{
-			int j = xorder[i]; 
+			int j = ordine_Punti_X[i]; 
 			if( j < 0 ) //caso in cui deve smettere di disegnare perchè i punti non sono collegati
 			{
 
@@ -340,13 +340,13 @@ void disegnaAssi(float lunghezza)
 	//per fare le due y
 	for (int doppio = 0; doppio < 2; doppio++){
 		glPushMatrix();
-		if (doppio == 1){
+		if (doppio == 1){	 //caso utilizzato per disegnare l'opposto
 			glRotatef(180, 0.0, 0.0, 1.0);
 		}
 		glBegin( GL_LINE_STRIP );
 		for( int i = 0; i < 5; i++ )
 		{
-			int j = yorder[i];
+			int j = ordine_Punti_Y[i];
 			if( j < 0 )
 			{
 
@@ -363,13 +363,13 @@ void disegnaAssi(float lunghezza)
 	//per fare le due z
 	for (int doppio = 0; doppio < 2; doppio++){
 		glPushMatrix();
-		if (doppio == 1){
+		if (doppio == 1){	 //caso utilizzato per disegnare l'opposto
 			glRotatef(180, 0.0, 1.0, 0.0);
 		}
 		glBegin( GL_LINE_STRIP );
 		for( int i = 0; i < 6; i++ )
 		{
-			int j = zorder[i];
+			int j = ordine_Punti_Z[i];
 			if( j < 0 )
 			{
 
@@ -384,6 +384,20 @@ void disegnaAssi(float lunghezza)
 	}
 
 	glColor3f(1.0, 1.0, 1.0);
+}
+
+void disegnaSuolo()
+{ 
+	glPushMatrix();
+	glBegin(GL_QUADS);
+	glColor3ub(0, 0, 0);
+	glVertex3f(600.0f, -50.0f, -200.0f);
+	glVertex3f(-600.0f, -50.0f, -650.0f);
+	glColor3ub(200, 200, 200);
+	glVertex3f(-600.0f, -50.0f, 30.0f);
+	glVertex3f(600.0f, -50.0f, 30.0f);
+	glEnd();
+	glPopMatrix();
 }
 
 void cuboSingolo(Colore colori[6])
@@ -578,6 +592,17 @@ void inizializzaCubo(){
 		}
 	}
 
+}
+
+void mischiaRubik() {
+	srand(time(NULL));
+	for (int i = 0; i < numeroMosseMischiate; i++)
+	{
+		mossaInCorso.riga_colonna_sezione = randomChar('r', 'c', 's');
+		mossaInCorso.valore = randomInt(0, 1, 2);
+		mossaInCorso.direzione = randomBool();
+		memorizzaMossa(false);
+	}
 }
 
 void ruotaColonnaRubik(int x, bool direzione){
@@ -1127,6 +1152,101 @@ void ruotaSezioneRubik(int z,bool direzione){
 	cuboRubik[1][1][z].colorifacce[5] = coloriInModifica[5];
 }
 
+bool controllaVittoria(){
+
+	bool vittoriaParziale = true;
+
+	Colore facciaSinistra = cuboRubik[0][0][0].colorifacce[3];		//colore di un cubo della faccia sinistra
+	Colore facciaDestra = cuboRubik[2][0][0].colorifacce[2];		//colore di un cubo della faccia destra
+	Colore facciaFrontale = cuboRubik[0][0][2].colorifacce[0];		//colore di un cubo della faccia frontale
+	Colore facciaPosteriore = cuboRubik[0][0][0].colorifacce[1];	//colore di un cubo della faccia posteriore
+	Colore facciaSuperiore = cuboRubik[0][2][0].colorifacce[4];		//colore di un cubo della faccia superiore
+	Colore facciaInferiore = cuboRubik[0][0][0].colorifacce[5];		//colore di un cubo della faccia inferiore
+
+	//controllo faccia sinistra quindi x = 0;
+	for (int y = 0; y < 3 && vittoriaParziale; y++){
+		for (int z = 0; z < 3 && vittoriaParziale; z++){
+			if (cuboRubik[0][y][z].colorifacce[3] != facciaSinistra){
+				vittoriaParziale = false;
+			}
+		}
+	}
+
+	//controllo faccia destra quindi x = 2
+	for (int y = 0; y < 3 && vittoriaParziale; y++){
+		for (int z = 0; z < 3 && vittoriaParziale; z++){
+			if (cuboRubik[2][y][z].colorifacce[2] != facciaDestra){
+				vittoriaParziale = false;
+			}
+		}
+	}
+
+	//controllo faccia frontale quindi z = 2;
+	for (int x = 0; x < 3 && vittoriaParziale; x++){
+		for (int y = 0; y < 3 && vittoriaParziale; y++){
+			if (cuboRubik[x][y][2].colorifacce[0] != facciaFrontale){
+				vittoriaParziale = false;
+			}
+		}
+	}
+
+	//controllo faccia posteriore quindi z = 0;
+	for (int x = 0; x < 3 && vittoriaParziale; x++){
+		for (int y = 0; y < 3 && vittoriaParziale; y++){
+			if (cuboRubik[x][y][0].colorifacce[1] != facciaPosteriore){
+				vittoriaParziale = false;
+			}
+		}
+	}
+
+	//controllo faccia superiore quindi y = 2;
+	for (int x = 0; x < 3 && vittoriaParziale; x++){
+		for (int z = 0; z < 3 && vittoriaParziale; z++){
+			if (cuboRubik[x][2][z].colorifacce[4] != facciaSuperiore){
+				vittoriaParziale = false;
+			}
+		}
+	}
+
+	//controllo faccia inferiore quindi y = 0;
+	for (int x = 0; x < 3 && vittoriaParziale; x++){
+		for (int z = 0; z < 3 && vittoriaParziale; z++){
+			if (cuboRubik[x][0][z].colorifacce[5] != facciaInferiore){
+				vittoriaParziale = false;
+			}
+		}
+	}
+
+	return vittoriaParziale;
+}
+
+void mossaPrecedente() {
+		if (!mosseEffettuate.empty()) {
+			mossaInCorso.riga_colonna_sezione = mosseEffettuate.back().riga_colonna_sezione;
+			mossaInCorso.valore = mosseEffettuate.back().valore;
+			mossaInCorso.direzione = !mosseEffettuate.back().direzione;
+			mosseEffettuate.erase(mosseEffettuate.begin() + mosseEffettuate.size() - 1);
+			mosseAnnullate.push_back(mossaInCorso);
+			mossaAnnullata = true;
+			pulsantePremuto = true;
+			if (!vittoria){
+				contatoreMosse++;
+			}
+			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
+		}
+}
+
+void mossaSuccessiva() {
+	if (!mosseAnnullate.empty()) {
+		mossaInCorso.riga_colonna_sezione = mosseAnnullate.back().riga_colonna_sezione;
+		mossaInCorso.valore = mosseAnnullate.back().valore;
+		mossaInCorso.direzione = !mosseAnnullate.back().direzione;
+		mosseAnnullate.erase(mosseAnnullate.begin() + mosseAnnullate.size() - 1);
+		pulsantePremuto = true;
+		PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
+	}
+}
+
 void memorizzaMossa(bool effettuatoOMischiato){ //se true la mossa è stata fatta dall'utente, altrimenti dal tasto mischia
 
 	switch (mossaInCorso.riga_colonna_sezione)
@@ -1157,56 +1277,50 @@ void memorizzaMossa(bool effettuatoOMischiato){ //se true la mossa è stata fatt
 
 }
 
-void mischiaRubik() {
-	srand(time(NULL));
-	for (int i = 0; i < numeroMosseMischiate; i++)
+bool attivazioneMossa(Mossa mossaCorrente, Point posizioneCuboCorrente){
+	bool attivaMovimento = false;
+	switch (mossaCorrente.riga_colonna_sezione)
 	{
-		mossaInCorso.riga_colonna_sezione = randomChar('r', 'c', 's');
-		mossaInCorso.valore = randomInt(0, 1, 2);
-		mossaInCorso.direzione = randomBool();
-		memorizzaMossa(false);
-	}
-}
-
-void mossaPrecedente() {
-		if (!mosseEffettuate.empty()) {
-			mossaInCorso.riga_colonna_sezione = mosseEffettuate.back().riga_colonna_sezione;
-			mossaInCorso.valore = mosseEffettuate.back().valore;
-			mossaInCorso.direzione = !mosseEffettuate.back().direzione;
-			mosseEffettuate.erase(mosseEffettuate.begin() + mosseEffettuate.size() - 1);
-			mosseAnnullate.push_back(mossaInCorso);
-			mossaAnnullata = true;
-			pulsantePremuto = true;
-			if (!vittoria){
-				contatoreMosse++;
-			}
-			PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
+	case 'r':
+		puntoRiferimentoRotazione.x = 0.0;
+		puntoRiferimentoRotazione.z = 0.0;
+		if (mossaCorrente.direzione){
+			puntoRiferimentoRotazione.y = 1.0;
+		}else {
+			puntoRiferimentoRotazione.y = -1.0;
 		}
-}
+		if (posizioneCuboCorrente.y == mossaCorrente.valore){
+			attivaMovimento = true;
+		}
+		break;
+	case 'c':
+		puntoRiferimentoRotazione.y = 0.0;
+		puntoRiferimentoRotazione.z = 0.0;
+		if (mossaCorrente.direzione){
+			puntoRiferimentoRotazione.x = 1.0;
+		}else {
+			puntoRiferimentoRotazione.x = -1.0;
+		}
+		if (posizioneCuboCorrente.x == mossaCorrente.valore){
+			attivaMovimento = true;
+		}
+		break;
 
-void mossaSuccessiva() {
-	if (!mosseAnnullate.empty()) {
-		mossaInCorso.riga_colonna_sezione = mosseAnnullate.back().riga_colonna_sezione;
-		mossaInCorso.valore = mosseAnnullate.back().valore;
-		mossaInCorso.direzione = !mosseAnnullate.back().direzione;
-		mosseAnnullate.erase(mosseAnnullate.begin() + mosseAnnullate.size() - 1);
-		pulsantePremuto = true;
-		PlaySound(TEXT("movimento.wav"), NULL, SND_FILENAME | SND_ASYNC); 
+	case 's':
+		puntoRiferimentoRotazione.y = 0.0;
+		puntoRiferimentoRotazione.x = 0.0;
+		if (mossaCorrente.direzione){
+			puntoRiferimentoRotazione.z = -1.0;
+		}else {
+			puntoRiferimentoRotazione.z = 1.0;
+		}
+		if (posizioneCuboCorrente.z == mossaCorrente.valore){
+			attivaMovimento = true;
+		}
+		break;
 	}
-}
+	return attivaMovimento;
 
-void disegnaSuolo()
-{ 
-	glPushMatrix();
-	glBegin(GL_QUADS);
-	glColor3ub(0, 0, 0);
-	glVertex3f(600.0f, -50.0f, -200.0f);
-	glVertex3f(-600.0f, -50.0f, -650.0f);
-	glColor3ub(200, 200, 200);
-	glVertex3f(-600.0f, -50.0f, 30.0f);
-	glVertex3f(600.0f, -50.0f, 30.0f);
-	glEnd();
-	glPopMatrix();
 }
 
 void gestioneBottoni(int opzione){
@@ -1387,7 +1501,7 @@ void gestioneBottoni(int opzione){
 		break;
 
 	case 7:		//Mischia
-		if (!mischiaCubo){
+		if (!mischiaCubo && !vittoria){
 			mischiaCubo = !mischiaCubo;
 			mischiaRubik();
 		}
@@ -1429,120 +1543,6 @@ void gestioneBottoni(int opzione){
 	case 12: //caso dell'aumento dello spinner che viene gia gestito automaticamente dalla glui
 		break;
 	}
-}
-
-bool attivazioneMossa(Mossa mossaCorrente, Point posizioneCuboCorrente){
-	bool attivaMovimento = false;
-	switch (mossaCorrente.riga_colonna_sezione)
-	{
-	case 'r':
-		puntoRiferimentoRotazione.x = 0.0;
-		puntoRiferimentoRotazione.z = 0.0;
-		if (mossaCorrente.direzione){
-			puntoRiferimentoRotazione.y = 1.0;
-		}else {
-			puntoRiferimentoRotazione.y = -1.0;
-		}
-		if (posizioneCuboCorrente.y == mossaCorrente.valore){
-			attivaMovimento = true;
-		}
-		break;
-	case 'c':
-		puntoRiferimentoRotazione.y = 0.0;
-		puntoRiferimentoRotazione.z = 0.0;
-		if (mossaCorrente.direzione){
-			puntoRiferimentoRotazione.x = 1.0;
-		}else {
-			puntoRiferimentoRotazione.x = -1.0;
-		}
-		if (posizioneCuboCorrente.x == mossaCorrente.valore){
-			attivaMovimento = true;
-		}
-		break;
-
-	case 's':
-		puntoRiferimentoRotazione.y = 0.0;
-		puntoRiferimentoRotazione.x = 0.0;
-		if (mossaCorrente.direzione){
-			puntoRiferimentoRotazione.z = -1.0;
-		}else {
-			puntoRiferimentoRotazione.z = 1.0;
-		}
-		if (posizioneCuboCorrente.z == mossaCorrente.valore){
-			attivaMovimento = true;
-		}
-		break;
-	}
-	return attivaMovimento;
-
-}
-
-bool controllaVittoria(){
-
-	bool vittoriaParziale = true;
-
-	Colore facciaSinistra = cuboRubik[0][0][0].colorifacce[3];		//colore di un cubo della faccia sinistra
-	Colore facciaDestra = cuboRubik[2][0][0].colorifacce[2];		//colore di un cubo della faccia destra
-	Colore facciaFrontale = cuboRubik[0][0][2].colorifacce[0];		//colore di un cubo della faccia frontale
-	Colore facciaPosteriore = cuboRubik[0][0][0].colorifacce[1];	//colore di un cubo della faccia posteriore
-	Colore facciaSuperiore = cuboRubik[0][2][0].colorifacce[4];		//colore di un cubo della faccia superiore
-	Colore facciaInferiore = cuboRubik[0][0][0].colorifacce[5];		//colore di un cubo della faccia inferiore
-
-	//controllo faccia sinistra quindi x = 0;
-	for (int y = 0; y < 3 && vittoriaParziale; y++){
-		for (int z = 0; z < 3 && vittoriaParziale; z++){
-			if (cuboRubik[0][y][z].colorifacce[3] != facciaSinistra){
-				vittoriaParziale = false;
-			}
-		}
-	}
-
-	//controllo faccia destra quindi x = 2
-	for (int y = 0; y < 3 && vittoriaParziale; y++){
-		for (int z = 0; z < 3 && vittoriaParziale; z++){
-			if (cuboRubik[2][y][z].colorifacce[2] != facciaDestra){
-				vittoriaParziale = false;
-			}
-		}
-	}
-
-	//controllo faccia frontale quindi z = 2;
-	for (int x = 0; x < 3 && vittoriaParziale; x++){
-		for (int y = 0; y < 3 && vittoriaParziale; y++){
-			if (cuboRubik[x][y][2].colorifacce[0] != facciaFrontale){
-				vittoriaParziale = false;
-			}
-		}
-	}
-
-	//controllo faccia posteriore quindi z = 0;
-	for (int x = 0; x < 3 && vittoriaParziale; x++){
-		for (int y = 0; y < 3 && vittoriaParziale; y++){
-			if (cuboRubik[x][y][0].colorifacce[1] != facciaPosteriore){
-				vittoriaParziale = false;
-			}
-		}
-	}
-
-	//controllo faccia superiore quindi y = 2;
-	for (int x = 0; x < 3 && vittoriaParziale; x++){
-		for (int z = 0; z < 3 && vittoriaParziale; z++){
-			if (cuboRubik[x][2][z].colorifacce[4] != facciaSuperiore){
-				vittoriaParziale = false;
-			}
-		}
-	}
-
-	//controllo faccia inferiore quindi y = 0;
-	for (int x = 0; x < 3 && vittoriaParziale; x++){
-		for (int z = 0; z < 3 && vittoriaParziale; z++){
-			if (cuboRubik[x][0][z].colorifacce[5] != facciaInferiore){
-				vittoriaParziale = false;
-			}
-		}
-	}
-
-	return vittoriaParziale;
 }
 
 void keyboard(unsigned char key,int x,int y)
@@ -1752,12 +1752,12 @@ void init()
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 
 	//carico le texture delle immagini bitmap
-	white_textureId = caricaTexture(WHITE);
-	red_textureId = caricaTexture(RED);
-	blue_textureId = caricaTexture(BLUE);
-	green_textureId = caricaTexture(GREEN);
-	yellow_textureId = caricaTexture(YELLOW);
-	orange_textureId = caricaTexture(ORANGE);
+	ID_Texture_Bianco = caricaTexture(WHITE);
+	ID_Texture_Rosso = caricaTexture(RED);
+	ID_Texture_Blu = caricaTexture(BLUE);
+	ID_Texture_Verde = caricaTexture(GREEN);
+	ID_Texture_Giallo = caricaTexture(YELLOW);
+	ID_Texture_Arancione = caricaTexture(ORANGE);
 
 }
 
@@ -1967,14 +1967,13 @@ void creaPannelloGlui()
 	glui -> set_main_gfx_window(windowsID);
 }
 
-void centraFinestraDesktop()
-{
+void centraFinestraDesktop(){
 	window_x = (glutGet (GLUT_SCREEN_WIDTH) - larghezza)/2 + spostamentoFinestra;
 	window_y = (glutGet (GLUT_SCREEN_HEIGHT) - altezza)/2;
 }
 
-void main(int argc,char** argv)
-{
+void main(int argc,char** argv){
+
 	glutInit(&argc,argv);
 	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH);
 	larghezza = 700;

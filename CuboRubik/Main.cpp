@@ -1908,12 +1908,16 @@ void creaPannelloGlui()
 	glui -> add_statictext_to_panel(panel,"sezione centrale");
 	glui -> add_statictext_to_panel(panel,"sezione frontale");
 	glui -> add_button_to_panel(panel, "v", 4, gestioneBottoni);	//Prima colonna giù
+	glui -> add_statictext_to_panel(panel,"");
+	glui -> add_statictext_to_panel(panel,"Frecce direzionali");
 	glui->add_column_to_panel( panel, false );
 	glui -> add_button_to_panel(panel, "^", -5, gestioneBottoni);	//Seconda colonna sù
 	glui -> add_statictext_to_panel(panel,"q = sinistra");
 	glui -> add_statictext_to_panel(panel,"a = sinistra");
 	glui -> add_statictext_to_panel(panel,"z = sinistra");
 	glui -> add_button_to_panel(panel, "v", 5, gestioneBottoni);	//Seconda colonna giù
+	glui -> add_statictext_to_panel(panel,"");
+	glui -> add_statictext_to_panel(panel,"= ruota il cubo");
 	glui->add_column_to_panel( panel, false );
 	glui -> add_button_to_panel(panel, "^", -6, gestioneBottoni);	//Terza colonna sù
 	glui -> add_statictext_to_panel(panel,"w = destra");

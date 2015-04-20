@@ -86,6 +86,7 @@ GLUI_Panel *panel;
 GLUI_RadioGroup *radio_group;
 GLUI_Spinner *spinner;
 
+//contengono gli id delle texture caricate ad avvio programma nel init()
 GLuint ID_Texture_Bianco;
 GLuint ID_Texture_Rosso;
 GLuint ID_Texture_Blu;
@@ -103,7 +104,7 @@ GLuint texture_faccia_inferiore;	//texture della faccia inferiore
 //frazione della lunghezza da usare come scaler dei caratteri degli assi
 const float LENFRAC = 0.10f;
 
-//frazione della lunghezza da usare come locazione di partenza dei caratteri
+//frazione della lunghezza da usare come locazione di partenza dei caratteri degli assi
 const float BASEFRAC = 1.10f;
 
 // Il carattere 'X':
@@ -122,9 +123,10 @@ float zy[6] = {0.5f, 0.5f, -0.5f, -0.5f, 0.0f, 0.0f};	//coordinate y dei punti p
 int ordine_Punti_Z[6] = {0, 1, 2, 3, -4, 5};			//ordine di prelevamento dei punti per il carattere z
 
 
+//colore di base degli assi
 int coloreAssi = 0;
 
-// Le definizioni dei colori
+// Le definizioni dei colori degli assi
 // L'ordine deve rispecchiare l'ordine dei radiobutton
 const GLfloat Colors[6][3] = 
 {
@@ -238,6 +240,7 @@ GLuint selezionaTextureCaricata(Colore colore){
 	return textureId;
 }
 
+//converte un intero in stringa
 string int2str(int x) 
 {
 	stringstream ss;
@@ -245,6 +248,7 @@ string int2str(int x)
 	return ss.str( );
 }
 
+//restituisce un char random tra r,c ed s
 char randomChar(char r, char c, char s) {
 	int random = rand()%3;
 
@@ -257,6 +261,7 @@ char randomChar(char r, char c, char s) {
 	}
 }
 
+//restituisce un boolean random
 bool randomBool() {
 	int r = rand()%2;
 
@@ -267,6 +272,7 @@ bool randomBool() {
 	}
 }
 
+//restituisce un random int tra primo, secondo e terzo
 int randomInt(int primo, int secondo , int terzo) {
 	int r = rand()%3;
 
@@ -279,6 +285,7 @@ int randomInt(int primo, int secondo , int terzo) {
 	}
 }
 
+//per stampare a video una stringa
 void disegnaTestoBitmap(float x, float y, string text)
 {
 	glRasterPos2f(x, y);
@@ -289,10 +296,11 @@ void disegnaTestoBitmap(float x, float y, string text)
 	}
 }
 
+//disegna gli assi cartesiani in base al colore scelto ed alla lunghezza desiderata
 void disegnaAssi(float lunghezza)
 {
 	//per fare asse x
-	glColor3fv(Colors[coloreAssi]);
+	glColor3fv(Colors[coloreAssi]); //preleva il colore scelto
 	glBegin(GL_LINE_STRIP);
 	glVertex3f(lunghezza, 0, 0);
 	glVertex3f(-lunghezza, 0, 0);
@@ -325,8 +333,7 @@ void disegnaAssi(float lunghezza)
 			int j = ordine_Punti_X[i]; 
 			if( j < 0 ) //caso in cui deve smettere di disegnare perchè i punti non sono collegati
 			{
-
-				glEnd( ); //interrompe il disegno
+				glEnd(); //interrompe il disegno
 				glBegin( GL_LINE_STRIP );
 				j = -j;	//inverte il numero per utilizzarlo come indice del vettore
 			}
@@ -334,7 +341,6 @@ void disegnaAssi(float lunghezza)
 		}
 		glEnd( );
 		glPopMatrix();
-
 	}
 
 	//per fare le due y
@@ -344,15 +350,14 @@ void disegnaAssi(float lunghezza)
 			glRotatef(180, 0.0, 0.0, 1.0);
 		}
 		glBegin( GL_LINE_STRIP );
-		for( int i = 0; i < 5; i++ )
+		for( int i = 0; i < 5; i++ ) //ciclo della grandezza dell'ordine di prelevamento dei punti
 		{
 			int j = ordine_Punti_Y[i];
-			if( j < 0 )
+			if( j < 0 ) //caso in cui deve smettere di disegnare perchè i punti non sono collegati
 			{
-
-				glEnd( );
+				glEnd(); //interrompe il disegno
 				glBegin( GL_LINE_STRIP );
-				j = -j;
+				j = -j; //inverte il numero per utilizzarlo come indice del vettore
 			}
 			glVertex3f(scalerLettere*yx[j], base + scalerLettere*yy[j], 0.0 );
 		}
@@ -367,15 +372,14 @@ void disegnaAssi(float lunghezza)
 			glRotatef(180, 0.0, 1.0, 0.0);
 		}
 		glBegin( GL_LINE_STRIP );
-		for( int i = 0; i < 6; i++ )
+		for( int i = 0; i < 6; i++ ) //ciclo della grandezza dell'ordine di prelevamento dei punti
 		{
 			int j = ordine_Punti_Z[i];
 			if( j < 0 )
 			{
-
-				glEnd( );
+				glEnd(); //interrompe il disegno
 				glBegin( GL_LINE_STRIP );
-				j = -j;
+				j = -j; //inverte il numero per utilizzarlo come indice del vettore
 			}
 			glVertex3f( 0.0, scalerLettere*zy[j], base + scalerLettere*zx[j] );
 		}
@@ -386,20 +390,22 @@ void disegnaAssi(float lunghezza)
 	glColor3f(1.0, 1.0, 1.0);
 }
 
+//disegna il suolo (fisso) della della scena
 void disegnaSuolo()
 { 
 	glPushMatrix();
 	glBegin(GL_QUADS);
-	glColor3ub(0, 0, 0);
+	glColor3ub(0, 0, 0); //colore iniziale sfumatura (lontano)
 	glVertex3f(600.0f, -50.0f, -200.0f);
 	glVertex3f(-600.0f, -50.0f, -650.0f);
-	glColor3ub(200, 200, 200);
+	glColor3ub(200, 200, 200); //colore finale sfumatura (vicino)
 	glVertex3f(-600.0f, -50.0f, 30.0f);
 	glVertex3f(600.0f, -50.0f, 30.0f);
 	glEnd();
 	glPopMatrix();
 }
 
+//disegna un singolo cubo sullo schermo
 void cuboSingolo(Colore colori[6])
 {
 	texture_faccia_anteriore = selezionaTextureCaricata(colori[0]);		//texture faccia anteriore
@@ -410,7 +416,7 @@ void cuboSingolo(Colore colori[6])
 	texture_faccia_inferiore = selezionaTextureCaricata(colori[5]);		//texture faccia inferiore
 
 	//Faccia Anteriore
-	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_TEXTURE_2D); //per utlizzare la texture
 	glBindTexture(GL_TEXTURE_2D, texture_faccia_anteriore);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -594,6 +600,7 @@ void inizializzaCubo(){
 
 }
 
+//mischia il cubo utilizzando metodi random per creare le mosse che mischiano
 void mischiaRubik() {
 	srand(time(NULL));
 	for (int i = 0; i < numeroMosseMischiate; i++)
@@ -605,6 +612,7 @@ void mischiaRubik() {
 	}
 }
 
+//ruota la colonna x con direzione bool (
 void ruotaColonnaRubik(int x, bool direzione){
 	if (direzione){
 
@@ -1640,6 +1648,7 @@ void keyboard(unsigned char key,int x,int y)
 	}
 }
 
+//utiizzato per prelevare l'uso delle freccie e ruotare il cubo
 void specialKeyboard(int key, int x, int y)
 {
 	if (!frecciaPremuta)
@@ -1728,7 +1737,7 @@ void reshape(GLsizei width, GLsizei height) // GLsizei per interi non negativi
 	}//per evitare di dividere per 0
 	GLfloat aspect = (GLfloat)width / (GLfloat)height;
 	//imposta l'aspect ratio del volume di ritaglio per abbinare la viewport
-	glMatrixMode(GL_PROJECTION); // To operate on the Projection matrix
+	glMatrixMode(GL_PROJECTION); //per operare con la matrice Projection
 	glLoadIdentity(); // Reset
 	//abilita la proiezione prospettica
 	gluPerspective(60.0f, aspect, 1.0f, 1000.0f);
@@ -1767,6 +1776,7 @@ void display()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
+	//imposta il punto di vista
 	gluLookAt(-4.0f, 5.0f, 8.0f, 
 		0.0f,0.0f,0.0f,
 		0.0f,1.0f,0.0f);
@@ -1812,6 +1822,7 @@ void timer(int value) {
 
 	SetActiveWindow(FindWindowA(0,"Cubo Di Rubik"));
 
+	//timer che regola l'apparizione della scritta HAI VINTO! nei 20 cicli positivi (da 20 a 0 compare e nei 20 cicli negativi da -1 a -20 non compare)
 	timerApparizione--;
 	if (timerApparizione == -20){
 		timerApparizione = 20;
@@ -1854,6 +1865,7 @@ void timer(int value) {
 			}
 		}
 	}
+
 	if (pulsantePremuto){
 
 		if (angolo_rotazione < gradiRotazioneMossa) {
@@ -1864,6 +1876,7 @@ void timer(int value) {
 			memorizzaMossa(true);
 		}
 	}
+
 	if (risolvi && angolo_rotazione == 0){
 		mosseAnnullate.clear();
 		if (!mosseEffettuate.empty()){
@@ -1892,6 +1905,7 @@ void timer(int value) {
 
 }
 
+//crea il pannello con i comandi del giocatore
 void creaPannelloGlui()
 {
 	glui = GLUI_Master.create_glui("Comandi Giocatore", GLUI_SUBWINDOW_TOP, (glutGet(GLUT_SCREEN_WIDTH)-larghezza-spostamentoFinestra)/2, (glutGet(GLUT_SCREEN_HEIGHT)-altezza)/2);

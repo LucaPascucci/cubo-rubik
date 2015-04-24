@@ -36,7 +36,6 @@ typedef struct{
 } Point;
 
 typedef struct{
-	int numeroCubo;
 	Colore colorifacce[6];
 } Cubo;
 
@@ -93,13 +92,6 @@ GLuint ID_Texture_Blu;
 GLuint ID_Texture_Verde;
 GLuint ID_Texture_Giallo;
 GLuint ID_Texture_Arancione;
-
-GLuint texture_faccia_anteriore;	//texture della faccia anteriore
-GLuint texture_faccia_posteriore;	//texture della faccia posteriore
-GLuint texture_faccia_destra;		//texture della faccia destra
-GLuint texture_faccia_sinistra;		//texture della faccia sinistra
-GLuint texture_faccia_superiore;	//texture della faccia superiore
-GLuint texture_faccia_inferiore;	//texture della faccia inferiore
 
 //frazione della lunghezza da usare come scaler dei caratteri degli assi
 const float LENFRAC = 0.10f;
@@ -405,15 +397,15 @@ void disegnaSuolo()
 	glPopMatrix();
 }
 
-//disegna un singolo cubo sullo schermo
+//disegna un singolo cubo sullo schermo viene passato il vettore di colori del cubo da disegnare
 void cuboSingolo(Colore colori[6])
 {
-	texture_faccia_anteriore = selezionaTextureCaricata(colori[0]);		//texture faccia anteriore
-	texture_faccia_posteriore = selezionaTextureCaricata(colori[1]);	//texture faccia posteriore
-	texture_faccia_destra = selezionaTextureCaricata(colori[2]);		//texture faccia destra
-	texture_faccia_sinistra = selezionaTextureCaricata(colori[3]);		//texture faccia sinistra
-	texture_faccia_superiore = selezionaTextureCaricata(colori[4]);		//texture faccia superiore
-	texture_faccia_inferiore = selezionaTextureCaricata(colori[5]);		//texture faccia inferiore
+	GLuint texture_faccia_anteriore = selezionaTextureCaricata(colori[0]);		//texture faccia anteriore
+	GLuint texture_faccia_posteriore = selezionaTextureCaricata(colori[1]);		//texture faccia posteriore
+	GLuint texture_faccia_destra = selezionaTextureCaricata(colori[2]);			//texture faccia destra
+	GLuint texture_faccia_sinistra = selezionaTextureCaricata(colori[3]);		//texture faccia sinistra
+	GLuint texture_faccia_superiore = selezionaTextureCaricata(colori[4]);		//texture faccia superiore
+	GLuint texture_faccia_inferiore = selezionaTextureCaricata(colori[5]);		//texture faccia inferiore
 
 	//Faccia Anteriore
 	glEnable(GL_TEXTURE_2D); //per utlizzare la texture
@@ -518,6 +510,7 @@ void cuboSingolo(Colore colori[6])
 	glDisable(GL_TEXTURE_2D);
 }
 
+//cambia il colore del cubo considerando che si muove per colonna
 void cambiaColoreCuboColonna(Colore coloriCubo[6],bool direzione){
 	if(direzione){
 		//ruota in avanti
@@ -538,6 +531,7 @@ void cambiaColoreCuboColonna(Colore coloriCubo[6],bool direzione){
 	coloriInModifica[3] = coloriCubo[3];
 }
 
+//cambia il colore del cubo considerando che si muove per riga
 void cambiaColoreCuboRiga(Colore coloriCubo[6],bool direzione){
 	if (direzione){
 		//ruota verso destra
@@ -557,6 +551,7 @@ void cambiaColoreCuboRiga(Colore coloriCubo[6],bool direzione){
 	coloriInModifica[5] = coloriCubo[5];
 }
 
+//cambia il colore del cubo considerando che si muove per sezione
 void cambiaColoreCuboSezione(Colore coloriCubo[6],bool direzione){
 	if(direzione){
 		//ruota verso destra
@@ -576,9 +571,13 @@ void cambiaColoreCuboSezione(Colore coloriCubo[6],bool direzione){
 	coloriInModifica[0] = coloriCubo[0];
 }
 
+//crea il cubo
 void inizializzaCubo(){
-	int numeroCubo = 1;
-
+	
+	//svuota tutte le mosse effettuate
+	mosseEffettuate.clear();
+	mosseAnnullate.clear();
+	mosseMischiate.clear();
 	for (int x = 0; x < 3;x++){
 		for (int y = 0; y < 3;y++){
 			for (int z = 0; z < 3;z++){
@@ -590,10 +589,7 @@ void inizializzaCubo(){
 				nuovoCubo.colorifacce[4] = ORANGE;
 				nuovoCubo.colorifacce[5] = RED;
 
-				nuovoCubo.numeroCubo = numeroCubo;
-
 				cuboRubik[x][y][z] = nuovoCubo;
-				numeroCubo++;
 			}
 		}
 	}
@@ -612,13 +608,13 @@ void mischiaRubik() {
 	}
 }
 
-//ruota la colonna x con direzione bool (
+//ruota la colonna x con direzione bool ruotando i colori di ogni cubo e spostandoli di posizione nel cubo visualizzato
 void ruotaColonnaRubik(int x, bool direzione){
 	if (direzione){
 
 		Cubo temp = cuboRubik[x][0][0];
 
-		cambiaColoreCuboColonna(cuboRubik[x][0][2].colorifacce,direzione);
+		cambiaColoreCuboColonna(cuboRubik[x][0][2].colorifacce,direzione); //salva i colori del cubo già ruotati nel senso corretto in coloriInModifica
 		cuboRubik[x][0][2].colorifacce[0] = coloriInModifica[0];
 		cuboRubik[x][0][2].colorifacce[1] = coloriInModifica[1];
 		cuboRubik[x][0][2].colorifacce[2] = coloriInModifica[2];
@@ -626,7 +622,7 @@ void ruotaColonnaRubik(int x, bool direzione){
 		cuboRubik[x][0][2].colorifacce[4] = coloriInModifica[4];
 		cuboRubik[x][0][2].colorifacce[5] = coloriInModifica[5];
 
-		cuboRubik[x][0][0] = cuboRubik[x][0][2];
+		cuboRubik[x][0][0] = cuboRubik[x][0][2]; //sposta la posizione dentro il cubo
 
 		cambiaColoreCuboColonna(cuboRubik[x][2][2].colorifacce,direzione);
 		cuboRubik[x][2][2].colorifacce[0] = coloriInModifica[0];
@@ -796,6 +792,7 @@ void ruotaColonnaRubik(int x, bool direzione){
 	cuboRubik[x][1][1].colorifacce[5] = coloriInModifica[5];
 }
 
+//ruota la riga x con direzione bool ruotando i colori di ogni cubo e spostandoli di posizione nel cubo visualizzato
 void ruotaRigaRubik(int y,bool direzione){
 	if (direzione){
 		Cubo temp = cuboRubik[0][y][0];
@@ -979,6 +976,7 @@ void ruotaRigaRubik(int y,bool direzione){
 
 }
 
+//ruota la sezione x con direzione bool ruotando i colori di ogni cubo e spostandoli di posizione nel cubo visualizzato
 void ruotaSezioneRubik(int z,bool direzione){
 	if (direzione){
 		Cubo temp = cuboRubik[0][0][z];
@@ -1160,21 +1158,23 @@ void ruotaSezioneRubik(int z,bool direzione){
 	cuboRubik[1][1][z].colorifacce[5] = coloriInModifica[5];
 }
 
+//controlla che tutte le faccie del cubo abbiano lo stesso colore
 bool controllaVittoria(){
 
 	bool vittoriaParziale = true;
 
-	Colore facciaSinistra = cuboRubik[0][0][0].colorifacce[3];		//colore di un cubo della faccia sinistra
-	Colore facciaDestra = cuboRubik[2][0][0].colorifacce[2];		//colore di un cubo della faccia destra
-	Colore facciaFrontale = cuboRubik[0][0][2].colorifacce[0];		//colore di un cubo della faccia frontale
-	Colore facciaPosteriore = cuboRubik[0][0][0].colorifacce[1];	//colore di un cubo della faccia posteriore
-	Colore facciaSuperiore = cuboRubik[0][2][0].colorifacce[4];		//colore di un cubo della faccia superiore
-	Colore facciaInferiore = cuboRubik[0][0][0].colorifacce[5];		//colore di un cubo della faccia inferiore
+	Colore facciaSinistra = cuboRubik[0][0][0].colorifacce[3];		//colore visualizzato di un cubo della faccia sinistra
+	Colore facciaDestra = cuboRubik[2][0][0].colorifacce[2];		//colore visualizzato di un cubo della faccia destra
+	Colore facciaFrontale = cuboRubik[0][0][2].colorifacce[0];		//colore visualizzato di un cubo della faccia frontale
+	Colore facciaPosteriore = cuboRubik[0][0][0].colorifacce[1];	//colore visualizzato di un cubo della faccia posteriore
+	Colore facciaSuperiore = cuboRubik[0][2][0].colorifacce[4];		//colore visualizzato di un cubo della faccia superiore
+	Colore facciaInferiore = cuboRubik[0][0][0].colorifacce[5];		//colore visualizzato di un cubo della faccia inferiore
 
 	//controllo faccia sinistra quindi x = 0;
 	for (int y = 0; y < 3 && vittoriaParziale; y++){
 		for (int z = 0; z < 3 && vittoriaParziale; z++){
 			if (cuboRubik[0][y][z].colorifacce[3] != facciaSinistra){
+				//se entra qui dentro allora esiste un cubo con una faccia non dello stesso colore
 				vittoriaParziale = false;
 			}
 		}
@@ -1228,6 +1228,7 @@ bool controllaVittoria(){
 	return vittoriaParziale;
 }
 
+//annulla l'ultima mossa effettuata
 void mossaPrecedente() {
 		if (!mosseEffettuate.empty()) {
 			mossaInCorso.riga_colonna_sezione = mosseEffettuate.back().riga_colonna_sezione;
@@ -1244,7 +1245,9 @@ void mossaPrecedente() {
 		}
 }
 
+//ripristina l'utlima mossa annullata
 void mossaSuccessiva() {
+	//controlla se esistono mosse annullate
 	if (!mosseAnnullate.empty()) {
 		mossaInCorso.riga_colonna_sezione = mosseAnnullate.back().riga_colonna_sezione;
 		mossaInCorso.valore = mosseAnnullate.back().valore;
@@ -1255,6 +1258,7 @@ void mossaSuccessiva() {
 	}
 }
 
+//applica la mossa nella matrice del cubo e la salva nel vettore delle mosse
 void memorizzaMossa(bool effettuatoOMischiato){ //se true la mossa è stata fatta dall'utente, altrimenti dal tasto mischia
 
 	switch (mossaInCorso.riga_colonna_sezione)
@@ -1262,6 +1266,7 @@ void memorizzaMossa(bool effettuatoOMischiato){ //se true la mossa è stata fatt
 	case 'r':
 		ruotaRigaRubik(mossaInCorso.valore,mossaInCorso.direzione);
 		break;
+
 	case 'c':
 		ruotaColonnaRubik(mossaInCorso.valore,mossaInCorso.direzione);
 		break;
@@ -1270,6 +1275,8 @@ void memorizzaMossa(bool effettuatoOMischiato){ //se true la mossa è stata fatt
 		ruotaSezioneRubik(mossaInCorso.valore,mossaInCorso.direzione);
 		break;
 	}
+
+	//se è true allora è una mossa effettuata
 	if (effettuatoOMischiato) {
 		if (!mossaAnnullata){
 			mosseEffettuate.push_back(mossaInCorso);
@@ -1285,6 +1292,7 @@ void memorizzaMossa(bool effettuatoOMischiato){ //se true la mossa è stata fatt
 
 }
 
+//controlla se la mossa corrente va applicata alla visualizzazione del cubo
 bool attivazioneMossa(Mossa mossaCorrente, Point posizioneCuboCorrente){
 	bool attivaMovimento = false;
 	switch (mossaCorrente.riga_colonna_sezione)
@@ -1510,6 +1518,7 @@ void gestioneBottoni(int opzione){
 
 	case 7:		//Mischia
 		if (!mischiaCubo && !vittoria){
+			inizializzaCubo();
 			mischiaCubo = !mischiaCubo;
 			mischiaRubik();
 		}
@@ -1519,9 +1528,6 @@ void gestioneBottoni(int opzione){
 		if (!pulsantePremuto){
 			pulsantePremuto = !pulsantePremuto;
 			inizializzaCubo();
-			mosseEffettuate.clear();
-			mosseMischiate.clear();
-			mosseAnnullate.clear();
 			angolo_asse_x = 0;
 			angolo_asse_y = 0;
 			angolo_asse_z = 0;
@@ -1866,17 +1872,20 @@ void timer(int value) {
 		}
 	}
 
+	//utilzzata per animare la rotazione di una qualsiasi mossa
 	if (pulsantePremuto){
 
 		if (angolo_rotazione < gradiRotazioneMossa) {
 			angolo_rotazione += 2.0;
 		}else{
+			//finita la rotazione memorizziamo la mossa sia spostando di posizione i cubi sia salvando la mossa dentro il vettore
 			angolo_rotazione = 0;
 			pulsantePremuto = false;
 			memorizzaMossa(true);
 		}
 	}
 
+	//caso in cui venga attivata la risoluzione automatica del cubo
 	if (risolvi && angolo_rotazione == 0){
 		mosseAnnullate.clear();
 		if (!mosseEffettuate.empty()){
@@ -1901,6 +1910,7 @@ void timer(int value) {
 
 	glutSetWindow(windowsID);
 	glutPostRedisplay();
+	//ogni 17 millisecondi
 	glutTimerFunc(17, timer, 0);
 
 }
@@ -1985,6 +1995,7 @@ void creaPannelloGlui()
 	glui -> set_main_gfx_window(windowsID);
 }
 
+//inizializza le variabili utilizzate per centrare le window 
 void centraFinestraDesktop(){
 	window_x = (glutGet (GLUT_SCREEN_WIDTH) - larghezza)/2 + spostamentoFinestra;
 	window_y = (glutGet (GLUT_SCREEN_HEIGHT) - altezza)/2;

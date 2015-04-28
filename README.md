@@ -2,6 +2,8 @@
 
 Rubik's Cube game simulator. It has been written using openGL libraries.
 
+![CuboRubik1.PNG](https://bitbucket.org/repo/xGLg9M/images/3479895125-CuboRubik1.PNG)
+
 **Details**
 
 Computer Science and Engineering University of Bologna, Cesena Campus

@@ -33,35 +33,20 @@
     <Image Include="yellow.bmp">
       <Filter>File di risorse</Filter>
     </Image>
+    <Image Include="rubik64.ico">
+      <Filter>File di risorse</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imageloader.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="CuboRubik.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="CuboRubikModificato.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="glui.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="RubickAreom.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="rubix_cube.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imageloader.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="rubix_cube.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>

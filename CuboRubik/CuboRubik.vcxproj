@@ -82,21 +82,16 @@
     <Image Include="green.bmp" />
     <Image Include="orange.bmp" />
     <Image Include="red.bmp" />
+    <Image Include="rubik64.ico" />
     <Image Include="white.bmp" />
     <Image Include="yellow.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CuboRubik.cpp" />
-    <ClCompile Include="CuboRubikModificato.cpp" />
-    <ClCompile Include="glui.cpp" />
     <ClCompile Include="imageloader.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="RubickAreom.cpp" />
-    <ClCompile Include="rubix_cube.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imageloader.h" />
-    <ClInclude Include="rubix_cube.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
